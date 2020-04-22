@@ -7,7 +7,7 @@ server.set("views", __dirname + "/views");
 
 server.use(morgan("short"));
 
-const PORT = process.env.PORT || 5000
+const port = process.env.PORT || 5000
 server.listen(port, ()=>{
     console.log("Servidor escuchando en el puerto:", port);
 });
