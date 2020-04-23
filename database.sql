@@ -11,12 +11,13 @@ insert into books values
     (3, 'N3', 'A3');
 
 create table users(
-    username text,
-    password text
+    id serial PRIMARY KEY,
+    username text UNIQUE NOT NULL,
+    password text NOT NULL
 );
 
 insert into users values
-    ('Alvaro', 'a123'),
+    (1, 'Alvaro', 'a123'),
     ('Juan', 'j123'),
     ('Pedro', 'p123');
 

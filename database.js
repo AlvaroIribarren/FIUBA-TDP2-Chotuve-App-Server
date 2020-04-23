@@ -9,22 +9,28 @@ const config = {
 
 const pool = new Pool(config);
 
-const getBoooks = async () => {
+const getUsers = async () => {
     try {
-        const books = await pool.query('select * from books');
-        console.log(books.rows);
-        pool.end();
+        const books = await pool.query('select * from users');
+        console.log(books.rows)
+        return books.rows;
     } catch(e){
         console.log(e);
     }
 }
 
-const insertBook = async () => {
+async function getUserById (id)  {
+    let users = await getUsers();
+    return users.find(user => user.id === id);
+}
+
+
+async function insertUser(nameReceived, passwordReceived) {
     try {
         const text = 'INSERT INTO users(username, password) VALUES($1, $2)';
-        const values = ['manuel', 'man123'];
-        const res = await pool.query(text, values);
-        console.log(res);
+        const values = [nameReceived, passwordReceived];
+        const result = await pool.query(text, values);
+        console.log(result);
         pool.end();
     } catch (e){
         console.log(e);
@@ -55,4 +61,12 @@ const editUser = async () => {
     }
 }
 
-editUser();
+async function print(){
+    const res = await getUserById('Foundation');
+    console.log("Buscaste el libro con titulo: " + res.title + " su autor es: " + res.author);
+}
+
+module.exports = {
+    getUser : getUserById,
+    insertUser : insertUser
+};
