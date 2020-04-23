@@ -1,29 +1,21 @@
 const express = require("express")
 const morgan = require("morgan")
 const server = express();
-
+const baseRoute = require("./routes/base")
+const saludoRoute = require("./routes/saludo")
+const loginRoute = require("./routes/login")
+const unknownRoute = require("./routes/unknown")
 
 server.set("views", __dirname + "/views");
-
 server.use(morgan("short"));
+
+server.use("/", baseRoute);
+server.use("/saludo", saludoRoute);
+server.use("/login", loginRoute);
+server.use("*", unknownRoute);
 
 const port = process.env.PORT || 5000
 server.listen(port, ()=>{
     console.log("Servidor escuchando en el puerto:", port);
 });
 
-server.get("/", (req, res)=> {
-    res.render("index.ejs")
-})
-
-server.get("/login", (req, res) =>{
-    res.render("login.ejs")
-})
-
-server.get("/saludo", (req, res) => {
-    res.render("saludo.ejs")
-})
-
-server.get("*", (req, res) => {
-    res.end("Todavia el virgo del desarrollador no creo esta pestaña")
-})
