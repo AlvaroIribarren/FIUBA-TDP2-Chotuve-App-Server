@@ -1,13 +1,23 @@
+const getUsers = async () => {
+    try {
+        const books = await pool.query('select * from users');
+        console.log(books.rows)
+        return books.rows;
+    } catch(e){
+        console.log(e);
+    }
+}
 async function getUserById (id)  {
     let users = await getUsers();
     return users.find(user => user.id === id);
 }
 
 
-async function insertUser(nameReceived, passwordReceived) {
+async function insertUser(id, nameReceived, passwordReceived) {
     try {
-        const text = 'INSERT INTO users(username, password) VALUES($1, $2)';
-        const values = [nameReceived, passwordReceived];
+        console.log("Intentando insertar user");
+        const text = 'INSERT INTO users(id, username, password) VALUES($1, $2, $3)';
+        const values = [id, nameReceived, passwordReceived];
         const result = await pool.query(text, values);
         console.log(result);
         pool.end();

@@ -33,9 +33,10 @@ function validateUser(body){
 router.post('/', async (req, res) => {
     const error = validateUser(req.body).error;
     if (!error){
+        const id = 2;
         const name = req.body.name;
         const password = req.body.password;
-        await database.insertUser(name, password);
+        await database.insertUser(id, name, password);
         res.send({name, password});
     } else {
         res.status(400).send(error.details[0].message);

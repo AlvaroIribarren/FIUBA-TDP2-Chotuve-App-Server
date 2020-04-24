@@ -22,14 +22,5 @@ router.get('/', async (req, res) => {
     }
 })
 
-const getUsers = async () => {
-    try {
-        const books = await pool.query('select * from users');
-        console.log(books.rows)
-        return books.rows;
-    } catch(e){
-        console.log(e);
-    }
-}
 
 module.exports = router;
