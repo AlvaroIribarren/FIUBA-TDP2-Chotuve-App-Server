@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
         const name = req.body.name;
         const password = req.body.password;
         await database.insertUser(id, name, password);
-        res.send({name, password});
+        res.send({id, name, password});
     } else {
         res.status(400).send(error.details[0].message);
     }

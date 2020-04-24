@@ -1,3 +1,8 @@
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
+});
+
 const getUsers = async () => {
     try {
         const books = await pool.query('select * from users');
