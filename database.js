@@ -29,7 +29,7 @@ const getUsers = async () => {
         console.log(e);
     }
 }
-
+asdasd
 async function getUserById (id)  {
     let users = await getUsers();
     return users.find(user => user.id === id);
