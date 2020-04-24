@@ -1,11 +1,13 @@
 const { Pool } = require('pg');
+const express = require('express')
+const router = express.Router();
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: true
 });
 
-.get('/db', async (req, res) => {
+router.get('/db', async (req, res) => {
     try {
         const client = await pool.connect()
         const result = await client.query('SELECT * FROM test_table');
