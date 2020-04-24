@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router();
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: true
@@ -13,7 +14,6 @@ router.get('/', async (req, res) => {
         const client = await pool.connect()
         const result = await client.query('SELECT * FROM users');
         const results = { 'results': (result) ? result.rows : null};
-        //res.render('pages/db', results );
         res.send(results);
         client.release();
     } catch (err) {
@@ -21,6 +21,5 @@ router.get('/', async (req, res) => {
         res.send("Error " + err);
     }
 })
-
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const database = require("../dataBaseManager")
+const Manager = require("../dataBaseManager")
 const Joi = require("joi")
 
 
@@ -10,7 +10,7 @@ router.get("/", (req, res) =>{
 
 
 router.get("/:id", async (req, res) =>{
-    const book = await database.getBookByTitle("Foundation")
+    const book = await Manager.getUsers();
     console.log(book);
     if (book) {
         res.send("Author: " + book.author + " title: " + book.title);
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         const id = 2;
         const name = req.body.name;
         const password = req.body.password;
-        await database.insertUser(id, name, password);
+        await Manager.insertUser(id, name, password);
         res.send({id, name, password});
     } else {
         res.status(400).send(error.details[0].message);

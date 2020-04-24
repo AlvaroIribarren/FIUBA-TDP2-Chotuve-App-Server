@@ -1,19 +1,22 @@
+const { Pool } = require('pg');
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: true
 });
 
-const getUsers = async () => {
+async function getUsers() {
     try {
         const books = await pool.query('select * from users');
         console.log(books.rows)
         return books.rows;
-    } catch(e){
+    } catch (e) {
         console.log(e);
     }
 }
-async function getUserById (id)  {
-    let users = await getUsers();
+
+async function getUserById(id) {
+    let users = await this.getUsers();
     return users.find(user => user.id === id);
 }
 
@@ -26,41 +29,40 @@ async function insertUser(id, nameReceived, passwordReceived) {
         const result = await pool.query(text, values);
         console.log(result);
         pool.end();
-    } catch (e){
+    } catch (e) {
         console.log(e);
     }
 }
 
-const deleteUser = async () => {
+async function deleteUser(){
     try {
         const text = 'DELETE FROM users WHERE username = $1';
         const values = ['manuel']
         const res = await pool.query(text, values);
         console.log(res);
         pool.end();
-    } catch (e){
+    } catch (e) {
         console.log(e);
     }
 }
 
-const editUser = async () => {
+async function editUser(){
     try {
         const text = 'UPDATE users SET username = $1 WHERE username = $2';
         const values = ['Jhon', 'Juan'];
         const res = await pool.query(text, values);
         console.log(res);
         pool.end();
-    } catch (e){
+    } catch (e) {
         console.log(e);
     }
 }
 
-async function print(){
-    const res = await getUserById('Foundation');
-    console.log("Buscaste el libro con titulo: " + res.title + " su autor es: " + res.author);
-}
+const Manager = {}
+Manager.getUsers = getUsers;
+Manager.getUserById = getUserById;
+Manager.insertUser = insertUser;
 
-module.exports = {
-    getUser : getUserById,
-    insertUser : insertUser
-};
+module.exports = Manager;
+
+
