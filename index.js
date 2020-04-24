@@ -8,17 +8,7 @@ const bodyParser = require("body-parser")
 const server = express();
 
 // //----------------------------
-// var pg = require('pg');
-//
-// var connectionString = "postgres://xovbegcheqegut:13cd6d27773e4f49fbbc6fb4677a84d3b92f9c0093793238f468eab55e32186e@ec2-52-6-143-153.compute-1.amazonaws.com:5432/d6o8g7k6fm0qv1"
-//
-// pg.connect(connectionString, function(err, client, done) {
-//     client.query('SELECT * FROM your_table', function(err, result) {
-//         done();
-//         if(err) return console.error(err);
-//         console.log(result.rows);
-//     });
-// });
+
 // //----------------------------
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: false}));

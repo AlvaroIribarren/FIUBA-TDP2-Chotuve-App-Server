@@ -1,13 +1,30 @@
-const {Pool} = require('pg');
+const { Client } = require('pg');
 
-const config = {
-    user: 'postgres',
-    host: 'localhost',
-    password: 'pass',
-    database: 'library'
-};
+const connectionString = "postgres://xovbegcheqegut:13cd6d27773e4f49fbbc6fb4677a84d3b92f9c0093793238f468eab55e32186e@ec2-52-6-143-153.compute-1.amazonaws.com:5432/d6o8g7k6fm0qv1"
+const client = new Client({
+    connectionString: connectionString,
+    ssl: true,
+});
 
-const pool = new Pool(config);
+client.connect();
+
+client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+        console.log(JSON.stringify(row));
+    }
+    client.end();
+});
+
+
+// const config = {
+//     user: 'postgres',
+//     host: 'ec2-52-6-143-153.compute-1.amazonaws.com',
+//     password: 'pass',
+//     database: 'library'
+// };
+//
+// const pool = new Pool(config);
 
 const getUsers = async () => {
     try {
