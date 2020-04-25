@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
         client.release();
     } catch (err) {
         console.error(err);
-        res.send("Error " + err);
+        res.send("Error: " + err);
     }
 })
 

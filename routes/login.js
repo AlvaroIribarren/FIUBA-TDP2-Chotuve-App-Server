@@ -8,10 +8,9 @@ router.get("/", (req, res) =>{
     res.render("login.ejs")
 })
 
-
 router.get("/:id", async (req, res) =>{
-    const book = await Manager.getUsers();
-    console.log(book);
+    const user = await Manager.getUserById(req.params.id);
+    console.log(user);
     if (book) {
         res.send("Author: " + book.author + " title: " + book.title);
         res.end();
@@ -33,7 +32,9 @@ function validateUser(body){
 router.post('/', async (req, res) => {
     const error = validateUser(req.body).error;
     if (!error){
-        const id = 2;
+        const users = await Manager.getUsers();
+        const id = users.length + 1;
+        console.log("Id: " + id);
         const name = req.body.name;
         const password = req.body.password;
         await Manager.insertUser(id, name, password);
