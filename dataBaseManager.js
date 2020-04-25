@@ -28,7 +28,6 @@ async function insertUser(id, nameReceived, passwordReceived) {
         const values = [id, nameReceived, passwordReceived];
         const result = await pool.query(text, values);
         console.log(result);
-        pool.end();
     } catch (e) {
         console.log(e);
     }
@@ -40,7 +39,6 @@ async function deleteUser(){
         const values = ['manuel']
         const res = await pool.query(text, values);
         console.log(res);
-        pool.end();
     } catch (e) {
         console.log(e);
     }
@@ -52,7 +50,6 @@ async function editUser(){
         const values = ['Jhon', 'Juan'];
         const res = await pool.query(text, values);
         console.log(res);
-        pool.end();
     } catch (e) {
         console.log(e);
     }
