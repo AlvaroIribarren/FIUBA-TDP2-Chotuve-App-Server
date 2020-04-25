@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
         const users = await Manager.getUsers();
         const id = users.length + 1;
         console.log("Id: " + id);
-        const name = req.body.name;
+        const name = req.body.username;
         const password = req.body.password;
         await Manager.insertUser(id, name, password);
         res.send({id, name, password});
