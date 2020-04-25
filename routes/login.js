@@ -23,7 +23,7 @@ function validateUser(body){
     const minNameLength = 3;
     const minPassLength = 5;
     const schema = {
-        name: Joi.string().min(minNameLength).required(),
+        username: Joi.string().min(minNameLength).required(),
         password: Joi.string().min(minPassLength).required()
     }
     return Joi.validate(body, schema);
