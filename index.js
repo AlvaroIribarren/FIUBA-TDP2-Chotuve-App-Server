@@ -2,9 +2,10 @@ const express = require("express")
 const morgan = require("morgan")
 const baseRoute = require("./routes/base")
 const saludoRoute = require("./routes/saludo")
-const loginRoute = require("./routes/login")
-const dataBaseRoute = require("./routes/database")
+const usersRoute = require("./routes/users")
+const friendsRoute = require("./routes/friends")
 const unknownRoute = require("./routes/unknown")
+
 const bodyParser = require("body-parser")
 const server = express();
 
@@ -18,12 +19,13 @@ server.listen(port, ()=>{
 
 server.set("views", __dirname + "/views");
 server.use(morgan("short"));
-
 server.use("/", baseRoute);
 server.use("/saludo", saludoRoute);
-server.use("/login", loginRoute);
-server.use("/db", dataBaseRoute);
+server.use("/users", usersRoute);
+server.use("/friends", friendsRoute);
 server.use("*", unknownRoute);
+
+
 
 
 
