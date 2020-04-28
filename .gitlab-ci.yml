@@ -7,23 +7,27 @@ image: node:latest
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
-  - mysql:latest
   - postgres:latest
+  - express:latest
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
   paths:
     - node_modules/
-
-test_async:
-  script:
-    - npm install
-    - npm start
-    - ^C
     
-test_db:
-  script:
-    - npm install
-    - npm start
-    - ^C
+stages:
+    - build
+    - test
+
+build:
+    stage: build
+    script:
+        - echo "Building"
+        - mkdir build
+        - touch build/info.txt
+test:
+    stage: test
+    script:
+        - echo "Testing"
+        - test -f "build/info.txt"
