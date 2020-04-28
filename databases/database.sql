@@ -6,6 +6,12 @@ create table books(
     author text
 );
 
+create table friends(
+    id INT PRIMARY KEY UNIQUE NOT NULL,
+    id1 INT NOT NULL,
+    id2 INT NOT NULL
+);
+
 insert into books values
     (2, 'N2', 'A2'),
     (3, 'N3', 'A3');
