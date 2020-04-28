@@ -63,9 +63,9 @@ router.post('/', async (req, res) => {
         const password = req.body.password;
         const email = req.body.email;
         const phone = req.body.phone;
-        const profileImgUrl = req.body.profileimgurl;
-        await UserManager.insertUser(id, name, password, email, phone, profileImgUrl);
-        res.status(201).send({id, name, password, email, phone, profileImgUrl});
+        const profileimgurl = req.body.profileimgurl;
+        await UserManager.insertUser(id, name, password, email, phone, profileimgurl);
+        res.status(201).send({id, name, password, email, phone, profileimgurl});
     } else {
         res.status(400).send(error.details[0].message);
     }
@@ -90,7 +90,7 @@ router.put('/:id', async (req, res) => {
         res.status(400).send("Error en validacion: " + error.details[0].message);
     } else {
         const newUserName = req.body.username;
-        await UserManager.editUser('username', newUserName, 'id', id);
+        await UserManager.editUser('name', newUserName, 'id', id);
         res.send(newUserName);
     }
 })
