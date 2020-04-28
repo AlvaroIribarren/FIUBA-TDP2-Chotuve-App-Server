@@ -4,7 +4,9 @@ const baseRoute = require("./routes/base")
 const saludoRoute = require("./routes/saludo")
 const usersRoute = require("./routes/users")
 const friendsRoute = require("./routes/friends")
+const videosRoute = require("./routes/videos")
 const unknownRoute = require("./routes/unknown")
+
 
 const bodyParser = require("body-parser")
 const server = express();
@@ -23,6 +25,7 @@ server.use("/", baseRoute);
 server.use("/saludo", saludoRoute);
 server.use("/users", usersRoute);
 server.use("/friends", friendsRoute);
+server.use("/videos", videosRoute);
 server.use("*", unknownRoute);
 
 
