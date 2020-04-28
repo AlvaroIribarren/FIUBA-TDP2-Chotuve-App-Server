@@ -58,14 +58,14 @@ function validateUser(body){
 router.post('/', async (req, res) => {
     const error = validateUser(req.body).error;
     if (!error){
-        const id = await UserManager.generateNewId();
+        const userid = await UserManager.generateNewId();
         const name = req.body.name;
         const password = req.body.password;
         const email = req.body.email;
         const phone = req.body.phone;
         const profileImgUrl = req.body.profileimgurl;
-        await UserManager.insertUser(id, name, password, email, phone, profileImgUrl);
-        res.status(201).send({id, name, password, email, phone, profileImgUrl});
+        await UserManager.insertUser(userid, name, password, email, phone, profileImgUrl);
+        res.status(201).send({userid, name, password, email, phone, profileImgUrl});
     } else {
         res.status(400).send(error.details[0].message);
     }
