@@ -7,6 +7,15 @@ const Joi = require("joi")
 const minNameLength = 3;
 const minPassLength = 5;
 
+/*
+    userId: lo mando yo
+    email: string
+    name: string
+    password: string
+    phone: string
+    profileImgUrl: string
+*/
+
 
 router.get("/", async (req, res) =>{
     try {
@@ -36,8 +45,11 @@ router.get("/:id/friends", async (req, res) => {
 
 function validateUser(body){
     const schema = {
-        username: Joi.string().min(minNameLength).required(),
-        password: Joi.string().min(minPassLength).required()
+        name: Joi.string().min(minNameLength).required(),
+        password: Joi.string().min(minPassLength).required(),
+        email: Joi.string().required(),
+        phone: Joi.string().required(),
+        profileimgurl: Joi.string().required(),
     }
     return Joi.validate(body, schema);
 }
@@ -47,10 +59,13 @@ router.post('/', async (req, res) => {
     const error = validateUser(req.body).error;
     if (!error){
         const id = await UserManager.generateNewId();
-        const username = req.body.username;
+        const name = req.body.name;
         const password = req.body.password;
-        await UserManager.insertUser(id, username, password);
-        res.send({id, username, password});
+        const email = req.body.email;
+        const phone = req.body.phone;
+        const profileImgUrl = req.body.profileimgurl;
+        await UserManager.insertUser(id, name, password, email, phone, profileImgUrl);
+        res.status(201).send({id, name, password, email, phone, profileImgUrl});
     } else {
         res.status(400).send(error.details[0].message);
     }

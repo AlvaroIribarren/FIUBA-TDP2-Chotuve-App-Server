@@ -10,10 +10,10 @@ async function getUserById(id){
     return await Manager.getIdFromTable(id, table);
 }
 
-async function insertUser(id, username, password) {
+async function insertUser(id, name, password, email, phone, profileimgurl) {
     console.log("Insertando elemento en: " + table);
-    const text = 'INSERT INTO users(id, username, password) VALUES($1, $2, $3)';
-    const values = [id, username, password];
+    const text = 'INSERT INTO users(id, name, password, email, phone, profileimgurl) VALUES($1, $2, $3, $4, $5, $6)';
+    const values = [id, name, password, email, phone, profileimgurl];
     await Manager.executeQueryInTable(text, values);
 }
 
