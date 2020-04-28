@@ -45,7 +45,6 @@ router.get("/:id/friends", async (req, res) => {
 
 function validateUser(body){
     const schema = {
-        id: Joi.number().required(),
         name: Joi.string().min(minNameLength).required(),
         password: Joi.string().min(minPassLength).required(),
         email: Joi.string().required(),
