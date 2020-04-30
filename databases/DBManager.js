@@ -5,7 +5,6 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-const pool = new Pool(config);
 
 async function getMaxId(table){
     const text = 'select max(id) from ' + table;
