@@ -45,7 +45,7 @@ router.get("/:id/friends", async (req, res) => {
 
 router.get("/:id/videos", async (req, res) => {
     const userId = parseInt(req.params.id);
-    const videos = await VideosManager.getAllVideosByUser(userId);
+    const videos = await VideosManager.getAllVideosFromUser(userId);
     res.send(videos)
 })
 

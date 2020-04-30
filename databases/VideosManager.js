@@ -22,6 +22,13 @@ async function getVideoById(id){
     return await Manager.getIdFromTable(id, videos);
 }
 
+async function getAllVideosFromUser(userid){
+    const text = 'SELECT * FROM videos WHERE author_name = ' + userid;
+    const res = await Manager.executeQueryInTableWithoutValues(text);
+    console.log(res.rows);
+    return res.rows;
+}   
+
 
 
 async function insertVideo(author_id, author_name, title, description, location, public, url) {
@@ -50,6 +57,7 @@ async function deleteAllVideosFromUser(userId){
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
 VideosManager.getVideoById = getVideoById;
+VideosManager.getAllVideosFromUser = getAllVideosFromUser;
 VideosManager.insertVideo = insertVideo;
 VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
