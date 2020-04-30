@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
-    const relation = await VideosManager.getVideosById(id);
+    const relation = await VideosManager.getVideoById(id);
     res.send(relation);
 })
 
@@ -42,16 +42,17 @@ async function validateInput(body){
 //todo: validate input
 router.post("/", async (req, res) => {
     //await validateInput(req.body);
-    const authorid = req.body.authorid;
+    const author_id = parseInt(req.body.author_id);
+    const userRow = await UserManager.getUserById(author_id);
+    const author_name = await userRow.name;
     const title = req.body.title;
     const description = req.body.description;
+    const location = req.body.location;
     const public = req.body.public;
     const url = req.body.url;
-    const location = req.body.location;
-    const userRow = await UserManager.getUserById(authorid);
-    const authorname = await userRow.name;
-    await VideosManager.insertVideo(authorid, authorname);
-    res.send({authorid, title, description, public, url, location});
+
+    await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
+    res.send({author_id, author_name, title, description, public, url, location});
 })
 
 router.delete("/:id1/:id2", async (req,res) => {

@@ -22,18 +22,11 @@ async function getVideoById(id){
     return await Manager.getIdFromTable(id, videos);
 }
 
-// async function getRelationByUsersIds(id1, id2){
-//     console.log("Relation between 2 users");
-//     const text = 'SELECT * FROM videos WHERE id1 = ' + id1 + ' AND id2 = ' + id2;
-//     const res = await Manager.executeQueryInTableWithoutValues(text);
-//     console.log(res.rows[0]);
-//     return res.rows[0];
-// }
-
-async function insertVideo(authorid, authorname) {
+async function insertVideo(author_id, author_name, title, description, location, public, url) {
     const id = await Manager.generateNewIdInTable(videos);
-    const text = 'INSERT INTO videos(id, authorid, authorname) VALUES($1, $2, $3)';
-    const values = [id, authorid, authorname];
+    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, url) ' +
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
+    const values = [id, author_id, author_name, title, description, location, public, url];
     await Manager.executeQueryInTable(text, values);
 }
 
@@ -44,13 +37,16 @@ async function deleteVideoByVideosId(id) {
 }
 
 async function deleteAllVideosFromUser(userId){
-
+    console.log("Deleting all videos");
+    const text = 'DELETE FROM friends WHERE authorid = ' + userId;
+    await Manager.executeQueryInTableWithoutValues(text);
 }
+
 
 
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
-VideosManager.getRelationById = getVideoById;
+VideosManager.getVideoById = getVideoById;
 VideosManager.insertVideo = insertVideo;
 VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
