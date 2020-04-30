@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
     const url = req.body.url;
 
     await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
-    res.send({author_id, author_name, title, description, public, url, location});
+    res.send({author_id, author_name, title, description, publicReceived, url, location});
 })
 
 router.delete("/:id1/:id2", async (req,res) => {
