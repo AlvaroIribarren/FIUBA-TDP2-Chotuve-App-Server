@@ -57,6 +57,13 @@ router.post("/", async (req, res) => {
     const url = req.body.url;
 
     const id = await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
+    
+    if (public === 1){
+        public = true;
+    } else {
+        public = false;
+    }
+
     res.send({id, author_id, author_name, title, description, public, url, location});
 })
 
