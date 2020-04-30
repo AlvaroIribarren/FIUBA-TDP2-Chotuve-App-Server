@@ -43,8 +43,7 @@ async function validateInput(body){
 router.post("/", async (req, res) => {
     //await validateInput(req.body);
     const author_id = parseInt(req.body.author_id);
-    const userRow = await UserManager.getUserById(author_id);
-    const author_name = await userRow.name;
+    const author_name = req.body.author_name;
     const title = req.body.title;
     const description = req.body.description;
     const location = req.body.location;
