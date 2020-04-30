@@ -3,6 +3,8 @@ const router = express.Router();
 const UserManager = require("../databases/UsersManager")
 const FriendsManager = require("../databases/FriendsManager")
 const VideosManager = require("../databases/VideosManager")
+const CommentManager = require("../databases/CommentsManager")
+const Manager = require("../databases/DBManager")
 const Joi = require("joi")
 
 //todo: agregar pedir videos a media
@@ -17,55 +19,58 @@ router.get("/:id", async (req, res) => {
     res.send(relation);
 })
 
-// router.get("/:id1/:id2", async (req, res) => {
-//     console.log("You asked for a certain relation between users")
-//     const relation = await VideosManager.getRelationByUsersIds(req.params.id1, req.params.id2);
-//     res.send(relation);
-//     console.log(relation);
-// })
+router.get("/:video_id/comments", async (req, res) => {
+    const video_id = parseInt(req.params.video_id);
+    const comments = await CommentManager.getAllCommentsFromVideo(video_id);
+    res.send(comments);
+})
 
 async function validateInput(body){
     const schema = {
-        authorid: Joi.number().positive().required(),
-        authorname: Joi.string().required()
+        author_id: Joi.number().positive().required(),
+        author_name: Joi.string().required(),
+        title: Joi.string().required(),
+        description: Joi.string(),
+        location: Joi.string(),
+        public: Joi.required(),
+        url: Joi.string().required()
     }
     return Joi.validate(body, schema);
 }
 
-// title = db.Column(db.String(100))
-// description = db.Column(db.String(1000))
-// url = db.Column(db.String(250))
-// location = db.Column(db.String(200))
-// public = db.Column(db.Boolean)
-// authorid = db.Column(db.Integer)
+async function validateUserInfo(author_id, author_name){
+    return await UserManager.checkCorrectIdAndName(author_id, author_name);
+}
 
-//todo: validate input
 router.post("/", async (req, res) => {
-    //await validateInput(req.body);
-    const author_id = parseInt(req.body.author_id);
-    const author_name = req.body.author_name;
-    const title = req.body.title;
-    const description = req.body.description;
-    const location = req.body.location;
-    let public = req.body.public;
-    
-    if (public) {
-        public = 1;
-    } else {
-        public = 0;
-    }
-    const url = req.body.url;
+    const error = await validateInput(req.body).error;
+    if (!error){
+        const author_id = parseInt(req.body.author_id);
+        const author_name = req.body.author_name;
+        const rightUserInfo = await validateUserInfo(author_id, author_name);
+        if (rightUserInfo){
+            const title = req.body.title;
+            const description = req.body.description;
+            const location = req.body.location;
+            let public = req.body.public;
 
-    const id = await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
-    
-    if (public === 1){
-        public = true;
-    } else {
-        public = false;
-    }
+            public = await Manager.turnBooleanToBit(public);
+            const url = req.body.url;
 
-    res.send({id, author_id, author_name, title, description, public, url, location});
+            const id = await VideosManager.insertVideo(author_id, author_name, title,
+                                                        description, location, public, url);
+
+            public = await Manager.turnBitToBoolean(public);
+            res.send({id, author_id, author_name, title, description, public, url, location});
+        } else {
+            res.status(404).send("Author's id or name was not found");
+        }
+    } else {
+        res.status(400).send(error.details[0].message);
+    }
 })
+
+
 
 router.delete("/:id1/:id2", async (req,res) => {
     const id1 = parseInt(req.params.id1);

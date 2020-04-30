@@ -36,6 +36,14 @@ create table requests(
     receiverid serial NOT NULL
 );
 
+create table comments(
+    id serial PRIMARY KEY NOT NULL,
+    author_id serial NOT NULL,
+    author_name text NOT NULL,
+    video_id serial NOT NULL,
+    comment text NOT NULL
+);
+
 insert into users values
     (1, 'Alvaro', 'a123'),
     ('Juan', 'j123'),

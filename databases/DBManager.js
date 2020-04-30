@@ -5,6 +5,15 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+// const config = {
+//     user: 'postgres',
+//     host: 'localhost',
+//     password: 'alvaro123',
+//     database: 'library'
+// };
+//
+// const pool = new Pool(config);
+
 
 async function getMaxId(table){
     const text = 'select max(id) from ' + table;
@@ -72,6 +81,24 @@ async function executeQueryInTableWithoutValues(text){
     }
 }
 
+async function turnBooleanToBit(boolean){
+    if (boolean) {
+        boolean = 1;
+    } else {
+        boolean = 0;
+    }
+    return boolean;
+}
+
+
+async function turnBitToBoolean(bit){
+    if (bit === 1){
+        bit = true;
+    } else {
+        bit = false;
+    }
+    return bit;
+}
 
 const Manager = {}
 Manager.getRows = getRows;
@@ -80,5 +107,7 @@ Manager.executeQueryInTable = executeQueryInTable;
 Manager.executeQueryInTableWithoutValues = executeQueryInTableWithoutValues;
 Manager.deleteRowFromTable = deleteRowFromTableById;
 Manager.generateNewIdInTable = generateNewIdInTable;
+Manager.turnBitToBoolean = turnBitToBoolean;
+Manager.turnBooleanToBit = turnBooleanToBit;
 
 module.exports = Manager;

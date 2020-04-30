@@ -23,7 +23,6 @@ async function deleteUserById(id) {
 
 async function editUser(fieldToBeChanged, field1, fieldToCompare, condition){
     try {
-        //const text = 'UPDATE users SET $1 = $2 WHERE $3 = $4';
         const str = 'UPDATE users SET '
         const modifiedString = "'" + field1 + "'";
         const str1 = fieldToBeChanged + ' = ' + modifiedString + ' WHERE ' + fieldToCompare + ' = ' + condition;
@@ -39,6 +38,16 @@ async function generateNewId(){
     return await Manager.generateNewIdInTable(table);
 }
 
+async function checkCorrectIdAndName(author_id, author_name){
+    const user = await getUserById(author_id);
+    if (user){
+        const name = user.name;
+        return author_name === name;
+    } else {
+        return false;
+    }
+}
+
 const UsersManager = {}
 UsersManager.insertUser = insertUser;
 UsersManager.getUsers = getUsers;
@@ -46,4 +55,5 @@ UsersManager.getUserById = getUserById;
 UsersManager.deleteUserById = deleteUserById;
 UsersManager.editUser = editUser;
 UsersManager.generateNewId = generateNewId;
+UsersManager.checkCorrectIdAndName = checkCorrectIdAndName;
 module.exports = UsersManager;

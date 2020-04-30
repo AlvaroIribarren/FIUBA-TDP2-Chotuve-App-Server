@@ -6,6 +6,7 @@ const usersRoute = require("./routes/users")
 const friendsRoute = require("./routes/friends")
 const videosRoute = require("./routes/videos")
 const requestsRoute = require("./routes/requests")
+const commentsRoute = require("./routes/comments")
 const unknownRoute = require("./routes/unknown")
 
 
@@ -28,6 +29,7 @@ server.use("/users", usersRoute);
 server.use("/friends", friendsRoute);
 server.use("/videos", videosRoute);
 server.use("/requests", requestsRoute);
+server.use("/comments", commentsRoute);
 server.use("*", unknownRoute);
 
 
