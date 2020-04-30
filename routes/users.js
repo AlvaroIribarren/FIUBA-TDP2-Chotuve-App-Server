@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const UserManager = require("../databases/UsersManager")
 const FriendManager = require("../databases/FriendsManager")
+const VideosManager = require("../databases/VideosManager")
 const Joi = require("joi")
 
 const minNameLength = 3;
@@ -40,6 +41,12 @@ router.get("/:id/friends", async (req, res) => {
     const userId = parseInt(req.params.id);
     const friends = await FriendManager.getAllRelationsFromUser(userId);
     res.send(friends);
+})
+
+router.get("/:id/videos", async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const videos = await VideosManager.getAllVideosByUser(userId);
+    res.send(videos)
 })
 
 

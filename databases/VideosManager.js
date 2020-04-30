@@ -22,12 +22,15 @@ async function getVideoById(id){
     return await Manager.getIdFromTable(id, videos);
 }
 
+
+
 async function insertVideo(author_id, author_name, title, description, location, public, url) {
     const id = await Manager.generateNewIdInTable(videos);
     const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, url) ' +
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
     const values = [id, author_id, author_name, title, description, location, public, url];
     await Manager.executeQueryInTable(text, values);
+    return id;
 }
 
 async function deleteVideoByVideosId(id) {
