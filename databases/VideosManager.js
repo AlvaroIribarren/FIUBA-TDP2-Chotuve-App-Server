@@ -23,7 +23,7 @@ async function getVideoById(id){
 }
 
 async function getAllVideosFromUser(userid){
-    const text = 'SELECT * FROM videos WHERE author_name = ' + userid;
+    const text = 'SELECT * FROM videos WHERE author_id = ' + userid;
     const res = await Manager.executeQueryInTableWithoutValues(text);
     console.log(res.rows);
     return res.rows;
