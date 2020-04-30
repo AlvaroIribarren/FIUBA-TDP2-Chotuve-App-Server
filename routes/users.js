@@ -8,12 +8,12 @@ const minNameLength = 3;
 const minPassLength = 5;
 
 /*
-    userId: lo mando yo
+    id: lo mando yo
     email: string
     name: string
     password: string
     phone: string
-    profileImgUrl: string
+    profileimgurl: string
 */
 
 
@@ -63,9 +63,9 @@ router.post('/', async (req, res) => {
         const password = req.body.password;
         const email = req.body.email;
         const phone = req.body.phone;
-        const profileimgurl = req.body.profileimgurl;
-        await UserManager.insertUser(id, name, password, email, phone, profileimgurl);
-        res.status(201).send({id, name, password, email, phone, profileimgurl});
+        const profileImgUrl = req.body.profileimgurl;
+        await UserManager.insertUser(id, name, password, email, phone, profileImgUrl);
+        res.status(201).send({id, name, password, email, phone, profileImgUrl});
     } else {
         res.status(400).send(error.details[0].message);
     }
@@ -89,7 +89,7 @@ router.put('/:id', async (req, res) => {
     if(error){
         res.status(400).send("Error en validacion: " + error.details[0].message);
     } else {
-        const newUserName = req.body.username;
+        const newUserName = req.body.name;
         await UserManager.editUser('name', newUserName, 'id', id);
         res.send(newUserName);
     }
@@ -103,4 +103,3 @@ router.delete('/:id', async (req, res) => {
 })
 
 module.exports = router;
-

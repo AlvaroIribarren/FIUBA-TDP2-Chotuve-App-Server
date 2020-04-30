@@ -1,3 +1,4 @@
+const {Pool} = require('pg');
 const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
 

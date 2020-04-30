@@ -1,3 +1,4 @@
+const { Pool } = require('pg');
 const express = require('express')
 const router = express.Router();
 const Manager = require("./DBManager")

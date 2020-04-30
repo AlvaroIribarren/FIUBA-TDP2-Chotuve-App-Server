@@ -15,6 +15,7 @@ router.get("/:id", async (req, res) => {
     res.send(relation);
 })
 
+//todo: cambiar
 router.get("/:id1/:id2", async (req, res) => {
     console.log("You asked for a certain relation between users")
     const relation = await FriendsManager.getRelationByUsersIds(req.params.id1, req.params.id2);
