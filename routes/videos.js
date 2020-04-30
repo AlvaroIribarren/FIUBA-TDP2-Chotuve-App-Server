@@ -47,7 +47,11 @@ router.post("/", async (req, res) => {
     const title = req.body.title;
     const description = req.body.description;
     const location = req.body.location;
-    const public = req.body.public;
+    const publicReceived = req.body.public;
+    let public = 0;
+    if (publicReceived) {
+        public = 1;
+    }
     const url = req.body.url;
 
     await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
