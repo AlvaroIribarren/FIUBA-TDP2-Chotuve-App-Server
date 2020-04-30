@@ -47,15 +47,17 @@ router.post("/", async (req, res) => {
     const title = req.body.title;
     const description = req.body.description;
     const location = req.body.location;
-    const publicReceived = req.body.public;
-    let public = 0;
-    if (publicReceived) {
+    let public = req.body.public;
+    
+    if (public) {
         public = 1;
+    } else {
+        public = 0;
     }
     const url = req.body.url;
 
     const id = await VideosManager.insertVideo(author_id, author_name, title, description, location, public, url);
-    res.send({id, author_id, author_name, title, description, publicReceived, url, location});
+    res.send({id, author_id, author_name, title, description, public, url, location});
 })
 
 router.delete("/:id1/:id2", async (req,res) => {
