@@ -7,7 +7,7 @@ const CommentManager = require("../databases/CommentsManager")
 const Joi = require("joi")
 
 router.get("/", async (req, res) => {
-    const relations = await CommentManager.getVideos();
+    const relations = await CommentManager.getAllComments();
     res.send(relations);
 })
 
