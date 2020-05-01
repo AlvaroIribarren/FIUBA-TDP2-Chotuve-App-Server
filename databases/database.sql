@@ -42,8 +42,21 @@ create table opinions(
     positive_opinion bit NOT NULL
 );
 
-insert into users values
-    (1, 'Alvaro', 'a123'),
-    ('Juan', 'j123'),
-    ('Pedro', 'p123');
+//OPINION
+{
+	"author_id" : 1,
+	"author_name" : "Alvaro",
+	"video_id": 1,
+	"positive_opinion": true
+}
 
+USER
+{
+	"name" : "Franco Giordano",
+	"password" : "goto_password",
+	"email": "franki_pelado@gmail.com",
+	"phone": "xdd",
+	"profileimgurl": "https://firebasestorage.googleapis.com/v0/b/chotuve-467b2.appspot.com/o/images%2Ffranki.jpg?alt=media&token=1aa11c1f-e684-4b5e-8bd5-52f305c989de"
+}
+
+VIDEO

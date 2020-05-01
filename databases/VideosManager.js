@@ -57,7 +57,7 @@ async function turnBooleanIntoBit(boolean){
 }
 
 async function turnBitIntoBoolean(bit) {
-    return turnBitIntoBoolean(bit);
+    return await Manager.turnBitToBoolean(bit);
 }
 
 
