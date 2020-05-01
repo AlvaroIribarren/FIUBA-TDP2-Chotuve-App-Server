@@ -1,15 +1,5 @@
 create database library;
 
-create table books(
-    section int,
-    title text,
-    author text
-);
-
-insert into books values
-    (2, 'N2', 'A2'),
-    (3, 'N3', 'A3');
-
 create table users(
     id serial PRIMARY KEY,
     name text UNIQUE NOT NULL,
