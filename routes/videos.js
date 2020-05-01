@@ -59,13 +59,12 @@ router.post("/", async (req, res) => {
             const description = req.body.description;
             const location = req.body.location;
             const url = req.body.url;
-            let localPublic =  await VideosManager.turnBooleanIntoBit(req.body.public);
+            //Cambio nombre para no tener problemas con la palabra reservada public.
+            const localPublic =  req.body.public;
 
             const id = await VideosManager.insertVideo(author_id, author_name, title,
                                                         description, location, localPublic, url);
 
-
-            localPublic = await VideosManager.turnBitIntoBoolean(localPublic);
             res.send({id, author_id, author_name, title, description, public: localPublic, url, location});
         } else {
             res.status(404).send("Author's id or name was not found");

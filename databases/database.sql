@@ -16,7 +16,7 @@ create table videos(
     title text NOT NULL,
     description text NOT NULL,
     location text NOT NULL,
-    public bit NOT NULL,
+    public boolean NOT NULL,
     url text UNIQUE NOT NULL,
     likes serial,
     dislikes serial

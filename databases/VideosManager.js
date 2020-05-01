@@ -68,16 +68,6 @@ async function deleteAllVideosFromUser(userId){
     await Manager.executeQueryInTableWithoutValues(text);
 }
 
-async function turnBooleanIntoBit(boolean){
-    return await Manager.turnBooleanToBit(boolean);
-}
-
-async function turnBitIntoBoolean(bit) {
-    return await Manager.turnBitToBoolean(bit);
-}
-
-
-
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
 VideosManager.getVideoById = getVideoById;
@@ -85,8 +75,6 @@ VideosManager.getAllVideosFromUser = getAllVideosFromUser;
 VideosManager.insertVideo = insertVideo;
 VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
-VideosManager.turnBitIntoBoolean = turnBitIntoBoolean;
-VideosManager.turnBooleanIntoBit =turnBooleanIntoBit;
 VideosManager.addOpinionToVideo = addOpinionToVideo;
 
 module.exports = VideosManager;
