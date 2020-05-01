@@ -17,7 +17,9 @@ create table videos(
     description text NOT NULL,
     location text NOT NULL,
     public bit NOT NULL,
-    url text UNIQUE NOT NULL
+    url text UNIQUE NOT NULL,
+    likes serial,
+    dislikes serial
 );
 
 create table requests(
@@ -39,15 +41,23 @@ create table opinions(
     author_id serial NOT NULL,
     author_name text NOT NULL,
     video_id serial NOT NULL,
-    positive_opinion bit NOT NULL
+    positive_opinion BOOLEAN NOT NULL
 );
 
 //OPINION
 {
 	"author_id" : 1,
-	"author_name" : "Alvaro",
+	"author_name" : "Santiago Beroch",
 	"video_id": 1,
 	"positive_opinion": true
+}
+
+Comments
+{
+	"author_id" : 1,
+	"author_name" : "Santiago Beroch",
+	"video_id": 1,
+	"comment": true
 }
 
 USER
@@ -60,3 +70,12 @@ USER
 }
 
 VIDEO
+{
+	"author_id": 1,
+	"author_name" : "Santiago Beroch",
+	"title" : "Tumbando asdel club",
+	"description": "TEMasdUCO",
+	"location": "EN EL CasdLUB",
+	"public": true,
+	"url": "asd"
+}

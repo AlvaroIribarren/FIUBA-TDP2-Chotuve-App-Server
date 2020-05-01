@@ -10,7 +10,6 @@ const commentsRoute = require("./routes/comments")
 const opinionsRoute = require("./routes/opinions")
 const unknownRoute = require("./routes/unknown")
 
-
 const bodyParser = require("body-parser")
 const server = express();
 
@@ -33,8 +32,3 @@ server.use("/requests", requestsRoute);
 server.use("/comments", commentsRoute);
 server.use("/opinions", opinionsRoute);
 server.use("*", unknownRoute);
-
-
-
-
-

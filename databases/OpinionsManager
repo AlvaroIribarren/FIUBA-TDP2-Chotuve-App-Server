@@ -44,12 +44,13 @@ async function deleteAllOpinionsFromVideo(video_id){
     await Manager.executeQueryInTableWithoutValues(text);
 }
 
-async function turnBooleanIntoBit(boolean){
-    return await Manager.turnBooleanToBit(boolean);
-}
-
-async function turnBitIntoBoolean(bit){
-    return await Manager.turnBitToBoolean(bit);
+async function checkIfUserIsTryingToPostTheSameOpinion(author_id, video_id, positive_opinion) {
+    const str1 = 'SELECT * FROM ' + opinions + ' WHERE';
+    const str2 = ' author_id =' + author_id + ' AND video_id =' + video_id +
+        ' AND positive_opinion =' + positive_opinion;
+    const text = str1 + str2;
+    const equalOpinion = await Manager.executeQueryInTableWithoutValues(text);
+    return equalOpinion.rows.length > 0;
 }
 
 const OpinionManager = {}
@@ -59,7 +60,6 @@ OpinionManager.getAllOpinionsFromVideo = getAllOpinionsFromVideo;
 OpinionManager.insertOpinion = insertOpinion;
 OpinionManager.deleteOpinionById = deleteOpinionById;
 OpinionManager.deleteAllOpinionsFromVideo = deleteAllOpinionsFromVideo;
-OpinionManager.turnBitIntoBoolean = turnBitIntoBoolean;
-OpinionManager.turnBooleanIntoBit = turnBooleanIntoBit;
+OpinionManager.checkIfUserIsTryingToPostTheSameOpinion = checkIfUserIsTryingToPostTheSameOpinion;
 
 module.exports = OpinionManager;

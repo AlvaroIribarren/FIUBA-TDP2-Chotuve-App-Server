@@ -46,10 +46,17 @@ router.post("/", async (req, res) => {
         const rightVideoInfo = await validateVideosExistance(video_id);
 
         if (rightUserInfo && rightVideoInfo){
-            let positive_opinion = await OpinionsManager.turnBooleanIntoBit(req.body.positive_opinion);
-            const id = await OpinionsManager.insertOpinion(author_id, author_name, video_id, positive_opinion);
-            positive_opinion = await OpinionsManager.turnBitIntoBoolean(positive_opinion);
-            res.send({id, author_id, author_name, video_id, positive_opinion});
+            const positive_opinion = req.body.positive_opinion;
+            const sameOpinionTwice = await OpinionsManager.checkIfUserIsTryingToPostTheSameOpinion
+                                                            (author_id, video_id, positive_opinion);
+            if (!sameOpinionTwice){
+                await VideoManager.addOpinionToVideo(video_id, positive_opinion);
+                const id = await OpinionsManager.insertOpinion(author_id, author_name, video_id, positive_opinion);
+
+                res.send({id, author_id, author_name, video_id, positive_opinion});
+            } else {
+                res.send("Este usuario ya puso esta opinión en el video.");
+            }
         } else {
             res.status(404).send("User or videos information is incorrect or doesn't exist.");
         }

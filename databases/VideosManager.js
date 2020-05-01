@@ -27,15 +27,31 @@ async function getAllVideosFromUser(userid){
     const res = await Manager.executeQueryInTableWithoutValues(text);
     console.log(res.rows);
     return res.rows;
-}   
+}
 
+async function addOpinionToVideo(id, positive_opinion){
+    if (positive_opinion){
+        await addLikeToVideo(id)
+    } else {
+        await addDislikeToVideo(id);
+    }
+}
 
+async function addLikeToVideo(id){
+    await Manager.incrementRowValueById(id, videos, 'likes');
+}
+
+async function addDislikeToVideo(id){
+    await Manager.incrementRowValueById(id, videos, 'dislikes');
+}
 
 async function insertVideo(author_id, author_name, title, description, location, public, url) {
     const id = await Manager.generateNewIdInTable(videos);
-    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, url) ' +
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
-    const values = [id, author_id, author_name, title, description, location, public, url];
+    const likes = 0;
+    const dislikes = 0;
+    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, url, likes, dislikes) ' +
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+    const values = [id, author_id, author_name, title, description, location, public, url, likes, dislikes];
     await Manager.executeQueryInTable(text, values);
     return id;
 }
@@ -71,5 +87,6 @@ VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
 VideosManager.turnBitIntoBoolean = turnBitIntoBoolean;
 VideosManager.turnBooleanIntoBit =turnBooleanIntoBit;
+VideosManager.addOpinionToVideo = addOpinionToVideo;
 
 module.exports = VideosManager;

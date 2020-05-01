@@ -45,13 +45,13 @@ async function deleteAllCommentsFromVideo(video_id){
 }
 
 
-
-const CommentManager = {}
+CommentManager = {};
 CommentManager.getAllComments = getAllComments;
 CommentManager.getCommentByItsId = getCommentByItsId;
 CommentManager.getAllCommentsFromVideo = getAllCommentsFromVideo;
 CommentManager.insertComment = insertComment;
 CommentManager.deleteCommentById = deleteCommentById;
 CommentManager.deleteAllCommentsFromVideo = deleteAllCommentsFromVideo;
+
 
 module.exports = CommentManager;

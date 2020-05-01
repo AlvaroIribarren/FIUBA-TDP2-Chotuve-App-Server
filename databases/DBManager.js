@@ -81,23 +81,13 @@ async function executeQueryInTableWithoutValues(text){
     }
 }
 
-async function turnBooleanToBit(boolean){
-    if (boolean) {
-        boolean = 1;
-    } else {
-        boolean = 0;
-    }
-    return boolean;
-}
-
-
-async function turnBitToBoolean(bit){
-    if (bit === 1){
-        bit = true;
-    } else {
-        bit = false;
-    }
-    return bit;
+async function incrementRowValueById(id, table, column_name){
+    //UPDATE videos SET likes = likes +1 WHERE id = id;
+    const operation = 'UPDATE ' + table + ' SET ';
+    const mathExpression = column_name + '=' + column_name + '+1 ';
+    const condition = 'WHERE id = ' + id;
+    const text = operation + mathExpression + condition;
+    await executeQueryInTableWithoutValues(text);
 }
 
 const Manager = {}
@@ -107,7 +97,6 @@ Manager.executeQueryInTable = executeQueryInTable;
 Manager.executeQueryInTableWithoutValues = executeQueryInTableWithoutValues;
 Manager.deleteRowFromTable = deleteRowFromTableById;
 Manager.generateNewIdInTable = generateNewIdInTable;
-Manager.turnBitToBoolean = turnBitToBoolean;
-Manager.turnBooleanToBit = turnBooleanToBit;
+Manager.incrementRowValueById = incrementRowValueById;
 
 module.exports = Manager;

@@ -64,6 +64,7 @@ router.post("/", async (req, res) => {
             const id = await VideosManager.insertVideo(author_id, author_name, title,
                                                         description, location, localPublic, url);
 
+
             localPublic = await VideosManager.turnBitIntoBoolean(localPublic);
             res.send({id, author_id, author_name, title, description, public: localPublic, url, location});
         } else {
