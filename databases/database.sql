@@ -44,6 +44,14 @@ create table comments(
     comment text NOT NULL
 );
 
+create table opinions(
+    id serial PRIMARY KEY NOT NULL,
+    author_id serial NOT NULL,
+    author_name text NOT NULL,
+    video_id serial NOT NULL,
+    positive_opinion bit NOT NULL
+);
+
 insert into users values
     (1, 'Alvaro', 'a123'),
     ('Juan', 'j123'),
