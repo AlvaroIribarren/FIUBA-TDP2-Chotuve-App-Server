@@ -32,6 +32,16 @@ async function getAllRelationsFromUser(id){
     return res.rows;
 }
 
+async function getAllFriendsFromUser(id){
+    const relations =  await getAllRelationsFromUser(id);
+    const users = [];
+
+    for (let relation of relations){
+        users.push(await UserManager.getUserById(relation.id2));
+    }
+    return users;
+}
+
 async function insertRelation(id1, id2) {
     const id = await Manager.generateNewIdInTable(friends);
     const text = 'INSERT INTO friends(id, id1, id2) VALUES($1, $2, $3)';
@@ -52,6 +62,6 @@ FriendsManager.getRelationById = getRelationById;
 FriendsManager.insertRelation = insertRelation;
 FriendsManager.getRelationByUsersIds = getRelationByUsersIds;
 FriendsManager.deleteRelation = deleteRelationByUsersId;
-FriendsManager.getAllRelationsFromUser = getAllRelationsFromUser;
+FriendsManager.getAllFriendsFromUser = getAllFriendsFromUser;
 
 module.exports = FriendsManager;

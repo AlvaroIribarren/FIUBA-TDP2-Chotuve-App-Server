@@ -39,7 +39,7 @@ router.get("/:id", async (req, res) =>{
 
 router.get("/:id/friends", async (req, res) => {
     const userId = parseInt(req.params.id);
-    const friends = await FriendManager.getAllRelationsFromUser(userId);
+    const friends = await FriendManager.getAllFriendsFromUser(userId);
     res.send(friends);
 })
 

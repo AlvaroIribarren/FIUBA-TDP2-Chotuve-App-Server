@@ -1,13 +1,28 @@
 const Manager = require('./DBManager')
-const UserManager = require('./UsersManager')
+const MediaManager = require("./MediaManager")
 
-const videos = 'videos'
+const videos = 'videos';
+const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
 
 /*recibo
 videoid : int
 userid : int
 authorname : string
 * */
+
+// async function getVideos(){
+//     try {
+//         return await MediaManager.getResponseByLink(mediaUrl);
+//     } catch(e){
+//         console.log(e);
+//     }
+// }
+
+// async function getVideoById(id){
+//     const str = "/" + id;
+//     const link = mediaUrl + str;
+//     return await MediaManager.getResponseByLink(link);
+// }
 
 async function getVideos(){
     try {
@@ -29,8 +44,12 @@ async function getAllVideosFromUser(userid){
     return res.rows;
 }
 
-async function addOpinionToVideo(id, positive_opinion){
-    if (positive_opinion){
+async function createVideoInMedia(json){
+    return await MediaManager.generatePost(mediaUrl, json);
+}
+
+async function addReactionToVideo(id, positive_reaction){
+    if (positive_reaction){
         await addLikeToVideo(id)
     } else {
         await addDislikeToVideo(id);
@@ -46,14 +65,12 @@ async function addDislikeToVideo(id){
 }
 
 async function insertVideo(author_id, author_name, title, description, location, public, url) {
-    const id = await Manager.generateNewIdInTable(videos);
     const likes = 0;
     const dislikes = 0;
-    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, url, likes, dislikes) ' +
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
-    const values = [id, author_id, author_name, title, description, location, public, url, likes, dislikes];
+    const text = 'INSERT INTO videos(author_id, author_name, title, description, location, public, url, likes, dislikes) ' +
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+    const values = [author_id, author_name, title, description, location, public, url, likes, dislikes];
     await Manager.executeQueryInTable(text, values);
-    return id;
 }
 
 async function deleteVideoByVideosId(id) {
@@ -75,6 +92,7 @@ VideosManager.getAllVideosFromUser = getAllVideosFromUser;
 VideosManager.insertVideo = insertVideo;
 VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
-VideosManager.addOpinionToVideo = addOpinionToVideo;
+VideosManager.addReactionToVideo = addReactionToVideo;
+VideosManager.createVideoInMedia = createVideoInMedia;
 
 module.exports = VideosManager;

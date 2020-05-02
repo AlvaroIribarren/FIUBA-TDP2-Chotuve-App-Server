@@ -3,20 +3,24 @@ const router = express.Router();
 const UserManager = require("../databases/UsersManager")
 const VideosManager = require("../databases/VideosManager")
 const CommentManager = require("../databases/CommentsManager")
-const OpinionManager = require("../databases/OpinionsManager")
+const ReactionManager = require("../databases/ReactionsManager")
+const MediaManager = require("../databases/MediaManager")
 
 const Joi = require("joi")
 
 //todo: agregar pedir videos a media
 router.get("/", async (req, res) => {
-    const relations = await VideosManager.getVideos();
-    res.send(relations);
+    const info = await VideosManager.getVideos();
+    const videos = info.data;
+    console.log("Imprimiendo videos");
+    console.log(videos);
+    res.send(videos);
 })
 
 router.get("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
-    const relation = await VideosManager.getVideoById(id);
-    res.send(relation);
+    const video = await VideosManager.getVideoById(id);
+    res.send(video);
 })
 
 router.get("/:video_id/comments", async (req, res) => {
@@ -27,8 +31,8 @@ router.get("/:video_id/comments", async (req, res) => {
 
 router.get("/:video_id/opinions", async(req, res) => {
     const video_id = parseInt(req.params.video_id);
-    const opinions = await OpinionManager.getAllOpinionsFromVideo(video_id);
-    res.send(opinions);
+    const reactions = await ReactionManager.getAllReactionsFromVideo(video_id);
+    res.send(reactions);
 })
 
 async function validateInput(body){
@@ -54,6 +58,7 @@ router.post("/", async (req, res) => {
         const author_id = parseInt(req.body.author_id);
         const author_name = req.body.author_name;
         const rightUserInfo = await validateUserInfo(author_id, author_name);
+
         if (rightUserInfo){
             const title = req.body.title;
             const description = req.body.description;
@@ -61,6 +66,7 @@ router.post("/", async (req, res) => {
             const url = req.body.url;
             //Cambio nombre para no tener problemas con la palabra reservada public.
             const localPublic =  req.body.public;
+            //const id = await VideosManager.createVideoInMedia({url});
 
             const id = await VideosManager.insertVideo(author_id, author_name, title,
                                                         description, location, localPublic, url);
@@ -73,6 +79,37 @@ router.post("/", async (req, res) => {
         res.status(400).send(error.details[0].message);
     }
 })
+
+router.post("/:video_id/reactions", async (req, res) => {
+    const error = await ReactionManager.validateInput(req.body).error;
+
+    if (!error) {
+        const author_id = req.body.author_id;
+        const author_name = req.body.author_name;
+        const video_id = parseInt(req.params.video_id);
+        const positive_reaction = req.body.positive_reaction;
+        const data = {author_id, author_name, video_id, positive_reaction};
+        await ReactionManager.postReaction(data, res);
+    } else {
+        res.status(400).send(error.details[0].message);
+    }
+})
+
+router.post("/:video_id/comments", async (req, res) => {
+    const error = await CommentManager.validateInput(req.body).error;
+    if (!error) {
+        const author_id = req.body.author_id;
+        const author_name = req.body.author_name;
+        const video_id = parseInt(req.params.video_id);
+        const comment = req.body.comment;
+        const data = {author_id, author_name, video_id, comment};
+        await CommentManager.postComment(data, res);
+    } else {
+        res.status(400).send(error.details[0].message);
+    }
+})
+
+
 
 
 module.exports = router;

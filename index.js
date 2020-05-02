@@ -7,7 +7,7 @@ const friendsRoute = require("./routes/friends")
 const videosRoute = require("./routes/videos")
 const requestsRoute = require("./routes/requests")
 const commentsRoute = require("./routes/comments")
-const opinionsRoute = require("./routes/opinions")
+const reactionsRoute = require("./routes/reactions")
 const unknownRoute = require("./routes/unknown")
 
 const bodyParser = require("body-parser")
@@ -30,5 +30,5 @@ server.use("/friends", friendsRoute);
 server.use("/videos", videosRoute);
 server.use("/requests", requestsRoute);
 server.use("/comments", commentsRoute);
-server.use("/opinions", opinionsRoute);
+server.use("/reactions", reactionsRoute);
 server.use("*", unknownRoute);

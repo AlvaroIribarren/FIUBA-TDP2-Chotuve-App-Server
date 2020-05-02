@@ -36,12 +36,12 @@ create table comments(
     comment text NOT NULL
 );
 
-create table opinions(
+create table reactions(
     id serial PRIMARY KEY NOT NULL,
     author_id serial NOT NULL,
     author_name text NOT NULL,
     video_id serial NOT NULL,
-    positive_opinion BOOLEAN NOT NULL
+    positive_reaction BOOLEAN NOT NULL
 );
 
 //OPINION
@@ -49,7 +49,7 @@ create table opinions(
 	"author_id" : 1,
 	"author_name" : "Santiago Beroch",
 	"video_id": 1,
-	"positive_opinion": true
+	"positive_reaction": true
 }
 
 Comments
@@ -57,7 +57,7 @@ Comments
 	"author_id" : 1,
 	"author_name" : "Santiago Beroch",
 	"video_id": 1,
-	"comment": true
+	"comment": "Wenardo"
 }
 
 USER
