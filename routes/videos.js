@@ -4,7 +4,7 @@ const UserManager = require("../databases/UsersManager")
 const VideosManager = require("../databases/VideosManager")
 const CommentManager = require("../databases/CommentsManager")
 const ReactionManager = require("../databases/ReactionsManager")
-const MediaManager = require("../databases/MediaManager")
+const MediaManager = require("../databases/AxiosManager")
 
 const Joi = require("joi")
 
