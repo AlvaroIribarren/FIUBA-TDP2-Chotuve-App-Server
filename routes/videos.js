@@ -10,11 +10,15 @@ const Joi = require("joi")
 
 //todo: agregar pedir videos a media
 router.get("/", async (req, res) => {
-    const info = await VideosManager.getVideos();
-    const videos = info.data;
+    const videos = await VideosManager.getVideos();
     console.log("Imprimiendo videos");
     console.log(videos);
     res.send(videos);
+})
+
+router.get("/appServer", async (req,res)=>{
+    const videosInAppSv = await VideosManager.getVideosInAppServer();
+    res.send(videosInAppSv);
 })
 
 router.get("/:id", async (req, res) => {
@@ -66,10 +70,12 @@ router.post("/", async (req, res) => {
             const url = req.body.url;
             //Cambio nombre para no tener problemas con la palabra reservada public.
             const localPublic =  req.body.public;
-            //const id = await VideosManager.createVideoInMedia({url});
+            const id = await VideosManager.createVideoInMedia({url});
+            console.log(res);
+            console.log("Id recibida de media: " + id);
 
-            const id = await VideosManager.insertVideo(author_id, author_name, title,
-                                                        description, location, localPublic, url);
+            await VideosManager.insertVideo(id, author_id, author_name, title,
+                                                        description, location, localPublic);
 
             res.send({id, author_id, author_name, title, description, public: localPublic, url, location});
         } else {

@@ -1,5 +1,5 @@
 const Manager = require('./DBManager')
-const MediaManager = require("./AxiosManager")
+const AxiosManager = require("./AxiosManager")
 
 const videos = 'videos';
 const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
@@ -12,7 +12,19 @@ authorname : string
 
 async function getVideos(){
     try {
-        return await MediaManager.getResponseByLink(mediaUrl);
+        const response =  await AxiosManager.getResponseByLink(mediaUrl);
+        const urls = response.data;
+        const listOfVideos = [];
+        for (let url of urls){
+            const video = await getVideoByIdInAppServer(url.id);
+            if (video) {
+                video.url = url.url;
+                listOfVideos.push(video);
+            } else {
+                console.log("No se encontro un video con id: " + video);
+            }
+        }
+        return listOfVideos;
     } catch(e){
         console.log(e);
     }
@@ -21,11 +33,17 @@ async function getVideos(){
 async function getVideoById(id){
     const str = "/" + id;
     const link = mediaUrl + str;
-    const res = await MediaManager.getResponseByLink(link);
+    const res = await AxiosManager.getResponseByLink(link);
     return res.data[0];
 }
 
+async function getVideoByIdInAppServer(id){
+    return await Manager.getIdFromTable(id, videos);
+}
 
+async function getVideosInAppServer(){
+    return await Manager.getRows(videos);
+}
 
 async function getAllVideosFromUser(userid){
     const text = 'SELECT * FROM videos WHERE author_id = ' + userid;
@@ -35,7 +53,7 @@ async function getAllVideosFromUser(userid){
 }
 
 async function createVideoInMedia(json){
-    return await MediaManager.generatePost(mediaUrl, json);
+    return await AxiosManager.generatePost(mediaUrl, json);
 }
 
 async function addReactionToVideo(id, positive_reaction){
@@ -54,12 +72,12 @@ async function addDislikeToVideo(id){
     await Manager.incrementRowValueById(id, videos, 'dislikes');
 }
 
-async function insertVideo(author_id, author_name, title, description, location, public, url) {
+async function insertVideo(id, author_id, author_name, title, description, location, public) {
     const likes = 0;
     const dislikes = 0;
-    const text = 'INSERT INTO videos(author_id, author_name, title, description, location, public, url, likes, dislikes) ' +
+    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, likes, dislikes) ' +
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
-    const values = [author_id, author_name, title, description, location, public, url, likes, dislikes];
+    const values = [id, author_id, author_name, title, description, location, public, likes, dislikes];
     await Manager.executeQueryInTable(text, values);
 }
 
@@ -77,6 +95,7 @@ async function deleteAllVideosFromUser(userId){
 
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
+VideosManager.getVideosInAppServer = getVideosInAppServer;
 VideosManager.getVideoById = getVideoById;
 VideosManager.getAllVideosFromUser = getAllVideosFromUser;
 VideosManager.insertVideo = insertVideo;

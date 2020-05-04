@@ -17,7 +17,6 @@ create table videos(
     description text NOT NULL,
     location text NOT NULL,
     public boolean NOT NULL,
-    url text UNIQUE NOT NULL,
     likes serial,
     dislikes serial
 );
@@ -101,5 +100,4 @@ VIDEO
 	"description": "TEMasdUCO",
 	"location": "EN EL CasdLUB",
 	"public": true,
-	"url": "asd"
 }

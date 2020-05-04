@@ -1,14 +1,13 @@
 const axios = require('axios');
 
 async function generatePost(link, json){
-    let response;
-    axios.post(link, json)
-        .then(res => {
-            response = res;
-            console.log('Res: ' + res);
+    let response = null;
+    await axios.post(link, json)
+        .then(function (res) {
+            response = res.data.id;
         })
-        .catch(error => {
-            console.error(error);
+        .catch(function (error) {
+            console.log(error);
         });
     return response;
 }
