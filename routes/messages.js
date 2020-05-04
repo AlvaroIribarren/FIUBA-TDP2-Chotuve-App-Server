@@ -5,7 +5,7 @@ const MessageManager = require("../databases/MessagesManager")
 
 router.get("/", async (req, res) =>{
     try {
-        const users = await MessageManager.getAllMessagesSentByUser(1);
+        const users = await MessageManager.getAllMessages();
         console.log(users);
         res.send(users);
     } catch (err) {
