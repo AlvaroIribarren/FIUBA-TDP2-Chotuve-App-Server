@@ -26,7 +26,13 @@ async function getAllMessagesSentByUser(sender_id){
     return rows;
 }
 
-
+async function getAllMessagesSentById1ToId2(id1, id2){
+    const condition1 = "sender_id = " + id1;
+    const condition2 = "receiver_id = " + id2;
+    const condition = condition1 + " AND " + condition2;
+    const rows = await Manager.getAllRowsWithCondition(messages, condition);
+    return rows;
+}
 
 async function insertMessage(sender_id, receiver_id, message, time) {
     const id = await Manager.generateNewIdInTable(messages);
@@ -99,5 +105,6 @@ MessageManager.deleteMessageByItsId = deleteMessageByItsId;
 MessageManager.deleteAllMessagesSentByUser = deleteAllMessagesSentByUser;
 MessageManager.postMessage = postMessage;
 MessageManager.validateInput = validateInput;
+MessageManager.getAllMessagesSentById1ToId2 = getAllMessagesSentById1ToId2;
 
 module.exports = MessageManager;

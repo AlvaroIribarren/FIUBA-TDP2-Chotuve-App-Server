@@ -111,3 +111,10 @@ VIDEO
 	"location": "EN EL CasdLUB",
 	"public": true,
 }
+
+Messages
+{
+    "sender_id" : 2,
+	"receiver_id" : 1,
+	"message": "TEMasdUCO",
+}

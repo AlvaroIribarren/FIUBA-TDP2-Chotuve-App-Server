@@ -56,6 +56,15 @@ router.get("/:id/token", async (req, res) => {
     res.send(token)
 })
 
+router.get("/:id1/messages/:id2", async (req,res) => {
+    const id1 = parseInt(req.params.id1);
+    const id2 = parseInt(req.params.id2);
+    const messages1 = await MessageManager.getAllMessagesSentById1ToId2(id1, id2);
+    const messages2 = await MessageManager.getAllMessagesSentById1ToId2(id2, id1);
+
+    const messages = messages1.concat(messages2);
+    res.send(messages);
+})
 
 function validateUser(body){
     const schema = {
