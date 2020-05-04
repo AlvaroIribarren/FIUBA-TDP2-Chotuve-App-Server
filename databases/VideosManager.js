@@ -1,5 +1,5 @@
 const Manager = require('./DBManager')
-const MediaManager = require("./MediaManager")
+const MediaManager = require("./AxiosManager")
 
 const videos = 'videos';
 const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
@@ -10,32 +10,22 @@ userid : int
 authorname : string
 * */
 
-// async function getVideos(){
-//     try {
-//         return await MediaManager.getResponseByLink(mediaUrl);
-//     } catch(e){
-//         console.log(e);
-//     }
-// }
-
-// async function getVideoById(id){
-//     const str = "/" + id;
-//     const link = mediaUrl + str;
-//     return await MediaManager.getResponseByLink(link);
-// }
-
 async function getVideos(){
     try {
-        const result = Manager.getRows(videos);
-        return result;
+        return await MediaManager.getResponseByLink(mediaUrl);
     } catch(e){
         console.log(e);
     }
 }
 
 async function getVideoById(id){
-    return await Manager.getIdFromTable(id, videos);
+    const str = "/" + id;
+    const link = mediaUrl + str;
+    const res = await MediaManager.getResponseByLink(link);
+    return res.data[0];
 }
+
+
 
 async function getAllVideosFromUser(userid){
     const text = 'SELECT * FROM videos WHERE author_id = ' + userid;

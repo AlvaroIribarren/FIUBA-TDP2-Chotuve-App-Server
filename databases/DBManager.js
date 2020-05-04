@@ -44,16 +44,35 @@ async function getRows(table) {
 }
 
 async function getIdFromTable(id, table) {
-    let rows = await this.getRows(table);
-    const row = rows.find(row => row.id === id);
-    return row;
+    return await getValueFromRow(id, "id", table);
 }
 
+async function getValueFromRow(value, rowName, table){
+    const condition =  rowName + " = " + value;
+    const response = await operateAllRowsWithCondition('select', table, condition);
+    return response.rows[0];
+}
+
+async function operateAllRowsWithCondition(operation, table, condition){
+    const text = operation + " * from " + table + " where " + condition;
+    const response = await executeQueryInTableWithoutValues(text);
+    return response;
+}
+
+async function getAllRowsWithCondition(table, condition){
+    const response = await operateAllRowsWithCondition('select', table, condition);
+    return response.rows;
+}
+
+async function deleteAllRowsWithCondition(table, condition){
+    const response = await operateAllRowsWithCondition('delete', table, condition);
+    return response.rows;
+}
 
 async function deleteRowFromTableById(id, table){
     try {
-        const text = 'DELETE FROM ' + table + ' WHERE id = ' + id;
-        await executeQueryInTableWithoutValues(text);
+        const condition = ' WHERE id = ' + id;
+        await deleteAllRowsWithCondition(table, condition);
         console.log("Deleting row from table: " +  table);
     } catch (e) {
         console.log(e);
@@ -82,7 +101,6 @@ async function executeQueryInTableWithoutValues(text){
 }
 
 async function incrementRowValueById(id, table, column_name){
-    //UPDATE videos SET likes = likes +1 WHERE id = id;
     const operation = 'UPDATE ' + table + ' SET ';
     const mathExpression = column_name + '=' + column_name + '+1 ';
     const condition = 'WHERE id = ' + id;
@@ -98,5 +116,7 @@ Manager.executeQueryInTableWithoutValues = executeQueryInTableWithoutValues;
 Manager.deleteRowFromTable = deleteRowFromTableById;
 Manager.generateNewIdInTable = generateNewIdInTable;
 Manager.incrementRowValueById = incrementRowValueById;
+Manager.getValueFromRow = getValueFromRow;
+Manager.getAllRowsWithCondition = getAllRowsWithCondition;
 
 module.exports = Manager;
