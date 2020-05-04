@@ -34,7 +34,10 @@ async function getVideoById(id){
     const str = "/" + id;
     const link = mediaUrl + str;
     const res = await AxiosManager.getResponseByLink(link);
-    return res.data[0];
+    const video = res.data[0];
+    const videoInAppSv = await getVideoByIdInAppServer(video.id);
+    videoInAppSv.url = video.url;
+    return videoInAppSv;
 }
 
 async function getVideoByIdInAppServer(id){
