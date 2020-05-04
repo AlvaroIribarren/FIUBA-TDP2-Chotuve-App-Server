@@ -1,5 +1,6 @@
 const Manager = require('./DBManager')
 const AxiosManager = require("./AxiosManager")
+const URLManager = require("./URLSManager")
 
 const videos = 'videos';
 const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
@@ -12,7 +13,8 @@ authorname : string
 
 async function getVideos(){
     try {
-        const response =  await AxiosManager.getResponseByLink(mediaUrl);
+        //const response =  await AxiosManager.getResponseByLink(mediaUrl);
+        const response = await URLManager.getUrls();
         const urls = response.data;
         const listOfVideos = [];
         for (let url of urls){
@@ -31,9 +33,10 @@ async function getVideos(){
 }
 
 async function getVideoById(id){
-    const str = "/" + id;
-    const link = mediaUrl + str;
-    const res = await AxiosManager.getResponseByLink(link);
+    // const str = "/" + id;
+    // const link = mediaUrl + str;
+    //const res = await AxiosManager.getResponseByLink(link);
+    const res = await URLManager.getRequestById(id);
     const video = res.data[0];
     const videoInAppSv = await getVideoByIdInAppServer(video.id);
     videoInAppSv.url = video.url;
@@ -81,6 +84,7 @@ async function insertVideo(id, author_id, author_name, title, description, locat
     const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, likes, dislikes) ' +
         'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
     const values = [id, author_id, author_name, title, description, location, public, likes, dislikes];
+
     await Manager.executeQueryInTable(text, values);
 }
 

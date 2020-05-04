@@ -1,0 +1,33 @@
+const Manager = require('./DBManager')
+
+const urls = 'urls'
+
+async function getUrls(){
+    try {
+        const result = Manager.getRows(urls);
+        return result;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+async function getUrlById(id){
+    return await Manager.getIdFromTable(id, urls);
+}
+
+
+async function insertUrl(url) {
+    const id = await Manager.generateNewIdInTable(urls);
+    const text = 'INSERT INTO urls(id, url) VALUES($1, $2)';
+    const values = [id, url];
+    await Manager.executeQueryInTable(text, values);
+    return id;
+}
+
+
+const URLManager = {}
+URLManager.getUrls = getUrls;
+URLManager.getUrlById = getUrlById;
+URLManager.insertUrl = insertUrl;
+
+module.exports = URLManager;

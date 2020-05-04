@@ -21,6 +21,11 @@ create table videos(
     dislikes serial
 );
 
+create table urls(
+    id serial PRIMARY KEY NOT NULL,
+    url text NOT NULL
+);
+
 create table requests(
     id serial PRIMARY KEY NOT NULL,
     senderid serial NOT NULL,
@@ -63,6 +68,11 @@ create table messages(
     receiver_id serial NOT NULL,
     message text NOT NULL,
     time text NOT NULL
+);
+
+create table urls(
+    id serial PRIMARY KEY NOT NULL,
+    url text NOT NULL
 );
 
 

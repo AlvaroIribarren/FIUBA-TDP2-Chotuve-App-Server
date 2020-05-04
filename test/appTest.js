@@ -1,11 +1,15 @@
 const assert = require('chai').assert;
-const app = require('/index')
-const Manager = require('databases/DBManager')
+
+const Manager = require(".././databases/DBManager")
+const MessageManager = require(".././databases/MessagesManager")
 
 describe('App', ()=> {
    it('Concatenate string', ()=>{
-       const validatedText = 'UPDATE videos SET likes = likes +1 WHERE id = id;'
-       Manager.incrementRowValueById(1, 'videos', 'likes');
+       const messages = MessageManager.getAllMessages();
+       const amount = messages.length;
+
+
+       MessageManager.insertMessage(1, 2, "hi", "asd");
        assert.equal('')
    });
 });
