@@ -14,8 +14,8 @@ authorname : string
 async function getVideos(){
     try {
         //const response =  await AxiosManager.getResponseByLink(mediaUrl);
-        const response = await URLManager.getUrls();
-        const urls = response.data;
+        const urls = await URLManager.getUrls();
+        //const urls = response.data;
         const listOfVideos = [];
         for (let url of urls){
             const video = await getVideoByIdInAppServer(url.id);
