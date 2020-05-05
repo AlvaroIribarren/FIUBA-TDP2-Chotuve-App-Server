@@ -5,7 +5,6 @@ const VideosManager = require("../databases/VideosManager")
 const CommentManager = require("../databases/CommentsManager")
 const ReactionManager = require("../databases/ReactionsManager")
 const MediaManager = require("../databases/AxiosManager")
-const URLSManager = require("../databases/URLSManager")
 
 const Joi = require("joi")
 
@@ -71,8 +70,7 @@ router.post("/", async (req, res) => {
             const url = req.body.url;
             //Cambio nombre para no tener problemas con la palabra reservada public.
             const localPublic =  req.body.public;
-            //const id = await VideosManager.createVideoInMedia({url});
-            const id = await URLSManager.insertUrl(url);
+            const id = await VideosManager.createVideoInMedia({url});
             console.log(res);
             console.log("Id recibida de media: " + id);
 

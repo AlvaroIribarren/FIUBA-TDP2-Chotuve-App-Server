@@ -13,9 +13,8 @@ authorname : string
 
 async function getVideos(){
     try {
-        //const response =  await AxiosManager.getResponseByLink(mediaUrl);
-        const urls = await URLManager.getUrls();
-        //const urls = response.data;
+        const response =  await AxiosManager.getResponseByLink(mediaUrl);
+        const urls = response.data;
         const listOfVideos = [];
         for (let url of urls){
             const video = await getVideoByIdInAppServer(url.id);
@@ -33,10 +32,9 @@ async function getVideos(){
 }
 
 async function getVideoById(id){
-    // const str = "/" + id;
-    // const link = mediaUrl + str;
-    //const res = await AxiosManager.getResponseByLink(link);
-    const res = await URLManager.getRequestById(id);
+    const str = "/" + id;
+    const link = mediaUrl + str;
+    const res = await AxiosManager.getResponseByLink(link);
     const video = res.data[0];
     const videoInAppSv = await getVideoByIdInAppServer(video.id);
     videoInAppSv.url = video.url;

@@ -67,10 +67,20 @@ router.get("/:id1/messages/:id2", async (req,res) => {
     res.send(messages);
 })
 
-router.get("/:id/requests", async (req,res) => {
-    const receiver_id = parseInt(req.params.id);
-    const requests = RequestManager.getAllRequestsReceivedByUserId(receiver_id);
-    res.send(requests);
+router.get("/:receiver_id/requests", async (req,res) => {
+    const receiver_id = parseInt(req.params.receiver_id);
+    const requests = await RequestManager.getAllRequestsReceivedByUserId(receiver_id);
+    const listToReturn = [];
+    for (let request of requests){
+        const user = await UserManager.getUserById(request.sender_id);
+        const data = {
+            "sender_id": request.sender_id,
+            "sender_name": user.name
+        }
+        listToReturn.push(data);
+    }
+
+    res.send(listToReturn);
 });
 
 function validateUser(body){
