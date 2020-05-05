@@ -125,6 +125,14 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+router.post("/:receiver_id/requests", async (req, res)=> {
+    const data = {
+        sender_id: parseInt(req.body.sender_id),
+        receiver_id: parseInt(req.params.receiver_id)
+    }
+    await RequestManager.postRequest(data, res);
+});
+
 router.delete('/:id', async (req, res) => {
     await checkIdsExistence(req, res);
     const id = parseInt(req.params.id);

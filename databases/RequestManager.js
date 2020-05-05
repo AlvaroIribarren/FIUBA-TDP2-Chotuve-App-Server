@@ -1,5 +1,6 @@
 const Manager = require('./DBManager')
 const FriendsManager = require('./RequestManager')
+const UserManager = require('./UsersManager')
 
 const requests = 'requests'
 
@@ -52,6 +53,21 @@ async function getRequestByUsersIds(sender_id, receiver_id){
     return res.rows[0];
 }
 
+async function postRequest(data, res){
+    const sender_id = parseInt(data.sender_id);
+    const receiver_id = parseInt(data.receiver_id);
+
+    const user1 = await UserManager.getUserById(sender_id);
+    const user2 = await UserManager.getUserById(receiver_id);
+
+    if (user1 && user2){
+        await RequestManager.insertRequest(sender_id, receiver_id);
+        res.send("Id :" + sender_id + " envia request a: " + receiver_id);
+    } else {
+        res.status(404).send("ID inexistente");
+    }
+}
+
 const RequestManager = {}
 RequestManager.getRequests = getRequests;
 RequestManager.getRequestById = getRequestById;
@@ -60,5 +76,6 @@ RequestManager.getRequestByUsersIds = getRequestByUsersIds;
 RequestManager.deleteRequestFromSenderToReceiver = deleteRequestFromSenderToReceiver;
 RequestManager.getAllRequestsSentById = getAllRequestsSentById;
 RequestManager.getAllRequestsReceivedByUserId = getAllRequestsReceivedByUserId;
+RequestManager.postRequest = postRequest;
 
 module.exports = RequestManager;
