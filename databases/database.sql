@@ -28,8 +28,8 @@ create table urls(
 
 create table requests(
     id serial PRIMARY KEY NOT NULL,
-    senderid serial NOT NULL,
-    receiverid serial NOT NULL
+    sender_id serial NOT NULL,
+    receiver_id serial NOT NULL
 );
 
 create table comments(
@@ -40,19 +40,11 @@ create table comments(
     comment text NOT NULL
 );
 
-create table messages(
-    id serial PRIMARY KEY NOT NULL,
-    sender_id serial NOT NULL,
-    receiver_id serial NOT NULL,
-    message text NOT NULL
-);
-
 create table tokens(
     id serial PRIMARY KEY NOT NULL,
     user_id serial UNIQUE NOT NULL,
     token text NOT NULL
 );
-
 
 create table reactions(
     id serial PRIMARY KEY NOT NULL,

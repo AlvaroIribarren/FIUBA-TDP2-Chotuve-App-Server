@@ -17,7 +17,6 @@ router.get("/:id", async (req, res) => {
 })
 
 
-
 router.get("/:senderid/:receiverid", async (req, res) => {
     console.log("You asked for a certain request between users")
     const request = await RequestManager.getRequestByUsersIds(req.params.senderid, req.params.receiverid);
@@ -27,8 +26,8 @@ router.get("/:senderid/:receiverid", async (req, res) => {
 
 async function validateInput(body){
     const schema = {
-        senderid: Joi.number().positive().required(),
-        receiverid: Joi.number().positive().required()
+        sender_id: Joi.number().positive().required(),
+        receiver_id: Joi.number().positive().required()
     }
 
     return Joi.validate(body, schema);
@@ -36,15 +35,15 @@ async function validateInput(body){
 
 router.post("/", async (req, res) => {
     await validateInput(req.body);
-    const senderid = parseInt(req.body.senderid);
-    const receiverid = parseInt(req.body.receiverid);
+    const sender_id = parseInt(req.body.sender_id);
+    const receiver_id = parseInt(req.body.receiver_id);
 
-    const user1 = await UserManager.getUserById(senderid);
-    const user2 = await UserManager.getUserById(receiverid);
+    const user1 = await UserManager.getUserById(sender_id);
+    const user2 = await UserManager.getUserById(receiver_id);
 
     if (user1 && user2){
-        await RequestManager.insertRequest(senderid, receiverid);
-        res.send("Id :" + senderid + " envia request a: " + receiverid);
+        await RequestManager.insertRequest(sender_id, receiver_id);
+        res.send("Id :" + sender_id + " envia request a: " + receiver_id);
     } else {
         res.status(404).send("ID inexistente");
     }

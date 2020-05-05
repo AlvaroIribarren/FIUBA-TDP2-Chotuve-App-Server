@@ -55,7 +55,6 @@ async function deleteAllMessagesSentByUser(sender_id){
     await Manager.executeQueryInTableWithoutValues(text);
 }
 
-
 async function validateUsersExistance(id){
     return await UserManager.getUserById(id);
 }

@@ -23,5 +23,8 @@
   },
   "engines": {
     "node": "12.16.2"
+  },
+  "devDependencies": {
+    "mocha-steps": "^1.3.0"
   }
 }

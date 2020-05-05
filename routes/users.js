@@ -4,6 +4,7 @@ const UserManager = require("../databases/UsersManager")
 const FriendManager = require("../databases/FriendsManager")
 const VideosManager = require("../databases/VideosManager")
 const TokenManager = require("../databases/TokensManager")
+const RequestManager = require("../databases/RequestManager")
 const Joi = require("joi")
 
 const minNameLength = 3;
@@ -65,6 +66,11 @@ router.get("/:id1/messages/:id2", async (req,res) => {
     const messages = messages1.concat(messages2);
     res.send(messages);
 })
+
+router.get("/:id/requests", async (req,res) => {
+    const receiverId = parseInt(req.params.id);
+    return await RequestManager.getAllRequestsReceivedByUserId(receiverId);
+});
 
 function validateUser(body){
     const schema = {
