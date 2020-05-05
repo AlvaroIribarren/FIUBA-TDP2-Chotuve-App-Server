@@ -24,6 +24,14 @@ async function getAllRequestsSentById(sender_id){
     return res.rows;
 }
 
+async function getRequestSentBySenderToReceiver(sender_id, receiver_id){
+    const condition1 = "sender_id = " + sender_id;
+    const condition2 = "receiver_id = " + receiver_id;
+    const condition = condition1 + " AND " + condition2;
+    const rows = await Manager.getAllRowsWithCondition(requests, condition);
+    return rows;
+}
+
 async function getAllRequestsReceivedByUserId(receiver_id){
     const text = 'SELECT * FROM requests WHERE receiver_id = ' + receiver_id;
     const res = await Manager.executeQueryInTableWithoutValues(text);
@@ -77,5 +85,6 @@ RequestManager.deleteRequestFromSenderToReceiver = deleteRequestFromSenderToRece
 RequestManager.getAllRequestsSentById = getAllRequestsSentById;
 RequestManager.getAllRequestsReceivedByUserId = getAllRequestsReceivedByUserId;
 RequestManager.postRequest = postRequest;
+RequestManager.getRequestSentBySenderToReceiver = getRequestSentBySenderToReceiver;
 
 module.exports = RequestManager;

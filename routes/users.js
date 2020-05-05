@@ -111,6 +111,24 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.post('/:receiver_id/friends', async (req, res) => {
+    const data = {
+        id1: parseInt(req.params.receiver_id),
+        id2: parseInt(req.body.sender_id)
+    }
+    const error = await FriendManager.validateInput(data).error;
+
+    const request1 = await RequestManager.getRequestSentBySenderToReceiver(data.id2, data.id1);
+
+    if (!error && request1){
+        await RequestManager.deleteRequestFromSenderToReceiver(data.id1, data.id2);
+        await RequestManager.deleteRequestFromSenderToReceiver(data.id2, data.id1);
+        await FriendManager.postRelation(data, res);
+    } else {
+        res.status(400).send("Datos invalidos o inexistentes");
+    }
+})
+
 async function checkIdsExistence(req, res){
     const id = parseInt(req.params.id);
     const user = await UserManager.getUserById(id);

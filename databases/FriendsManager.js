@@ -1,6 +1,7 @@
 const {Pool} = require('pg');
 const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
+const Joi  = require('joi')
 
 const friends = 'friends'
 
@@ -55,6 +56,31 @@ async function deleteRelationByUsersId(id1, id2) {
     await Manager.executeQueryInTableWithoutValues(text);
 }
 
+async function postRelation(data, res) {
+    const id1 = parseInt(data.id1);
+    const id2 = parseInt(data.id2);
+
+    const user1 = await UserManager.getUserById(id1);
+    const user2 = await UserManager.getUserById(id2);
+
+    if (user1 && user2){
+        await FriendsManager.insertRelation(id1, id2);
+        await FriendsManager.insertRelation(id2, id1);
+        res.send("Amistad agregada entre: " + id1 + "/" + id2);
+    } else {
+        res.status(404).send("ID inexistente");
+    }
+}
+
+async function validateInput(body){
+    const schema = {
+        id1: Joi.number().positive().required(),
+        id2: Joi.number().positive().required()
+    }
+
+    return Joi.validate(body, schema);
+}
+
 
 const FriendsManager = {}
 FriendsManager.getRelations = getRelations;
@@ -63,5 +89,7 @@ FriendsManager.insertRelation = insertRelation;
 FriendsManager.getRelationByUsersIds = getRelationByUsersIds;
 FriendsManager.deleteRelation = deleteRelationByUsersId;
 FriendsManager.getAllFriendsFromUser = getAllFriendsFromUser;
+FriendsManager.postRelation = postRelation;
+FriendsManager.validateInput = validateInput;
 
 module.exports = FriendsManager;
