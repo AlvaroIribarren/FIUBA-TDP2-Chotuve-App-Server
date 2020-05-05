@@ -50,10 +50,10 @@ router.post("/", async (req, res) => {
 })
 
 router.delete("/:senderid/:receiverid", async (req,res) => {
-    const senderid = parseInt(req.params.id1);
-    const receiverid = parseInt(req.params.id2);
+    const sender_id = parseInt(req.params.id1);
+    const receiver_id = parseInt(req.params.id2);
 
-    await RequestManager.deleteRequestFromSenderToReceiver(senderid, receiverid);
+    await RequestManager.deleteRequestFromSenderToReceiver(sender_id, receiver_id);
     res.send("Relation deleted");
 })
 

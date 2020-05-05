@@ -68,8 +68,9 @@ router.get("/:id1/messages/:id2", async (req,res) => {
 })
 
 router.get("/:id/requests", async (req,res) => {
-    const receiverId = parseInt(req.params.id);
-    return await RequestManager.getAllRequestsReceivedByUserId(receiverId);
+    const receiver_id = parseInt(req.params.id);
+    const requests = RequestManager.getAllRequestsReceivedByUserId(receiver_id);
+    res.send(requests);
 });
 
 function validateUser(body){
