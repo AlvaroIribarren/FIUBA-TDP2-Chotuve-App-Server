@@ -16,7 +16,8 @@ const minPassLength = 5;
     name: string
     password: string
     phone: string
-    profileimgurl: string
+    img_url: string
+    img_uuid: string
 */
 
 
@@ -88,7 +89,8 @@ function validateUser(body){
         password: Joi.string().min(minPassLength).required(),
         email: Joi.string().required(),
         phone: Joi.string().required(),
-        profileimgurl: Joi.string().required(),
+        img_url: Joi.string().required(),
+        img_uuid: Joi.string().required()
     }
     return Joi.validate(body, schema);
 }
@@ -102,9 +104,10 @@ router.post('/', async (req, res) => {
         const password = req.body.password;
         const email = req.body.email;
         const phone = req.body.phone;
-        const profileImgUrl = req.body.profileimgurl;
-        await UserManager.insertUser(id, name, password, email, phone, profileImgUrl);
-        res.status(201).send({id, name, password, email, phone, profileImgUrl});
+        const img_url = req.body.img_url;
+        const img_uuid = req.body.img_uuid;
+        await UserManager.insertUser(id, name, password, email, phone, img_url, img_uuid);
+        res.status(201).send({id, name, password, email, phone, img_url, img_uuid});
     } else {
         res.status(400).send(error.details[0].message);
     }

@@ -27,10 +27,10 @@ async function getUserByEmailAndPassword(email, password){
     return usersRows[0];
 }
 
-async function insertUser(id, name, password, email, phone, profileimgurl) {
+async function insertUser(id, name, password, email, phone, img_url, img_uuid) {
     console.log("Insertando elemento en: " + users);
-    const text = 'INSERT INTO users(id, name, password, email, phone, profileimgurl) VALUES($1, $2, $3, $4, $5, $6)';
-    const values = [id, name, password, email, phone, profileimgurl];
+    const text = 'INSERT INTO users(id, name, password, email, phone, img_url, img_uuid) VALUES($1, $2, $3, $4, $5, $6, $7)';
+    const values = [id, name, password, email, phone, img_url, img_uuid];
     await Manager.executeQueryInTable(text, values);
 }
 

@@ -6,7 +6,8 @@ create table users(
     password text NOT NULL,
     email text UNIQUE NOT NULL,
     phone text UNIQUE NOT NULL,
-    profileimgurl text NOT NULL
+    img_url text NOT NULL,
+    img_uuid text NOT NULL
 );
 
 create table videos(
