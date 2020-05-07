@@ -33,7 +33,7 @@ router.get("/:video_id/comments", async (req, res) => {
     res.send(comments);
 })
 
-router.get("/:video_id/opinions", async(req, res) => {
+router.get("/:video_id/reactions", async(req, res) => {
     const video_id = parseInt(req.params.video_id);
     const reactions = await ReactionManager.getAllReactionsFromVideo(video_id);
     res.send(reactions);

@@ -11,8 +11,8 @@ const receiver_id = 2;
 const messageText = "hi";
 const timeText = "asd";
 
-describe('App', ()=> {
-    step('Add message', async ()=>{
+describe('App', async ()=> {
+    it('Add message', async ()=>{
         const messages = await MessageManager.getAllMessages();
         const amount = messages.length;
         const id = await MessageManager.insertMessage(sender_id, receiver_id, messageText, timeText);
@@ -56,8 +56,8 @@ describe('App', ()=> {
 
 
     it('Check message info: message', async ()=>{
-        const messageFromDB = messageFromDB.message;
-        assert.equal(messageFromDB, messageText);
+        const message = messageFromDB.message;
+        assert.equal(message, messageText);
     });
 
 
@@ -67,9 +67,11 @@ describe('App', ()=> {
     });
 
     it('Delete message', async () =>{
-        const amount = await MessageManager.getAllMessages().length;
+        const messages = await MessageManager.getAllMessages();
+        const amount = messages.length;
         await MessageManager.deleteMessageByItsId(messageId);
-        const newAmount = await MessageManager.getAllMessages().length;
-        assert.equal(amount, newAmount-1);
+        const newMessages = await MessageManager.getAllMessages();
+        const newAmount = newMessages.length;
+        assert.equal(amount-1, newAmount);
     })
 });

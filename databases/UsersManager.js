@@ -1,24 +1,41 @@
 const Manager = require('./DBManager')
 
-const table = 'users';
+const users = 'users';
 
 async function getUsers(){
-    return await Manager.getRows(table);
+    return await Manager.getRows(users);
 }
 
 async function getUserById(id){
-    return await Manager.getIdFromTable(id, table);
+    return await Manager.getIdFromTable(id, users);
+}
+
+async function getUserByEmail(email){
+    const mail = "'" + email + "'";
+
+    const condition = " email = " + mail;
+    const usersRows = await Manager.getAllRowsWithCondition(users, condition);
+    return usersRows[0];
+}
+
+async function getUserByEmailAndPassword(email, password){
+    const mail = "'" + email + "'";
+    const pass = "'" + password + "'";
+
+    const condition = " email = " + mail + " AND" + " password = " + pass;
+    const usersRows = await Manager.getAllRowsWithCondition(users, condition);
+    return usersRows[0];
 }
 
 async function insertUser(id, name, password, email, phone, profileimgurl) {
-    console.log("Insertando elemento en: " + table);
+    console.log("Insertando elemento en: " + users);
     const text = 'INSERT INTO users(id, name, password, email, phone, profileimgurl) VALUES($1, $2, $3, $4, $5, $6)';
     const values = [id, name, password, email, phone, profileimgurl];
     await Manager.executeQueryInTable(text, values);
 }
 
 async function deleteUserById(id) {
-    await Manager.deleteRowFromTable(id, table);
+    await Manager.deleteRowFromTable(id, users);
 }
 
 async function editUser(fieldToBeChanged, field1, fieldToCompare, condition){
@@ -35,7 +52,7 @@ async function editUser(fieldToBeChanged, field1, fieldToCompare, condition){
 }
 
 async function generateNewId(){
-    return await Manager.generateNewIdInTable(table);
+    return await Manager.generateNewIdInTable(users);
 }
 
 async function checkCorrectIdAndName(author_id, author_name){
@@ -56,4 +73,6 @@ UsersManager.deleteUserById = deleteUserById;
 UsersManager.editUser = editUser;
 UsersManager.generateNewId = generateNewId;
 UsersManager.checkCorrectIdAndName = checkCorrectIdAndName;
+UsersManager.getUserByNameAndPassword = getUserByEmailAndPassword;
+UsersManager.getUserByEmail = getUserByEmail;
 module.exports = UsersManager;

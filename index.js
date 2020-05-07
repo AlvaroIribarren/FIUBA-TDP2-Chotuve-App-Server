@@ -10,6 +10,7 @@ const commentsRoute = require("./routes/comments")
 const reactionsRoute = require("./routes/reactions")
 const messagesRoute = require("./routes/messages")
 const tokensRoute = require("./routes/tokens")
+const loginRoute = require("./routes/login")
 const unknownRoute = require("./routes/unknown")
 
 const bodyParser = require("body-parser")
@@ -35,4 +36,5 @@ server.use("/comments", commentsRoute);
 server.use("/reactions", reactionsRoute);
 server.use("/messages", messagesRoute);
 server.use("/tokens", tokensRoute);
+server.use("/login", loginRoute);
 server.use("*", unknownRoute);

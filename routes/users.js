@@ -79,7 +79,6 @@ router.get("/:receiver_id/requests", async (req,res) => {
         }
         listToReturn.push(data);
     }
-
     res.send(listToReturn);
 });
 
