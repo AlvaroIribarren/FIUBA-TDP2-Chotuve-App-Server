@@ -8,12 +8,25 @@ const MediaManager = require("../databases/AxiosManager")
 
 const Joi = require("joi")
 
-//todo: agregar pedir videos a media
-router.get("/", async (req, res) => {
-    const videos = await VideosManager.getVideos();
-    console.log("Imprimiendo videos");
-    console.log(videos);
-    res.send(videos);
+router.get("/", async(req, res) => {
+    let search = req.query.search_query;
+    if (search === " "){
+        const videos = await VideosManager.getVideos();
+        res.send(videos);
+    } else {
+        const videos = await VideosManager.getVideos();
+        const listOfVideos = [];
+        for (let video of videos){
+            let title = video.title.toUpperCase();
+            search = search.replace(/_/g, ' ');
+            const areEqual = (title === search.toUpperCase());
+
+            if (areEqual){
+                listOfVideos.push(video);
+            }
+        }
+        res.send(listOfVideos);
+    }
 })
 
 router.get("/appServer", async (req,res)=>{
@@ -38,6 +51,8 @@ router.get("/:video_id/reactions", async(req, res) => {
     const reactions = await ReactionManager.getAllReactionsFromVideo(video_id);
     res.send(reactions);
 })
+
+
 
 async function validateInput(body){
     const schema = {

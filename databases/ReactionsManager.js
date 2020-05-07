@@ -73,9 +73,9 @@ async function postReaction(data, res){
     const rightVideoInfo = await validateVideosExistance(video_id);
 
     if (rightUserInfo && rightVideoInfo){
-        const sameOpinionTwice = await checkIfUserIsTryingToPostTheSameReaction
+        const sameReactionTwice = await checkIfUserIsTryingToPostTheSameReaction
                             (author_id, video_id, positive_reaction);
-        if (!sameOpinionTwice){
+        if (!sameReactionTwice){
             await VideoManager.addReactionToVideo(video_id, positive_reaction);
             const id = await insertReaction(author_id, author_name, video_id, positive_reaction);
 

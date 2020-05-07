@@ -65,8 +65,8 @@ async function postToken(data, res){
 
     const rightUserInfo = await validateUsersExistance(user_id);
     if (rightUserInfo){
-        const sameOpinionTwice = await checkIfUserAlreadyHasToken(user_id);
-        if (!sameOpinionTwice){
+        const hasToken = await checkIfUserAlreadyHasToken(user_id);
+        if (!hasToken){
             const id = await insertToken(user_id, token);
             res.send({id, user_id, token});
         } else {

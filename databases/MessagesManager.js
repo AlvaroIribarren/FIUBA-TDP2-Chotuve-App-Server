@@ -20,7 +20,6 @@ async function getMessageByItsId(id){
 }
 
 async function getAllMessagesSentByUser(sender_id){
-    //const text = 'SELECT * FROM messages WHERE sender_id = ' + sender_id;
     const condition = "sender_id = " + sender_id;
     const rows = await Manager.getAllRowsWithCondition(messages, condition);
     return rows;

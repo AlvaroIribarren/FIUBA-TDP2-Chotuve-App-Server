@@ -71,7 +71,7 @@ create table urls(
 
 
 
-//OPINION
+//Reaction
 {
 	"author_id" : 1,
 	"author_name" : "Santiago Beroch",
