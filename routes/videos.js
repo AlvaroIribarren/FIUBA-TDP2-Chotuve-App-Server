@@ -8,9 +8,13 @@ const MediaManager = require("../databases/AxiosManager")
 
 const Joi = require("joi")
 
+async function noSearchQuery(search){
+    return search === undefined || search === null || search === "" || search === " ";
+}
+
 router.get("/", async(req, res) => {
     let search = req.query.search_query;
-    if (search === undefined || search === null || search === "" || search === " "){
+    if (await noSearchQuery(search)){
         const videos = await VideosManager.getVideos();
         res.send(videos);
     } else {
@@ -18,10 +22,11 @@ router.get("/", async(req, res) => {
         const listOfVideos = [];
         for (let video of videos){
             let title = video.title.toUpperCase();
+            search = search.toUpperCase();
             search = search.replace(/_/g, ' ');
-            const areEqual = (title === search.toUpperCase());
-
-            if (areEqual){
+            const areEqual = (title === search);
+            const isASubString = title.includes(search);
+            if (areEqual || isASubString){
                 listOfVideos.push(video);
             }
         }
@@ -51,8 +56,6 @@ router.get("/:video_id/reactions", async(req, res) => {
     const reactions = await ReactionManager.getAllReactionsFromVideo(video_id);
     res.send(reactions);
 })
-
-
 
 async function validateInput(body){
     const schema = {
@@ -86,7 +89,8 @@ router.post("/", async (req, res) => {
             //Cambio nombre para no tener problemas con la palabra reservada public.
             const localPublic =  req.body.public;
             const uuid = req.body.uuid;
-            const id = await VideosManager.createVideoInMedia({url});
+
+            const id = await VideosManager.createVideoInMedia({url, uuid});
             console.log(res);
             console.log("Id recibida de media: " + id);
 

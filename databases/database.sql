@@ -104,6 +104,7 @@ VIDEO
 	"description": "TEMasdUCO",
 	"location": "EN EL CasdLUB",
 	"public": true,
+	"url": "asd",
 	"uuid": "asdasd"
 }
 
