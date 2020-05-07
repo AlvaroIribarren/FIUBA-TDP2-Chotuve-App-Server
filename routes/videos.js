@@ -10,7 +10,7 @@ const Joi = require("joi")
 
 router.get("/", async(req, res) => {
     let search = req.query.search_query;
-    if (search === undefined || search === null){
+    if (search === undefined || search === null || search === "" || search === " "){
         const videos = await VideosManager.getVideos();
         res.send(videos);
     } else {
