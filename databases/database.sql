@@ -104,6 +104,7 @@ VIDEO
 	"description": "TEMasdUCO",
 	"location": "EN EL CasdLUB",
 	"public": true,
+	"uuid": "asdasd"
 }
 
 Messages

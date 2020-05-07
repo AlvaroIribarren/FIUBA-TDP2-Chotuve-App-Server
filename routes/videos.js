@@ -47,7 +47,7 @@ async function validateInput(body){
         description: Joi.string(),
         location: Joi.string(),
         public: Joi.required(),
-        url: Joi.string().required()
+        uuid: Joi.required()
     }
     return Joi.validate(body, schema);
 }
@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
             //Cambio nombre para no tener problemas con la palabra reservada public.
             const localPublic =  req.body.public;
             const uuid = req.body.uuid;
-            const id = await VideosManager.createVideoInMedia({url, uuid});
+            const id = await VideosManager.createVideoInMedia({url});
             console.log(res);
             console.log("Id recibida de media: " + id);
 
