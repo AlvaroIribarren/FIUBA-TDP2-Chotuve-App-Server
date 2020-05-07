@@ -19,7 +19,8 @@ create table videos(
     location text NOT NULL,
     public boolean NOT NULL,
     likes serial,
-    dislikes serial
+    dislikes serial,
+    uuid text UNIQUE NOT NULL
 );
 
 create table urls(

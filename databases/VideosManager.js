@@ -76,12 +76,12 @@ async function addDislikeToVideo(id){
     await Manager.incrementRowValueById(id, videos, 'dislikes');
 }
 
-async function insertVideo(id, author_id, author_name, title, description, location, public) {
+async function insertVideo(id, author_id, author_name, title, description, location, public, uuid) {
     const likes = 0;
     const dislikes = 0;
-    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, likes, dislikes) ' +
-        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
-    const values = [id, author_id, author_name, title, description, location, public, likes, dislikes];
+    const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public, likes, dislikes, uuid) ' +
+        'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+    const values = [id, author_id, author_name, title, description, location, public, likes, dislikes, uuid];
 
     await Manager.executeQueryInTable(text, values);
 }
