@@ -5,22 +5,9 @@ const FriendManager = require("../databases/FriendsManager")
 const VideosManager = require("../databases/VideosManager")
 const TokenManager = require("../databases/TokensManager")
 const RequestManager = require("../databases/RequestManager")
-const Joi = require("joi")
 
-const minNameLength = 3;
-const minPassLength = 5;
-
-/*
-    id: lo mando yo
-    email: string
-    name: string
-    password: string
-    phone: string
-    img_url: string
-    img_uuid: string
-*/
-
-
+//pre:
+//post: sends all users. Sends nothing if empty.
 router.get("/", async (req, res) =>{
     try {
         const users = await UserManager.getUsers();
@@ -32,40 +19,75 @@ router.get("/", async (req, res) =>{
     }
 })
 
-
+//pre:
+//post: sends the user if he exists. Sends an error if he doesn't
 router.get("/:id", async (req, res) =>{
     const id = parseInt(req.params.id);
-    await checkIdsExistence(req,res);
     const user = await UserManager.getUserById(id);
-    res.send(user);
+    if(user)
+        res.send(user);
+    else
+        res.status(404).send("User not found");
 })
 
+
+//pre: user exists
+//post: sends all friend from user id.
 router.get("/:id/friends", async (req, res) => {
     const userId = parseInt(req.params.id);
-    const friends = await FriendManager.getAllFriendsFromUser(userId);
-    res.send(friends);
+    const userExists = await UserManager.getUserById(userId);
+    if (userExists){
+        const friends = await FriendManager.getAllFriendsFromUser(userId);
+        res.send(friends);
+    } else {
+        res.status(404).send("User with id: " + userId + " not found.");
+    }
 })
 
+//pre: user exists.
+//post: sends all videos from user id.
 router.get("/:id/videos", async (req, res) => {
     const userId = parseInt(req.params.id);
-    const videos = await VideosManager.getAllVideosFromUser(userId);
-    res.send(videos)
+    const userExists = await UserManager.getUserById(userId);
+    if (userExists){
+        const videos = await VideosManager.getAllVideosFromUser(userId);
+        res.send(videos)
+    } else {
+        res.status(404).send("User with id: " + userId + " not found.");
+    }
 })
 
+//pre: user exists.
+//post: sends token from user.
 router.get("/:id/token", async (req, res) => {
     const userId = parseInt(req.params.id);
-    const token = await TokenManager.getTokenByUserId(userId);
-    res.send(token)
+    const userExists = await UserManager.getUserById(userId);
+    if (userExists){
+        const token = await TokenManager.getTokenByUserId(userId);
+        res.send(token)
+    } else {
+        res.status(404).send("User with id: " + userId + " not found.");
+    }
 })
 
+//pre: id1 and id2 users exist.
+//post: sends all messages sent by id1 to id2.
 router.get("/:id1/messages/:id2", async (req,res) => {
     const id1 = parseInt(req.params.id1);
     const id2 = parseInt(req.params.id2);
-    const messages1 = await MessageManager.getAllMessagesSentById1ToId2(id1, id2);
-    const messages2 = await MessageManager.getAllMessagesSentById1ToId2(id2, id1);
 
-    const messages = messages1.concat(messages2);
-    res.send(messages);
+    const user1Exists = await UserManager.getUserById(id1);
+    const user2Exists = await UserManager.getUserById(id2);
+
+    if (user1Exists && user2Exists){
+        const messages1 = await MessageManager.getAllMessagesSentById1ToId2(id1, id2);
+        const messages2 = await MessageManager.getAllMessagesSentById1ToId2(id2, id1);
+
+        const messages = messages1.concat(messages2);
+        res.send(messages);
+    } else {
+        res.status(404).send("User with id: " + id1 + " or " + id2 + " not found.");
+    }
 })
 
 router.get("/:receiver_id/requests", async (req,res) => {
@@ -83,31 +105,11 @@ router.get("/:receiver_id/requests", async (req,res) => {
     res.send(listToReturn);
 });
 
-function validateUser(body){
-    const schema = {
-        name: Joi.string().min(minNameLength).required(),
-        password: Joi.string().min(minPassLength).required(),
-        email: Joi.string().required(),
-        phone: Joi.string().required(),
-        img_url: Joi.string().required(),
-        img_uuid: Joi.string().required()
-    }
-    return Joi.validate(body, schema);
-}
-
 
 router.post('/', async (req, res) => {
-    const error = validateUser(req.body).error;
+    const error = UserManager.validateUser(req.body).error;
     if (!error){
-        const id = await UserManager.generateNewId();
-        const name = req.body.name;
-        const password = req.body.password;
-        const email = req.body.email;
-        const phone = req.body.phone;
-        const img_url = req.body.img_url;
-        const img_uuid = req.body.img_uuid;
-        await UserManager.insertUser(id, name, password, email, phone, img_url, img_uuid);
-        res.status(201).send({id, name, password, email, phone, img_url, img_uuid});
+        await UserManager.postUser(req.body, res);
     } else {
         res.status(400).send(error.details[0].message);
     }
@@ -115,43 +117,33 @@ router.post('/', async (req, res) => {
 
 router.post('/:receiver_id/friends', async (req, res) => {
     const data = {
-        id1: parseInt(req.params.receiver_id),
-        id2: parseInt(req.body.sender_id)
+        id1: parseInt(req.params.receiver_id),  //id1: received/accepted request
+        id2: parseInt(req.body.sender_id)       //id2: sent request
     }
     const error = await FriendManager.validateInput(data).error;
-
-    const request1 = await RequestManager.getRequestSentBySenderToReceiver(data.id2, data.id1);
-
-    if (!error && request1){
-        await RequestManager.deleteRequestFromSenderToReceiver(data.id1, data.id2);
-        await RequestManager.deleteRequestFromSenderToReceiver(data.id2, data.id1);
+    if (!error){
         await FriendManager.postRelation(data, res);
     } else {
         res.status(400).send("Datos invalidos o inexistentes");
     }
 })
 
-async function checkIdsExistence(req, res){
-    const id = parseInt(req.params.id);
-    const user = await UserManager.getUserById(id);
-    console.log(user);
-
-    if (!user){
-        res.status(404).send("No hay ningun usuario con id: " + id);
-    }
-}
-
 router.put('/:id', async (req, res) => {
-    await checkIdsExistence(req, res);
-    const error = validateUser(req.body).error;
+    const id = parseInt(req.params.id);
+    const error = await UserManager.validateUserWithOptionalFields(req.body).error;
+    const user = await UserManager.getUserById(id);
 
-    console.log(req.body);
-    if(error){
-        res.status(400).send("Error en validacion: " + error.details[0].message);
+    if(!error && user){
+        const data = req.body;
+        for (let key in data) {
+            if (data.hasOwnProperty(key)) {
+                console.log(key + " -> " + data[key]);
+                await UserManager.editUser(key, data[key], 'id', id);
+            }
+        }
+        res.send("Se deberia haber hecho bien");
     } else {
-        const newUserName = req.body.name;
-        await UserManager.editUser('name', newUserName, 'id', id);
-        res.send(newUserName);
+        res.status(400).send("Error en validacion: " + error.details[0].message);
     }
 })
 

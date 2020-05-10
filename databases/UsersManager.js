@@ -1,6 +1,9 @@
 const Manager = require('./DBManager')
+const Joi = require('joi')
 
 const users = 'users';
+const minNameLength = 3;
+const minPassLength = 5;
 
 async function getUsers(){
     return await Manager.getRows(users);
@@ -34,6 +37,22 @@ async function insertUser(id, name, password, email, phone, img_url, img_uuid) {
     await Manager.executeQueryInTable(text, values);
 }
 
+async function postUser(data, res){
+    const id = await generateNewId();
+    const name = data.name;
+    const password = data.password;
+    const email = data.email;
+    const phone = data.phone;
+    const img_url = data.img_url;
+    const img_uuid = data.img_uuid;
+    await insertUser(id, name, password, email, phone, img_url, img_uuid);
+    //testing purposes.
+    if (res !== null) {
+        res.status(201).send({id, name, password, email, phone, img_url, img_uuid});
+    }
+    return id;
+}
+
 async function deleteUserById(id) {
     await Manager.deleteRowFromTable(id, users);
 }
@@ -51,8 +70,17 @@ async function editUser(fieldToBeChanged, field1, fieldToCompare, condition){
     }
 }
 
+async function getNameById(user_id){
+    const user = await getUserById(user_id);
+    return user.name;
+}
+
 async function generateNewId(){
     return await Manager.generateNewIdInTable(users);
+}
+
+async function changeProfilePicture(id, newImgUrl){
+    await Manager.updateRowWithNewValue(id, users, "'img_url'", newImgUrl);
 }
 
 async function checkCorrectIdAndName(author_id, author_name){
@@ -65,14 +93,41 @@ async function checkCorrectIdAndName(author_id, author_name){
     }
 }
 
+function validateUser(body){
+    const schema = {
+        name: Joi.string().min(minNameLength).required(),
+        password: Joi.string().min(minPassLength).required(),
+        email: Joi.string().required(),
+        phone: Joi.string().required(),
+        img_url: Joi.string().required(),
+        img_uuid: Joi.string().required()
+    }
+    return Joi.validate(body, schema);
+}
+
+function validateUserWithOptionalFields(body){
+    const schema = {
+        name: Joi.string().min(minNameLength),
+        password: Joi.string().min(minPassLength),
+        email: Joi.string(),
+        phone: Joi.string(),
+        img_url: Joi.string(),
+        img_uuid: Joi.string()
+    }
+    return Joi.validate(body, schema);
+}
+
 const UsersManager = {}
-UsersManager.insertUser = insertUser;
+UsersManager.postUser = postUser;
 UsersManager.getUsers = getUsers;
 UsersManager.getUserById = getUserById;
+UsersManager.getNameById = getNameById;
 UsersManager.deleteUserById = deleteUserById;
 UsersManager.editUser = editUser;
 UsersManager.generateNewId = generateNewId;
 UsersManager.checkCorrectIdAndName = checkCorrectIdAndName;
 UsersManager.getUserByNameAndPassword = getUserByEmailAndPassword;
 UsersManager.getUserByEmail = getUserByEmail;
+UsersManager.validateUser = validateUser;
+UsersManager.validateUserWithOptionalFields = validateUserWithOptionalFields;
 module.exports = UsersManager;

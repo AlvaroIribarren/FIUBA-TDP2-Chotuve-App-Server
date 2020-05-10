@@ -18,7 +18,7 @@ async function getTokenById(id){
 }
 
 async function getTokenByUserId(user_id){
-    await Manager.getValueFromRow(user_id, "user_id", tokens);
+    return await Manager.getValueFromRow(user_id, "user_id", tokens);
 }
 
 async function insertToken(user_id, token) {

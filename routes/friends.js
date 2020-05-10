@@ -15,7 +15,6 @@ router.get("/:id", async (req, res) => {
     res.send(relation);
 })
 
-//todo: cambiar para no recibir ambas aids
 router.get("/:id1/:id2", async (req, res) => {
     console.log("You asked for a certain relation between users")
     const relation = await FriendsManager.getRelationByUsersIds(req.params.id1, req.params.id2);
@@ -23,11 +22,11 @@ router.get("/:id1/:id2", async (req, res) => {
     console.log(relation);
 })
 
-
-
+//todo: actualizar con el post de users.
 router.post("/", async (req, res) => {
-    await FriendsManager.validateInput(req.body);
-    await FriendsManager.postRelation(req.body, res);
+    const error = await FriendsManager.validateInput(req.body).error;
+    if(!error)
+        await FriendsManager.postRelation(req.body, res);
 })
 
 router.delete("/:id1/:id2", async (req,res) => {

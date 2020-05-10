@@ -1,5 +1,5 @@
 const Manager = require('./DBManager')
-const FriendsManager = require('./RequestManager')
+const FriendsManager = require('./FriendsManager')
 const UserManager = require('./UsersManager')
 
 const requests = 'requests'
@@ -39,6 +39,12 @@ async function getAllRequestsReceivedByUserId(receiver_id){
     return res.rows;
 }
 
+async function isThereAtLeastARequestBetweenUsers(id1, id2){
+    const r1 = await getRequestSentBySenderToReceiver(id1, id2);
+    const r2 = await getRequestSentBySenderToReceiver(id2, id1);
+    return r1 || r2;
+}
+
 async function insertRequest(sender_id, receiver_id) {
     const id = await Manager.generateNewIdInTable(requests);
     const text = 'INSERT INTO requests(id, sender_id, receiver_id) VALUES($1, $2, $3)';
@@ -46,7 +52,7 @@ async function insertRequest(sender_id, receiver_id) {
     await Manager.executeQueryInTable(text, values);
 }
 
-//todo: borrar bidireccionalmente.
+
 async function deleteRequestFromSenderToReceiver(id1, id2) {
     console.log("Deleting friendship (so sad :( )");
     const text = 'DELETE FROM requests WHERE sender_id = ' + id1 + ' AND receiver_id = ' + id2;
@@ -61,22 +67,35 @@ async function getRequestByUsersIds(sender_id, receiver_id){
     return res.rows[0];
 }
 
+async function checkValidRequest(sender_id, receiver_id){
+    const user1 = await UserManager.getUserById(sender_id);
+    const user2 = await UserManager.getUserById(receiver_id);
+
+    const relation = await FriendsManager.getRelationByUsersIds(sender_id, receiver_id);
+    const request = await getRequestByUsersIds(sender_id, receiver_id);
+
+    return (user1 && user2 && !relation && !request);
+}
+
 async function postRequest(data, res){
     const sender_id = parseInt(data.sender_id);
     const receiver_id = parseInt(data.receiver_id);
 
-    const user1 = await UserManager.getUserById(sender_id);
-    const user2 = await UserManager.getUserById(receiver_id);
-
-    if (user1 && user2){
+    const validRequest = await checkValidRequest(sender_id, receiver_id);
+    if (validRequest){
         await RequestManager.insertRequest(sender_id, receiver_id);
         res.send("Id :" + sender_id + " envia request a: " + receiver_id);
     } else {
-        res.status(404).send("ID inexistente");
+        res.status(404).send("Request invalida, ids no validas, ya son amigos o ya se envio la request");
     }
 }
 
-const RequestManager = {}
+async function deleteRequestsBetweenUsers(id1, id2) {
+    await deleteRequestFromSenderToReceiver(id1, id2);
+    await deleteRequestFromSenderToReceiver(id2, id1);
+}
+
+RequestManager = {}
 RequestManager.getRequests = getRequests;
 RequestManager.getRequestById = getRequestById;
 RequestManager.insertRequest = insertRequest;
@@ -86,5 +105,7 @@ RequestManager.getAllRequestsSentById = getAllRequestsSentById;
 RequestManager.getAllRequestsReceivedByUserId = getAllRequestsReceivedByUserId;
 RequestManager.postRequest = postRequest;
 RequestManager.getRequestSentBySenderToReceiver = getRequestSentBySenderToReceiver;
+RequestManager.isThereAtLeastARequestBetweenUsers = isThereAtLeastARequestBetweenUsers;
+RequestManager.deleteRequestsBetweenUsers = deleteRequestsBetweenUsers;
 
 module.exports = RequestManager;
