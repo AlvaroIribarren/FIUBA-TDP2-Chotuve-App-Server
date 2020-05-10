@@ -70,7 +70,7 @@ async function deleteRelationByUsersId(id1, id2) {
 async function checkNewValidRelation(id1, id2){
     const user1 = await UserManager.getUserById(id1);
     const user2 = await UserManager.getUserById(id2);
-    const relation = await getRelationByUsersIds(id1, id2);
+    const relation = await this.getRelationByUsersIds(id1, id2);
     const request = await RequestManager.isThereAtLeastARequestBetweenUsers(id1, id2);
 
     return (user1 && user2 && request && !relation);

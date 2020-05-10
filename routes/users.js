@@ -152,6 +152,7 @@ router.post("/:receiver_id/requests", async (req, res)=> {
         sender_id: parseInt(req.body.sender_id),
         receiver_id: parseInt(req.params.receiver_id)
     }
+    console.log("Post in request");
     await RequestManager.postRequest(data, res);
 });
 
