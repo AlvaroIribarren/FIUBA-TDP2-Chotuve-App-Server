@@ -20,19 +20,22 @@ async function getRelationById(id){
     return await Manager.getIdFromTable(id, friends);
 }
 
-async function getRelationByUsersIds(id1, id2){
-    console.log("Relation between 2 users");
-    const text = 'SELECT * FROM friends WHERE id1 = ' + id1 + ' AND id2 = ' + id2;
-    const res = await Manager.executeQueryInTableWithoutValues(text);
-    console.log(res.rows[0]);
-    return res.rows[0];
-}
-
 async function getAllRelationsFromUser(id){
     const text = 'SELECT * FROM friends WHERE id1 = ' + id;
     const res = await Manager.executeQueryInTableWithoutValues(text);
     console.log(res.rows);
     return res.rows;
+}
+
+async function getRelationByIds(id1, id2){
+    const condition = " id1 = " + id1 + " and " + " id2 = " + id2;
+    const response = await Manager.getAllRowsWithCondition(friends, condition);
+    return response;
+}
+
+async function doesRelationExistBetween(id1, id2){
+    const array = await getRelationByIds(id1, id2);
+    return array.length > 0;
 }
 
 async function getAllFriendsFromUser(id){
@@ -70,7 +73,7 @@ async function deleteRelationByUsersId(id1, id2) {
 async function checkNewValidRelation(id1, id2){
     const user1 = await UserManager.getUserById(id1);
     const user2 = await UserManager.getUserById(id2);
-    const relation = await this.getRelationByUsersIds(id1, id2);
+    const relation = await doesRelationExistBetween(id1, id2);
     const request = await RequestManager.isThereAtLeastARequestBetweenUsers(id1, id2);
 
     return (user1 && user2 && request && !relation);
@@ -88,8 +91,8 @@ async function sendAcceptedRequestNotification(id1, id2){
         "click-action": "friendship"
     }
 
-    const friendNotification = await new FriendNotification(id2, notification, data);
-    const notificationState = await NotificationManager.sendNotification(friendNotification);
+    const friendNotification1 = await new FriendNotification(id2, notification, data);
+    const notificationState = await NotificationManager.sendNotification(friendNotification1);
     return {data, notificationState};
 }
 
@@ -122,16 +125,16 @@ async function validateInput(body){
     return Joi.validate(body, schema);
 }
 
-
 const FriendsManager = {}
 FriendsManager.getRelations = getRelations;
 FriendsManager.getRelationById = getRelationById;
 FriendsManager.insertRelation = insertRelation;
-FriendsManager.getRelationByUsersIds = getRelationByUsersIds;
 FriendsManager.deleteRelation = deleteRelationByUsersId;
 FriendsManager.getAllFriendsFromUser = getAllFriendsFromUser;
 FriendsManager.postRelation = postRelation;
 FriendsManager.validateInput = validateInput;
 FriendsManager.sendAcceptedRequestNotification = sendAcceptedRequestNotification;
+FriendsManager.getRelationByIds = getRelationByIds;
+FriendsManager.doesRelationExistBetween = doesRelationExistBetween;
 
 module.exports = FriendsManager;

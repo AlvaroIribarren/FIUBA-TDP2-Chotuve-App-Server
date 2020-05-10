@@ -1,5 +1,4 @@
 const Manager = require('./DBManager')
-const FriendsManager = require('./FriendsManager')
 const UserManager = require('./UsersManager')
 
 const requests = 'requests'
@@ -67,14 +66,15 @@ async function getRequestByUsersIds(sender_id, receiver_id){
     return res.rows[0];
 }
 
+
 async function checkValidRequest(sender_id, receiver_id){
     const user1 = await UserManager.getUserById(sender_id);
     const user2 = await UserManager.getUserById(receiver_id);
 
-    const relation = await FriendsManager.getRelationByUsersIds(sender_id, receiver_id);
+    //const relation = await getRelationByIds(sender_id, receiver_id);
     const request = await getRequestByUsersIds(sender_id, receiver_id);
 
-    return (user1 && user2 && !relation && !request);
+    return (user1 && user2 && !request);
 }
 
 async function postRequest(data, res){
