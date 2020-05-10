@@ -84,7 +84,7 @@ async function getActualTime(){
 //post: creates notification, sends it and returns it's state.
 async function sendMessageNotification(sender_id, receiver_id, message, time){
     const sender_name = await UserManager.getNameById(sender_id);
-    const data = { sender_name, message, time};
+    const data = {sender_id};
 
     const notification = {
         "title": "Mensaje de: " + sender_name,

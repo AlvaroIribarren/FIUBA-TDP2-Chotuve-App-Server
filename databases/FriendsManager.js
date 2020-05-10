@@ -83,12 +83,13 @@ async function checkNewValidRelation(id1, id2){
 async function sendAcceptedRequestNotification(id1, id2){
     const acceptor_name = await UserManager.getNameById(id1);
     const sender_name = await UserManager.getNameById(id2);
-    const data = {sender_name, acceptor_name};
+    const acceptor_id = id1;
+    const data = {acceptor_id};
 
     const notification = {
         "title": "Solicitud de amistad aceptada!",
         "body": "El usuario: " + acceptor_name + " es ahora tu amigo.",
-        "click-action": "friendship"
+        "click-action": "friend_accept"
     }
 
     const friendNotification1 = await new FriendNotification(id2, notification, data);

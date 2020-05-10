@@ -6,9 +6,7 @@ class MessageNotification extends Notification{
     async validateDataInput(data){
         console.log("Message notification");
         const schema = {
-            "sender": Joi.string().required(),
-            "message": Joi.string().required(),
-            "time": Joi.string().required()
+            "sender_id": Joi.number().positive().required()
         }
         return Joi.validate(data, schema);
     }

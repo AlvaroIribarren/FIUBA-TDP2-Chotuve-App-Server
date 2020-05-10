@@ -1,5 +1,7 @@
 const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
+const NotificationManager = require("../databases/NotificationManager")
+const RequestNotification = require(".././classes/Notifications/RequestNotification")
 
 const requests = 'requests'
 
@@ -83,7 +85,8 @@ async function postRequest(data, res){
     const validRequest = await checkValidRequest(sender_id, receiver_id);
     if (validRequest){
         await RequestManager.insertRequest(sender_id, receiver_id);
-        res.send("Id :" + sender_id + " envia request a: " + receiver_id);
+        const response = await sendRequestNotification(sender_id, receiver_id);
+        res.send(response);
     } else {
         res.status(404).send("Request invalida, ids no validas, ya son amigos o ya se envio la request");
     }
@@ -94,6 +97,20 @@ async function deleteRequestsBetweenUsers(id1, id2) {
     await deleteRequestFromSenderToReceiver(id2, id1);
 }
 
+async function sendRequestNotification(sender_id, receiver_id){
+    const sender_name = await UserManager.getNameById(sender_id);
+    const data = { sender_id};
+
+    const notification = {
+        "title": "Solicitud de amistad de: " + sender_name,
+        "body": "aceptame viejita",
+        "click-action": "friend_request"
+    }
+
+    const rNotification = await new RequestNotification(receiver_id, notification, data);
+    const notificationState = await NotificationManager.sendNotification(rNotification);
+    return {data, notificationState};
+}
 
 RequestManager = {}
 RequestManager.getRequests = getRequests;

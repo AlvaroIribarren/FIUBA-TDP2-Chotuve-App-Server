@@ -9,8 +9,7 @@ const key = 'key=AAAAh7BTywg:APA91bFFr4C3-YD7rY1TA5hu8Xs-S7Xy1rBfaecw5EwWZJYohJE
 const Notification = require("../classes/Notifications/Notification")
 
 async function sendNotification(notification){
-    const notificationResponse = await postNotification(notification);
-    return notificationResponse;
+    return await postNotification(notification);
 }
 
 async function postNotification(notification){
