@@ -137,4 +137,5 @@ FriendsManager.sendAcceptedRequestNotification = sendAcceptedRequestNotification
 FriendsManager.getRelationByIds = getRelationByIds;
 FriendsManager.doesRelationExistBetween = doesRelationExistBetween;
 
+
 module.exports = FriendsManager;

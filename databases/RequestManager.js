@@ -27,8 +27,7 @@ async function getRequestSentBySenderToReceiver(sender_id, receiver_id){
     const condition1 = "sender_id = " + sender_id;
     const condition2 = "receiver_id = " + receiver_id;
     const condition = condition1 + " AND " + condition2;
-    const rows = await Manager.getAllRowsWithCondition(requests, condition);
-    return rows;
+    return await Manager.getAllRowsWithCondition(requests, condition);
 }
 
 async function getAllRequestsReceivedByUserId(receiver_id){
@@ -94,6 +93,7 @@ async function deleteRequestsBetweenUsers(id1, id2) {
     await deleteRequestFromSenderToReceiver(id1, id2);
     await deleteRequestFromSenderToReceiver(id2, id1);
 }
+
 
 RequestManager = {}
 RequestManager.getRequests = getRequests;

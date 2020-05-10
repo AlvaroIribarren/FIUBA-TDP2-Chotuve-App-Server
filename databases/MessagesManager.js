@@ -107,7 +107,7 @@ async function postMessage(data, res){
 
     const rightSenderInfo = await validateUsersExistance(sender_id);
     const rightReceiverInfo = await validateUsersExistance(receiver_id);
-    const areFriends = await FriendManager.getRelationByUsersIds(sender_id, receiver_id);
+    const areFriends = await FriendManager.getRelationByIds(sender_id, receiver_id);
 
     if (rightSenderInfo && rightReceiverInfo && areFriends){
         const id = await insertMessage(sender_id, receiver_id, message, time);
