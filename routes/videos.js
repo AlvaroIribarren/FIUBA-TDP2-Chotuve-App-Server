@@ -54,6 +54,7 @@ async function validateInput(body){
         description: Joi.string(),
         location: Joi.string(),
         public: Joi.required(),
+        url: Joi.string().required(),
         uuid: Joi.required()
     }
     return Joi.validate(body, schema);

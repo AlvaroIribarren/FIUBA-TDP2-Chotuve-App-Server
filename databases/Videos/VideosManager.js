@@ -46,7 +46,7 @@ async function getAllVideosFromUser(userid){
 }
 
 async function createVideoInMedia(json){
-    return await URLManager.postObjectToMedia(json);
+    return await URLManager.postVideoToMedia(json);
 }
 
 async function addReactionToVideo(id, positive_reaction){

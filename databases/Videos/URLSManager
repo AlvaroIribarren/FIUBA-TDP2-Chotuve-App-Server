@@ -1,4 +1,3 @@
-const VideoManager = require("./VideosManager")
 const AxiosManager = require("../ExternalManagers/AxiosManager")
 
 const VIDEOS_URL = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
