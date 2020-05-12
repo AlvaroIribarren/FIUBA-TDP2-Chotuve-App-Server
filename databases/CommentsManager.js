@@ -36,8 +36,8 @@ async function insertComment(author_id, author_name, video_id, comment) {
 
 async function deleteCommentById(id) {
     console.log("Deleting video");
-    const text = 'DELETE FROM comments WHERE id = ' + id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = ' id = ' + id;
+    return await Manager.executeQueryInTableWithoutValues(condition);
 }
 
 async function deleteAllCommentsFromVideo(video_id){

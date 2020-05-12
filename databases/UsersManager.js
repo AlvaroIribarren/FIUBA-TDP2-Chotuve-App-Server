@@ -1,4 +1,5 @@
 const Manager = require('./DBManager')
+const UrlManager = require("./Videos/URLSManager")
 const Joi = require('joi')
 
 const users = 'users';
@@ -30,10 +31,10 @@ async function getUserByEmailAndPassword(email, password){
     return usersRows[0];
 }
 
-async function insertUser(id, name, password, email, phone, img_url, img_uuid) {
+async function insertUser(id, name, password, email, phone, img_id, img_url, img_uuid) {
     console.log("Insertando elemento en: " + users);
-    const text = 'INSERT INTO users(id, name, password, email, phone, img_url, img_uuid) VALUES($1, $2, $3, $4, $5, $6, $7)';
-    const values = [id, name, password, email, phone, img_url, img_uuid];
+    const text = 'INSERT INTO users(id, name, password, email, phone, img_id, img_url, img_uuid) VALUES($1, $2, $3, $4, $5, $6, $7, $8)';
+    const values = [id, name, password, email, phone, img_id, img_url, img_uuid];
     await Manager.executeQueryInTable(text, values);
 }
 
@@ -45,10 +46,11 @@ async function postUser(data, res){
     const phone = data.phone;
     const img_url = data.img_url;
     const img_uuid = data.img_uuid;
-    await insertUser(id, name, password, email, phone, img_url, img_uuid);
+    const img_id = await UrlManager.postImageToMedia({url: img_url, uuid: img_uuid});
+    await insertUser(id, name, password, email, phone, img_id, img_url, img_uuid);
     //testing purposes.
     if (res !== null) {
-        res.status(201).send({id, name, password, email, phone, img_url, img_uuid});
+        res.status(201).send({id, name, password, email, phone, img_id, img_url, img_uuid});
     }
     return id;
 }

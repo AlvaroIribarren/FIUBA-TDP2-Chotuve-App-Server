@@ -42,17 +42,17 @@ async function deleteReactionById(id) {
 
 async function deleteAllReactionsFromVideo(video_id){
     console.log("Deleting all reactions");
-    const text = 'DELETE FROM friends WHERE video_id = ' + video_id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = ' video_id = ' + video_id;
+    return await Manager.deleteAllRowsWithCondition(reactions, condition);
 }
 
-async function checkIfUserIsTryingToPostTheSameReaction(author_id, video_id, positive_reaction) {
-    const str1 = 'SELECT * FROM ' + reactions + ' WHERE';
-    const str2 = ' author_id =' + author_id + ' AND video_id =' + video_id +
-        ' AND positive_reaction =' + positive_reaction;
-    const text = str1 + str2;
-    const equalReaction = await Manager.executeQueryInTableWithoutValues(text);
-    return equalReaction.rows.length > 0;
+async function getReactionFromUserInVideo(author_id, video_id) {
+    const condition = ' author_id =' + author_id + ' AND video_id =' + video_id;
+    const filteredReactions = await Manager.getAllRowsWithCondition(reactions, condition);
+    if (filteredReactions.length > 0)
+        return filteredReactions[0];
+    else
+        return null;
 }
 
 async function validateUserInfo(author_id, author_name){
@@ -61,6 +61,10 @@ async function validateUserInfo(author_id, author_name){
 
 async function validateVideosExistance(video_id){
     return await VideoManager.getVideoById(video_id);
+}
+
+async function updateReaction(id, positive_reaction){
+    return await Manager.updateRowWithNewValue(id, reactions, 'positive_reaction', positive_reaction);
 }
 
 async function postReaction(data, res){
@@ -73,15 +77,23 @@ async function postReaction(data, res){
     const rightVideoInfo = await validateVideosExistance(video_id);
 
     if (rightUserInfo && rightVideoInfo){
-        const sameReactionTwice = await checkIfUserIsTryingToPostTheSameReaction
-                            (author_id, video_id, positive_reaction);
-        if (!sameReactionTwice){
+        const reaction = await getReactionFromUserInVideo(author_id, video_id, positive_reaction);
+
+        if (!reaction) {
             await VideoManager.addReactionToVideo(video_id, positive_reaction);
             const id = await insertReaction(author_id, author_name, video_id, positive_reaction);
-
             res.send({id, author_id, author_name, video_id, positive_reaction});
         } else {
-            res.send("This user has already posted this reaction in this video.");
+            if (reaction.positive_reaction === positive_reaction){
+                res.send("Intentado subir la misma reaccion otra vez");
+            } else {
+                await updateReaction(reaction.id, positive_reaction);
+                const reactionToBeDeleted = !(positive_reaction);
+                await VideoManager.deleteReactionFromVideo(video_id, reactionToBeDeleted);
+                await VideoManager.addReactionToVideo(video_id, positive_reaction);
+                const id = reaction.id;
+                res.send({id, author_id, author_name, video_id, positive_reaction});
+            }
         }
     } else {
         res.status(404).send("User or videos information is incorrect or doesn't exist.");
@@ -105,7 +117,7 @@ ReactionsManager.getAllReactionsFromVideo = getAllReactionsFromVideo;
 ReactionsManager.insertReaction = insertReaction;
 ReactionsManager.deleteReactionById = deleteReactionById;
 ReactionsManager.deleteAllReactionsFromVideo = deleteAllReactionsFromVideo;
-ReactionsManager.checkIfUserIsTryingToPostTheSameReaction = checkIfUserIsTryingToPostTheSameReaction;
+ReactionsManager.getReactionFromUserInVideo = getReactionFromUserInVideo;
 ReactionsManager.postReaction = postReaction;
 ReactionsManager.validateInput = validateInput;
 

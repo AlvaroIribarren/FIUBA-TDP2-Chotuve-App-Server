@@ -6,6 +6,7 @@ create table users(
     password text NOT NULL,
     email text UNIQUE NOT NULL,
     phone text UNIQUE NOT NULL,
+    img_id serial UNIQUE NOT NULL,
     img_url text NOT NULL,
     img_uuid text NOT NULL
 );
@@ -89,10 +90,10 @@ Comments
 
 USER
 {
-	"name" : "Alvarito",
-	"password" : "AdminPassahre",
-	"email": "superAdmin@gmail.com",
-	"phone": "xddaddsd",
+	"name" : "Alvaro Iribarren",
+	"password" : "asdasda",
+	"email": "asd@asd.com",
+	"phone": "asd",
 	"img_url": "hddttps://firebasestorage.googleapis.com/v0/b/chotuve-467b2.appspot.com/o/images%2Ffranki.jpg?alt=media&token=1aa11c1f-e684-4b5e-8bd5-52f305c989de",
 	"img_uuid" : "asdddadds"
 }

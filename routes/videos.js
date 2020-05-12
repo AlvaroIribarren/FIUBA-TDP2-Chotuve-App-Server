@@ -123,6 +123,32 @@ router.post("/:video_id/comments", async (req, res) => {
     }
 })
 
+router.delete("/video_id", async (req,res) => {
+    const video_id = parseInt(req.params.video_id);
+    const videoExists = await VideosManager.getVideoById(video_id);
+    if (videoExists){
+        const result = await VideosManager.deleteVideoByVideosId(video_id);
+        res.send(result);
+    } else {
+        res.status(404).send("Video not found");
+    }
+})
+
+
+router.delete("/:video_id/comments/:comment_id", async (req, res) =>{
+    const video_id = parseInt(req.params.video_id);
+    const videoExist = await VideosManager.getVideoById(video_id);
+    const comment_id = parseInt(req.params.comment_id);
+    const commentExists = await CommentManager.getCommentByItsId(comment_id);
+
+    if (videoExist && commentExists) {
+        const result = await CommentManager.deleteCommentById(comment_id);
+        res.send(result);
+    } else {
+        res.status(404).send("Video or comment not found");
+    }
+})
+
 
 
 

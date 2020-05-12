@@ -57,12 +57,28 @@ async function addReactionToVideo(id, positive_reaction){
     }
 }
 
+async function deleteReactionFromVideo(video_id, positive_reaction){
+    if (positive_reaction){
+        await subLikeToVideo(video_id);
+    } else {
+        await subDislikeToVideo(video_id);
+    }
+}
+
 async function addLikeToVideo(id){
     await Manager.incrementRowValueById(id, videos, 'likes');
 }
 
 async function addDislikeToVideo(id){
     await Manager.incrementRowValueById(id, videos, 'dislikes');
+}
+
+async function subLikeToVideo(id){
+    await Manager.updateRowWithNewValue(id, videos, 'likes', 'likes - 1');
+}
+
+async function subDislikeToVideo(id){
+    await Manager.updateRowWithNewValue(id, videos, 'dislikes', 'dislikes - 1');
 }
 
 async function insertVideo(id, author_id, author_name, title, description, location, public, uuid) {
@@ -106,7 +122,6 @@ async function getSearchRelatedVideos(videos, search){
 
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
-VideosManager.getVideosInAppServer = getVideosInAppServer;
 VideosManager.getVideoById = getVideoById;
 VideosManager.getAllVideosFromUser = getAllVideosFromUser;
 VideosManager.insertVideo = insertVideo;
@@ -115,6 +130,6 @@ VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
 VideosManager.addReactionToVideo = addReactionToVideo;
 VideosManager.createVideoInMedia = createVideoInMedia;
 VideosManager.getSearchRelatedVideos = getSearchRelatedVideos;
-VideosManager.getVideoByIdInAppServer = getVideoByIdInAppServer;
+VideosManager.deleteReactionFromVideo = deleteReactionFromVideo;
 
 module.exports = VideosManager;
