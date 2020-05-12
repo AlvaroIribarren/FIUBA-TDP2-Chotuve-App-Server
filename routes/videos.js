@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const UserManager = require("../databases/UsersManager")
-const VideosManager = require("../databases/VideosManager")
+const VideosManager = require("../databases/Videos/VideosManager")
 const CommentManager = require("../databases/CommentsManager")
 const ReactionManager = require("../databases/ReactionsManager")
-const MediaManager = require("../databases/AxiosManager")
+const MediaManager = require("../databases/ExternalManagers/AxiosManager")
 
 const Joi = require("joi")
 
@@ -14,23 +14,12 @@ async function noSearchQuery(search){
 
 router.get("/", async(req, res) => {
     let search = req.query.search_query;
+    const videos = await VideosManager.getVideos();
     if (await noSearchQuery(search)){
-        const videos = await VideosManager.getVideos();
         res.send(videos);
     } else {
-        const videos = await VideosManager.getVideos();
-        const listOfVideos = [];
-        for (let video of videos){
-            let title = video.title.toUpperCase();
-            search = search.toUpperCase();
-            search = search.replace(/_/g, ' ');
-            const areEqual = (title === search);
-            const isASubString = title.includes(search);
-            if (areEqual || isASubString){
-                listOfVideos.push(video);
-            }
-        }
-        res.send(listOfVideos);
+        const filtratedVideos = await VideosManager.getSearchRelatedVideos(videos, search);
+        res.send(filtratedVideos);
     }
 })
 

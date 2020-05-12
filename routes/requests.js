@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
 const RequestManager = require("../databases/RequestManager")
 
 const Joi = require("joi")
@@ -17,6 +16,7 @@ router.get("/:id", async (req, res) => {
 })
 
 
+//todo: refactor
 router.get("/:senderid/:receiverid", async (req, res) => {
     console.log("You asked for a certain request between users")
     const request = await RequestManager.getRequestByUsersIds(req.params.senderid, req.params.receiverid);
@@ -40,6 +40,7 @@ router.post("/", async (req, res) => {
     }
 })
 
+//refactor
 router.delete("/:senderid/:receiverid", async (req,res) => {
     const sender_id = parseInt(req.params.id1);
     const receiver_id = parseInt(req.params.id2);

@@ -2,7 +2,7 @@ const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
 const RequestManager = require("./RequestManager")
 const FriendNotification = require("../classes/Notifications/FriendNotification")
-const NotificationManager = require("./NotificationManager")
+const NotificationManager = require("./ExternalManagers/NotificationManager")
 const Joi  = require('joi')
 
 const friends = 'friends'
@@ -65,7 +65,21 @@ async function insertRelation(id1, id2) {
 async function deleteRelationByUsersId(id1, id2) {
     console.log("Deleting friendship (so sad :( )");
     const text = 'DELETE FROM friends WHERE id1 = ' + id1 + ' AND id2 = ' + id2;
-    await Manager.executeQueryInTableWithoutValues(text);
+    return await Manager.executeQueryInTableWithoutValues(text);
+}
+
+async function deleteRelationBetweenUsers(id1, id2){
+    const user1 = await UserManager.getUserById(id1);
+    const user2 = await UserManager.getUserById(id2);
+    const relationExists = await doesRelationExistBetween(id1, id2);
+
+    if (user1 && user2 && relationExists){
+        const res1 = await deleteRelationByUsersId(id1, id2);
+        const res2 = await deleteRelationByUsersId(id2, id1);
+        return {res1, res2};
+    } else {
+        return null;
+    }
 }
 
 //valid: User1 and 2 exist, they aren't friends and there is a request from one to another.
@@ -130,7 +144,7 @@ const FriendsManager = {}
 FriendsManager.getRelations = getRelations;
 FriendsManager.getRelationById = getRelationById;
 FriendsManager.insertRelation = insertRelation;
-FriendsManager.deleteRelation = deleteRelationByUsersId;
+FriendsManager.deleteRelationBetweenUsers = deleteRelationBetweenUsers;
 FriendsManager.getAllFriendsFromUser = getAllFriendsFromUser;
 FriendsManager.postRelation = postRelation;
 FriendsManager.validateInput = validateInput;

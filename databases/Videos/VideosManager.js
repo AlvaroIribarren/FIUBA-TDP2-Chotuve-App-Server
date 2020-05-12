@@ -1,9 +1,9 @@
-const Manager = require('./DBManager')
-const AxiosManager = require("./AxiosManager")
+const Manager = require('../DBManager')
+const AxiosManager = require("../ExternalManagers/AxiosManager")
 const URLManager = require("./URLSManager")
 
 const videos = 'videos';
-const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
+
 
 /*recibo
 videoid : int
@@ -13,32 +13,22 @@ authorname : string
 
 async function getVideos(){
     try {
-        const response =  await AxiosManager.getResponseByLink(mediaUrl);
-        const urls = response.data;
-        const listOfVideos = [];
-        for (let url of urls){
-            const video = await getVideoByIdInAppServer(url.id);
-            if (video) {
-                video.url = url.url;
-                listOfVideos.push(video);
-            } else {
-                console.log("No se encontro un video con id: " + video);
-            }
-        }
-        return listOfVideos;
+        const videos = await getVideosInAppServer();
+        return URLManager.getAllVideosWithAddedUrls(videos);
     } catch(e){
         console.log(e);
     }
 }
 
-async function getVideoById(id){
-    const str = "/" + id;
-    const link = mediaUrl + str;
-    const res = await AxiosManager.getResponseByLink(link);
-    const video = res.data[0];
-    const videoInAppSv = await getVideoByIdInAppServer(video.id);
-    videoInAppSv.url = video.url;
-    return videoInAppSv;
+async function getVideoById(id) {
+    const url = await URLManager.getUrlById(id);
+    if (url) {
+        const videoInAppSv = await getVideoByIdInAppServer(url.id);
+        videoInAppSv.url = url.url;
+        return videoInAppSv;
+    } else {
+        return null;
+    }
 }
 
 async function getVideoByIdInAppServer(id){
@@ -50,14 +40,13 @@ async function getVideosInAppServer(){
 }
 
 async function getAllVideosFromUser(userid){
-    const text = 'SELECT * FROM videos WHERE author_id = ' + userid;
-    const res = await Manager.executeQueryInTableWithoutValues(text);
-    console.log(res.rows);
-    return res.rows;
+    const condition = ' author_id = ' + userid;
+    const allVideos = await Manager.getAllRowsWithCondition(videos, condition);
+    return await URLManager.addUrlsToVideos(allVideos);
 }
 
 async function createVideoInMedia(json){
-    return await AxiosManager.generatePost(mediaUrl, json);
+    return await URLManager.postObjectToMedia(json);
 }
 
 async function addReactionToVideo(id, positive_reaction){
@@ -98,6 +87,23 @@ async function deleteAllVideosFromUser(userId){
     await Manager.executeQueryInTableWithoutValues(text);
 }
 
+//post: returns related videos by user's search. The video is related if
+//the string is the same or if the search is included in the video's title.
+async function getSearchRelatedVideos(videos, search){
+    const listOfVideos = [];
+    for (let video of videos){
+        let title = video.title.toUpperCase();
+        search = search.toUpperCase();
+        search = search.replace(/_/g, ' ');
+        const areEqual = (title === search);
+        const isASubString = title.includes(search);
+        if (areEqual || isASubString){
+            listOfVideos.push(video);
+        }
+    }
+    return listOfVideos;
+}
+
 const VideosManager = {}
 VideosManager.getVideos = getVideos;
 VideosManager.getVideosInAppServer = getVideosInAppServer;
@@ -108,5 +114,7 @@ VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;
 VideosManager.addReactionToVideo = addReactionToVideo;
 VideosManager.createVideoInMedia = createVideoInMedia;
+VideosManager.getSearchRelatedVideos = getSearchRelatedVideos;
+VideosManager.getVideoByIdInAppServer = getVideoByIdInAppServer;
 
 module.exports = VideosManager;

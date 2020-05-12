@@ -1,7 +1,6 @@
 const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
-const VideoManager = require('./VideosManager')
-const NotificationManager = require("./NotificationManager")
+const NotificationManager = require("./ExternalManagers/NotificationManager")
 const FriendManager = require("./FriendsManager")
 const MessageNotification = require("../classes/Notifications/MessageNotification")
 const Joi = require('joi')
@@ -12,8 +11,7 @@ const messages = 'messages'
 //post: returns all messages in db.
 async function getAllMessages(){
     try {
-        const result = Manager.getRows(messages);
-        return result;
+        return Manager.getRows(messages);
     } catch(e){
         console.log(e);
     }
@@ -26,17 +24,13 @@ async function getMessageByItsId(id){
 //post: returns array of messages sent by user.
 async function getAllMessagesSentByUser(sender_id){
     const condition = "sender_id = " + sender_id;
-    const rows = await Manager.getAllRowsWithCondition(messages, condition);
-    return rows;
+    return await Manager.getAllRowsWithCondition(messages, condition);
 }
 
 //post: returns an array of messages sent by id1 to id2.
 async function getAllMessagesSentById1ToId2(user_id1, user_id2){
-    const condition1 = "sender_id = " + user_id1;
-    const condition2 = "receiver_id = " + user_id2;
-    const condition = condition1 + " AND " + condition2;
-    const rows = await Manager.getAllRowsWithCondition(messages, condition);
-    return rows;
+    const condition = "sender_id = " + user_id1 + " AND " + "receiver_id = " + user_id2;
+    return await Manager.getAllRowsWithCondition(messages, condition);
 }
 
 //pre: receives message's information which was previously checked.
@@ -52,16 +46,30 @@ async function insertMessage(sender_id, receiver_id, message, time) {
 
 async function deleteMessageByItsId(id) {
     console.log("Deleting video");
-    const text = 'DELETE FROM messages WHERE id = ' + id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = 'id = ' + id;
+    await Manager.deleteAllRowsWithCondition(messages, condition);
 }
 
 //pre: no pre conditions
 //post: deletes all messages by user, if none, it does nothing.
 async function deleteAllMessagesSentByUser(sender_id){
-    console.log("Deleting all messages");
-    const text = 'DELETE FROM friends WHERE sender_id = ' + sender_id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = 'sender_id = ' + sender_id;
+    return await Manager.deleteAllRowsWithCondition(messages, condition);
+}
+
+//pre: users ids have been checked
+//post: deletes all messages sent by id1 to id2
+async function deleteAllMessagesSentById1ToId2(id1, id2){
+    const condition = "sender_id = " + id1 + " AND " + "receiver_id = " + id2;
+    return await Manager.deleteAllRowsWithCondition(messages, condition);
+}
+
+//pre: users ids have been checked
+//post: deletes all messages sent by id1 to id2
+async function deleteAllMessagesBetweenUsers(id1, id2){
+    const res1 = await deleteAllMessagesSentById1ToId2(id1, id2);
+    const res2 = await deleteAllMessagesSentById1ToId2(id2, id1);
+    return {res1, res2};
 }
 
 //post: returns true if user exists.
@@ -107,7 +115,7 @@ async function postMessage(data, res){
 
     const rightSenderInfo = await validateUsersExistance(sender_id);
     const rightReceiverInfo = await validateUsersExistance(receiver_id);
-    const areFriends = await FriendManager.getRelationByIds(sender_id, receiver_id);
+    const areFriends = await FriendManager.doesRelationExistBetween(sender_id, receiver_id);
 
     if (rightSenderInfo && rightReceiverInfo && areFriends){
         const id = await insertMessage(sender_id, receiver_id, message, time);
@@ -139,5 +147,6 @@ MessageManager.deleteAllMessagesSentByUser = deleteAllMessagesSentByUser;
 MessageManager.postMessage = postMessage;
 MessageManager.validateInput = validateInput;
 MessageManager.getAllMessagesSentById1ToId2 = getAllMessagesSentById1ToId2;
+MessageManager.deleteAllMessagesBetweenUsers = deleteAllMessagesBetweenUsers;
 
 module.exports = MessageManager;

@@ -1,0 +1,51 @@
+const VideoManager = require("./VideosManager")
+const AxiosManager = require("../ExternalManagers/AxiosManager")
+
+const mediaUrl = "https://chotuve-media-server-g5-dev.herokuapp.com/videos";
+
+async function getAllUrls(){
+    const response =  await AxiosManager.getResponseByLink(mediaUrl);
+    return response.data;
+}
+
+async function getUrlById(id){
+    const str = "/" + id;
+    const link = mediaUrl + str;
+    const res = await AxiosManager.getResponseByLink(link);
+    if (res)
+        return res.data[0];
+    else
+        return null;
+}
+
+async function addUrlsToVideos(videos){
+    const listOfVideos = [];
+    for (let video of videos){
+        const url = await getUrlById(video.id);
+        if (url) {
+            video.url = url.url;
+            listOfVideos.push(video);
+        } else {
+            console.log("No se encontro un video con id: " + video);
+        }
+    }
+    return listOfVideos;
+}
+
+async function getAllVideosWithAddedUrls(videos){
+    return await addUrlsToVideos(videos);
+}
+
+async function postObjectToMedia(object){
+    return await AxiosManager.generatePost(mediaUrl, object);
+}
+
+
+const URLManager = {}
+URLManager.addUrlsToVideos = addUrlsToVideos;
+URLManager.getUrlById = getUrlById;
+URLManager.getAllUrls = getAllUrls;
+URLManager.getAllVideosWithAddedUrls = getAllVideosWithAddedUrls;
+URLManager.postObjectToMedia = postObjectToMedia;
+
+module.exports = URLManager;

@@ -2,9 +2,10 @@ const express = require('express')
 const router = express.Router();
 const UserManager = require("../databases/UsersManager")
 const FriendManager = require("../databases/FriendsManager")
-const VideosManager = require("../databases/VideosManager")
+const VideosManager = require("../databases/Videos/VideosManager")
 const TokenManager = require("../databases/TokensManager")
 const RequestManager = require("../databases/RequestManager")
+const MessageManager = require("../databases/MessagesManager")
 
 //pre:
 //post: sends all users. Sends nothing if empty.
@@ -128,6 +129,34 @@ router.post('/:receiver_id/friends', async (req, res) => {
     }
 })
 
+router.post("/:receiver_id/requests", async (req, res)=> {
+    const data = {
+        sender_id: parseInt(req.body.sender_id),
+        receiver_id: parseInt(req.params.receiver_id)
+    }
+    console.log("Post in request");
+    await RequestManager.postRequest(data, res);
+});
+
+router.delete('/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    await UserManager.deleteUserById(id);
+    res.status(200).send("User eliminated");
+})
+
+router.delete('/:id1/friends/:id2', async (req,res) => {
+    const id1 = parseInt(req.params.id1);
+    const id2 = parseInt(req.params.id2);
+    const positiveResult = await FriendManager.deleteRelationBetweenUsers(id1, id2);
+
+    if (positiveResult){
+        await MessageManager.deleteAllMessagesBetweenUsers(id1, id2);
+        res.send("Amistad eliminada");
+    } else {
+       res.status(404).send("Users not found or they weren't friends");
+    }
+})
+
 router.put('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateUserWithOptionalFields(req.body).error;
@@ -147,20 +176,5 @@ router.put('/:id', async (req, res) => {
     }
 })
 
-router.post("/:receiver_id/requests", async (req, res)=> {
-    const data = {
-        sender_id: parseInt(req.body.sender_id),
-        receiver_id: parseInt(req.params.receiver_id)
-    }
-    console.log("Post in request");
-    await RequestManager.postRequest(data, res);
-});
-
-router.delete('/:id', async (req, res) => {
-    await checkIdsExistence(req, res);
-    const id = parseInt(req.params.id);
-    await UserManager.deleteUserById(id);
-    res.status(200).send("User eliminated");
-})
 
 module.exports = router;

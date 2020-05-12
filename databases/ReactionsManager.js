@@ -1,6 +1,6 @@
 const Manager = require('./DBManager')
 const UserManager = require('./UsersManager')
-const VideoManager = require('./VideosManager')
+const VideoManager = require('./Videos/VideosManager')
 const Joi = require('joi')
 
 const reactions = 'reactions'

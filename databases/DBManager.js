@@ -2,19 +2,19 @@ const {Pool} = require('pg');
 
 const SELECT_STRING = 'select *';
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-});
+// const pool = new Pool({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: { rejectUnauthorized: false }
+// });
 
-// const config = {
-//     user: 'postgres',
-//     host: 'localhost',
-//     password: 'alvaro123',
-//     database: 'library'
-// };
-//
-// const pool = new Pool(config);
+const config = {
+    user: 'postgres',
+    host: 'localhost',
+    password: 'alvaro123',
+    database: 'library'
+};
+
+const pool = new Pool(config);
 
 //pre: table exists
 //post: returns max id from table.
@@ -91,8 +91,8 @@ async function deleteAllRowsWithCondition(table, condition){
 async function deleteRowFromTableById(id, table){
     try {
         const condition = ' id = ' + id;
-        await deleteAllRowsWithCondition(table, condition);
         console.log("Deleting row from table: " +  table);
+        return await deleteAllRowsWithCondition(table, condition);
     } catch (e) {
         console.log(e);
     }
@@ -155,5 +155,6 @@ Manager.incrementRowValueById = incrementRowValueById;
 Manager.getValueFromRow = getValueFromRow;
 Manager.getAllRowsWithCondition = getAllRowsWithCondition;
 Manager.updateRowWithNewValue = updateRowWithNewValue;
+Manager.deleteAllRowsWithCondition = deleteAllRowsWithCondition;
 
 module.exports = Manager;

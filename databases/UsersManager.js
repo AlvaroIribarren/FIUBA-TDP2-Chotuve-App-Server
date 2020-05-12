@@ -54,7 +54,13 @@ async function postUser(data, res){
 }
 
 async function deleteUserById(id) {
-    await Manager.deleteRowFromTable(id, users);
+    const user = await getUserById(id);
+    if (user){
+        return await Manager.deleteRowFromTable(id, users);
+    } else {
+        return null;
+    }
+
 }
 
 async function editUser(fieldToBeChanged, field1, fieldToCompare, condition){

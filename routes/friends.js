@@ -33,8 +33,8 @@ router.delete("/:id1/:id2", async (req,res) => {
     const id1 = parseInt(req.params.id1);
     const id2 = parseInt(req.params.id2);
 
-    await FriendsManager.deleteRelation(id1, id2);
-    await FriendsManager.deleteRelation(id2, id1);
+    await FriendsManager.deleteRelationByUsersIds(id1, id2);
+    await FriendsManager.deleteRelationByUsersIds(id2, id1);
 
     res.send("Relation deleted");
 })
