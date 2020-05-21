@@ -46,12 +46,15 @@ router.get("/:id/friends", async (req, res) => {
 })
 
 //pre: user exists.
-//post: sends all videos from user id.
+//post: sends all videos from user id. If the requester_id is equal to the user_id also the private videos are
+//returned.
 router.get("/:id/videos", async (req, res) => {
+    const requester_id = parseInt(req.header("requester_id"));
     const userId = parseInt(req.params.id);
     const userExists = await UserManager.getUserById(userId);
     if (userExists){
-        const videos = await VideosManager.getAllVideosFromUser(userId);
+        const showPrivateVideos = (requester_id === userId);
+        const videos = await VideosManager.getAllVideosFromUser(userId, showPrivateVideos);
         res.send(videos)
     } else {
         res.status(404).send("User with id: " + userId + " not found.");

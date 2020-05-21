@@ -5,7 +5,8 @@ const videos = 'videos';
 
 async function getVideos(){
     try {
-        const videos = await getVideosInAppServer();
+        let videos = await getVideosInAppServer();
+        videos = videos.filter(video => video.public === true);
         return VideoRequestManager.getAllVideosWithAddedUrls(videos);
     } catch(e){
         console.log(e);
@@ -14,8 +15,9 @@ async function getVideos(){
 
 async function getVideoById(id) {
     const url = await VideoRequestManager.getVideoById(id);
-    if (url) {
-        const videoInAppSv = await getVideoByIdInAppServer(url.id);
+    const videoInAppSv = await getVideoByIdInAppServer(url.id);
+    const videoIsPublic = videoInAppSv.public;
+    if (url && videoInAppSv && videoIsPublic) {
         videoInAppSv.url = url.url;
         return videoInAppSv;
     } else {
@@ -31,10 +33,16 @@ async function getVideosInAppServer(){
     return await Manager.getRows(videos);
 }
 
-async function getAllVideosFromUser(userid){
+async function getAllVideosFromUser(userid, showPrivateVideos){
     const condition = ' author_id = ' + userid;
     const allVideos = await Manager.getAllRowsWithCondition(videos, condition);
-    return await VideoRequestManager.addUrlsToVideos(allVideos);
+    let videosWithUrls =  await VideoRequestManager.addUrlsToVideos(allVideos);
+
+    if (!showPrivateVideos){ //muestro solo los publicos
+        videosWithUrls = videosWithUrls.filter(video => video.public === true);
+    }
+
+    return videosWithUrls;
 }
 
 async function createVideoInMedia(json){
@@ -100,13 +108,15 @@ async function deleteAllVideosFromUser(userId){
 async function getSearchRelatedVideos(videos, search){
     const listOfVideos = [];
     for (let video of videos){
-        let title = video.title.toUpperCase();
-        search = search.toUpperCase();
-        search = search.replace(/_/g, ' ');
-        const areEqual = (title === search);
-        const isASubString = title.includes(search);
-        if (areEqual || isASubString){
-            listOfVideos.push(video);
+        if (video.public){
+            let title = video.title.toUpperCase();
+            search = search.toUpperCase();
+            search = search.replace(/_/g, ' ');
+            const areEqual = (title === search);
+            const isASubString = title.includes(search);
+            if (areEqual || isASubString){
+                listOfVideos.push(video);
+            }
         }
     }
     return listOfVideos;
