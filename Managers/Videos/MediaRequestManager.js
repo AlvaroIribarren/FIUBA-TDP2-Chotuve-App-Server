@@ -13,12 +13,12 @@ async function getAllImagesFromMedia(){
     return response.data;
 }
 
-async function getUrlById(src,id){
+async function getUrlById(id){
     const str = "/" + id;
-    const link = src + str;
+    const link = VIDEOS_URL + str;
     const res = await RequestManager.getResponseByLink(link);
     if (res)
-        return res.data[0];
+        return res.data;
     else
         return null;
 }
