@@ -13,7 +13,7 @@ async function getVideos(){
 }
 
 async function getVideoById(id) {
-    const url = await VideoRequestManager.getUrlById(id);
+    const url = await VideoRequestManager.getVideoById(id);
     if (url) {
         const videoInAppSv = await getVideoByIdInAppServer(url.id);
         videoInAppSv.url = url.url;

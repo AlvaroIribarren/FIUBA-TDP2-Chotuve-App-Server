@@ -13,9 +13,9 @@ async function getAllImagesFromMedia(){
     return response.data;
 }
 
-async function getUrlById(id){
+async function getUrlById(src, id){
     const str = "/" + id;
-    const link = VIDEOS_URL + str;
+    const link = src + str;
     const res = await RequestManager.getResponseByLink(link);
     if (res)
         return res.data;
@@ -24,7 +24,8 @@ async function getUrlById(id){
 }
 
 async function getImageById(id){
-    return await getUrlById(IMAGES_URL, id);
+    const url = await getUrlById(IMAGES_URL, id);
+    return url[0];
 }
 
 async function getVideoById(id){
@@ -34,7 +35,7 @@ async function getVideoById(id){
 async function addUrlsToVideos(videos){
     const listOfVideos = [];
     for (let video of videos){
-        const url = await getUrlById(video.id);
+        const url = await getVideoById(video.id);
         if (url) {
             video.url = url.url;
             listOfVideos.push(video);
@@ -66,16 +67,15 @@ async function changeProfileImage(img_id, img_url, img_uuid){
     return await RequestManager.generatePutRequest(imageLinkWithId, data);
 }
 
+const MediaRequestManager = {}
+MediaRequestManager.addUrlsToVideos = addUrlsToVideos;
+MediaRequestManager.getImageById = getImageById;
+MediaRequestManager.getVideoById = getVideoById
+MediaRequestManager.getAllVideosFromMedia = getAllVideosFromMedia;
+MediaRequestManager.getAllImagesFromMedia = getAllImagesFromMedia;
+MediaRequestManager.getAllVideosWithAddedUrls = getAllVideosWithAddedUrls;
+MediaRequestManager.postVideoToMedia = postVideoToMedia;
+MediaRequestManager.postImageToMedia = postImageToMedia;
+MediaRequestManager.changeProfileImage = changeProfileImage;
 
-const VideoRequestManager = {}
-VideoRequestManager.addUrlsToVideos = addUrlsToVideos;
-VideoRequestManager.getImageById = getImageById;
-VideoRequestManager.getVideoById = getVideoById
-VideoRequestManager.getAllVideosFromMedia = getAllVideosFromMedia;
-VideoRequestManager.getAllImagesFromMedia = getAllImagesFromMedia;
-VideoRequestManager.getAllVideosWithAddedUrls = getAllVideosWithAddedUrls;
-VideoRequestManager.postVideoToMedia = postVideoToMedia;
-VideoRequestManager.postImageToMedia = postImageToMedia;
-VideoRequestManager.changeProfileImage = changeProfileImage;
-
-module.exports = VideoRequestManager;
+module.exports = MediaRequestManager;
