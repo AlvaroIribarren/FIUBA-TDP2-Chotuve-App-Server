@@ -1,7 +1,6 @@
 const Manager = require('../DBManager')
 const UsersRequestManager = require("./UsersRequestManager")
 const MediaRequestManager = require("../Videos/MediaRequestManager")
-const Authorizer = require("../../classes/Authorizer")
 const Joi = require('joi')
 
 const users = 'users';
@@ -35,9 +34,10 @@ async function insertUser(id, img_id) {
     await Manager.executeQueryInTable(text, values);
 }
 
+//todo: mandar firebase_token a Auth
 async function postUser(data, res){
     const name = data.name;
-    const password = data.password;
+    const password = "soy_terrible_rancio";
     const email = data.email;
     const phone = data.phone;
     const sign_in_method = data.sign_in_method;
@@ -45,16 +45,16 @@ async function postUser(data, res){
     const img_uuid = data.img_uuid;
     const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
     const img_id = resultFromMedia.id;
+    const firebase_token = data.firebase_token;
     const userToAuth = {display_name: name, password, email, phone_number: phone, sign_in_method};
     const resultFromAuth = await UsersRequestManager.postUserToAuth(userToAuth);
     const id = resultFromAuth.id;
     const refresh_token = resultFromAuth.refresh_token;
-    const token = resultFromAuth.token;
+    const sl_token = resultFromAuth.token;
     await insertUser(id, img_id);
     //testing purposes.
     if (res !== null) {
-        res.status(201).send({id, name, password, email, phone, sign_in_method, img_id, img_url, img_uuid,
-                                refresh_token, token});
+        res.status(201).send({id, refresh_token, sl_token,});
     }
     return id;
 }
@@ -101,12 +101,12 @@ async function checkCorrectIdAndName(author_id, author_name){
 function validateUser(body){
     const schema = {
         name: Joi.string().min(minNameLength).required(),
-        password: Joi.string().min(minPassLength),
         email: Joi.string().required(),
         phone: Joi.string().required(),
         sign_in_method: Joi.string().required(),
         img_url: Joi.string().required(),
-        img_uuid: Joi.string().required()
+        img_uuid: Joi.string().required(),
+        firebase_token: Joi.string().required()
     }
     return Joi.validate(body, schema);
 }
@@ -124,7 +124,8 @@ async function validateProfileModification(body){
         name: Joi.string().min(minNameLength),
         email: Joi.string(),
         phone: Joi.string(),
-        sign_in_method: Joi.string()
+        sign_in_method: Joi.string(),
+        firebase_token: Joi.string()
     }
     return Joi.validate(body, schema);
 }

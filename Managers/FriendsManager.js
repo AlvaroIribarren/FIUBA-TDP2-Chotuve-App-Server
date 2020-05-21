@@ -1,6 +1,6 @@
 const Manager = require('./DBManager')
 const UserManager = require('./Users/UsersManager')
-const RequestManager = require("./RequestManager")
+const RequestManager = require("./FriendRequestManager")
 const FriendNotification = require("../classes/Notifications/FriendNotification")
 const NotificationManager = require("./ExternalManagers/NotificationManager")
 const Joi  = require('joi')

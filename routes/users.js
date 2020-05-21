@@ -4,7 +4,7 @@ const UserManager = require("../Managers/Users/UsersManager")
 const FriendManager = require("../Managers/FriendsManager")
 const VideosManager = require("../Managers/Videos/VideosManager")
 const TokenManager = require("../Managers/TokensManager")
-const RequestManager = require("../Managers/RequestManager")
+const RequestManager = require("../Managers/FriendRequestManager")
 const MessageManager = require("../Managers/MessagesManager")
 
 //pre:
@@ -108,7 +108,7 @@ router.get("/:receiver_id/requests", async (req,res) => {
 
 
 router.post('/', async (req, res) => {
-    const error = UserManager.validateUser(req.body).error;
+    const error = await UserManager.validateUser(req.body).error;
     if (!error){
         await UserManager.postUser(req.body, res);
     } else {
