@@ -80,7 +80,8 @@ router.post("/", async (req, res) => {
             const localPublic =  req.body.public;
             const uuid = req.body.uuid;
 
-            const id = await VideosManager.createVideoInMedia({url, uuid});
+            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid});
+            const id = resultFromMedia.id;
             console.log(res);
             console.log("Id recibida de media: " + id);
 
