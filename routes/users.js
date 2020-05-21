@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
-const FriendManager = require("../databases/FriendsManager")
-const VideosManager = require("../databases/Videos/VideosManager")
-const TokenManager = require("../databases/TokensManager")
-const RequestManager = require("../databases/RequestManager")
-const MessageManager = require("../databases/MessagesManager")
+const UserManager = require("../Managers/Users/UsersManager")
+const FriendManager = require("../Managers/FriendsManager")
+const VideosManager = require("../Managers/Videos/VideosManager")
+const TokenManager = require("../Managers/TokensManager")
+const RequestManager = require("../Managers/RequestManager")
+const MessageManager = require("../Managers/MessagesManager")
 
 //pre:
 //post: sends all users. Sends nothing if empty.
@@ -157,9 +157,29 @@ router.delete('/:id1/friends/:id2', async (req,res) => {
     }
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id/image', async (req,res) => {
     const id = parseInt(req.params.id);
-    const error = await UserManager.validateUserWithOptionalFields(req.body).error;
+    const error = await UserManager.validateImageModification(req.body);
+    const user = await UserManager.getUserById(id);
+
+    if (!error && user){
+        const img_url = req.body.img_url;
+        const img_uuid = req.body.img_uuid;
+        const result = await UserManager.changeProfilePicture(id, img_url, img_uuid);
+
+        if (result){
+            res.status(200).send({id, img_url, img_uuid});
+        } else {
+            res.status(400).send("Something failed :)");
+        }
+    } else {
+        res.status(404).send(error.details[0].message);
+    }
+})
+
+router.put('/:id/profile', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const error = await UserManager.validateProfileModification(req.body).error;
     const user = await UserManager.getUserById(id);
 
     if(!error && user){
@@ -167,7 +187,8 @@ router.put('/:id', async (req, res) => {
         for (let key in data) {
             if (data.hasOwnProperty(key)) {
                 console.log(key + " -> " + data[key]);
-                await UserManager.editUser(key, data[key], 'id', id);
+                const value = data[key];
+                await UserManager.editUser(id, key, value);
             }
         }
         res.send("Se deberia haber hecho bien");

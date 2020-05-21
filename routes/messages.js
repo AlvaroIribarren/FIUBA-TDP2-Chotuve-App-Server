@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
-const MessageManager = require("../databases/MessagesManager")
+const UserManager = require("../Managers/Users/UsersManager")
+const MessageManager = require("../Managers/MessagesManager")
 
 router.get("/", async (req, res) =>{
     try {

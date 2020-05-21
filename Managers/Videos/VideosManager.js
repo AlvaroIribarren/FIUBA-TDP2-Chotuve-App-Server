@@ -1,27 +1,19 @@
 const Manager = require('../DBManager')
-const AxiosManager = require("../ExternalManagers/AxiosManager")
-const URLManager = require("./URLSManager")
+const VideoRequestManager = require("./MediaRequestManager")
 
 const videos = 'videos';
-
-
-/*recibo
-videoid : int
-userid : int
-authorname : string
-* */
 
 async function getVideos(){
     try {
         const videos = await getVideosInAppServer();
-        return URLManager.getAllVideosWithAddedUrls(videos);
+        return VideoRequestManager.getAllVideosWithAddedUrls(videos);
     } catch(e){
         console.log(e);
     }
 }
 
 async function getVideoById(id) {
-    const url = await URLManager.getUrlById(id);
+    const url = await VideoRequestManager.getUrlById(id);
     if (url) {
         const videoInAppSv = await getVideoByIdInAppServer(url.id);
         videoInAppSv.url = url.url;
@@ -42,11 +34,11 @@ async function getVideosInAppServer(){
 async function getAllVideosFromUser(userid){
     const condition = ' author_id = ' + userid;
     const allVideos = await Manager.getAllRowsWithCondition(videos, condition);
-    return await URLManager.addUrlsToVideos(allVideos);
+    return await VideoRequestManager.addUrlsToVideos(allVideos);
 }
 
 async function createVideoInMedia(json){
-    return await URLManager.postVideoToMedia(json);
+    return await VideoRequestManager.postVideoToMedia(json);
 }
 
 async function addReactionToVideo(id, positive_reaction){

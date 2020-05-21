@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const ReactionManager = require("../databases/ReactionsManager")
+const ReactionManager = require("../Managers/ReactionsManager")
 
 router.get("/", async (req, res) => {
     const relations = await ReactionManager.getAllReactions();

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const CommentManager = require("../databases/CommentsManager")
+const CommentManager = require("../Managers/CommentsManager")
 
 router.get("/", async (req, res) => {
     const relations = await CommentManager.getAllComments();

@@ -1,5 +1,5 @@
 const assert = require('chai').assert;
-const Manager = require('../../databases/DBManager');
+const Manager = require('../../Managers/DBManager');
 
 describe('DBManager', () => {
     it('Value should be turned into 1', () =>{

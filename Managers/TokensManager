@@ -1,5 +1,5 @@
 const Manager = require('./DBManager')
-const UserManager = require("./UsersManager")
+const UserManager = require("./Users/UsersManager")
 const Joi = require('joi')
 
 const tokens = 'tokens'

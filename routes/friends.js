@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
-const FriendsManager = require("../databases/FriendsManager")
+const UserManager = require("../Managers/Users/UsersManager")
+const FriendsManager = require("../Managers/FriendsManager")
 const Joi = require("joi")
 
 router.get("/", async (req, res) => {

@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
-const VideosManager = require("../databases/Videos/VideosManager")
-const CommentManager = require("../databases/CommentsManager")
-const ReactionManager = require("../databases/ReactionsManager")
-const MediaManager = require("../databases/ExternalManagers/AxiosManager")
+const UserManager = require("../Managers/Users/UsersManager")
+const VideosManager = require("../Managers/Videos/VideosManager")
+const CommentManager = require("../Managers/CommentsManager")
+const ReactionManager = require("../Managers/ReactionsManager")
+const MediaManager = require("../Managers/ExternalManagers/RequestsManager")
 
 const Joi = require("joi")
 

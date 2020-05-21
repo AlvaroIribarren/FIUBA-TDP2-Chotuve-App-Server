@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const UserManager = require("../databases/UsersManager")
+const UserManager = require("../Managers/Users/UsersManager")
 const Joi = require("joi")
 
 const minNameLength = 5;

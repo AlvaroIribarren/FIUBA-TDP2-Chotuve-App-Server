@@ -1,7 +1,7 @@
 const assert = require('chai').assert;
 
-const Manager = require("../.././databases/DBManager")
-const MessageManager = require("../.././databases/MessagesManager")
+const Manager = require("../../Managers/DBManager")
+const MessageManager = require("../../Managers/MessagesManager")
 
 let messageId;
 let messageFromDB;

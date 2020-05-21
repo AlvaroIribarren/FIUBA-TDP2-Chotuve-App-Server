@@ -1,5 +1,5 @@
 const Manager = require('./DBManager')
-const UserManager = require('./UsersManager')
+const UserManager = require('./Users/UsersManager')
 const NotificationManager = require("./ExternalManagers/NotificationManager")
 const RequestNotification = require(".././classes/Notifications/RequestNotification")
 

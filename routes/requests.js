@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const RequestManager = require("../databases/RequestManager")
+const RequestManager = require("../Managers/RequestManager")
 
 const Joi = require("joi")
 

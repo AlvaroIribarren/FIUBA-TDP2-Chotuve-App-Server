@@ -2,13 +2,7 @@ create database library;
 
 create table users(
     id serial PRIMARY KEY,
-    name text UNIQUE NOT NULL,
-    password text NOT NULL,
-    email text UNIQUE NOT NULL,
-    phone text UNIQUE NOT NULL,
-    img_id serial UNIQUE NOT NULL,
-    img_url text NOT NULL,
-    img_uuid text NOT NULL
+    img_id serial UNIQUE NOT NULL
 );
 
 create table videos(
@@ -91,11 +85,12 @@ Comments
 USER
 {
 	"name" : "Alvaro Iribarren",
-	"password" : "asdasda",
+	"password" : "asdasd",
 	"email": "asd@asd.com",
-	"phone": "asd",
-	"img_url": "hddttps://firebasestorage.googleapis.com/v0/b/chotuve-467b2.appspot.com/o/images%2Ffranki.jpg?alt=media&token=1aa11c1f-e684-4b5e-8bd5-52f305c989de",
-	"img_uuid" : "asdddadds"
+	"phone": "dasd",
+	"sign_in_method": "google",
+	"img_url": "hddsdttps://firdsdsebasestorage.googleapis.com/v0/b/chotuve-467b2.appspot.com/o/images%2Ffranki.jpg?alt=media&token=1aa11c1f-e684-4b5e-8bd5-52f305c989de",
+	"img_uuid" : "asddasdsdadsdds"
 }
 
 VIDEO

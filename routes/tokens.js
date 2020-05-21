@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const TokenManager = require("../databases/TokensManager")
+const TokenManager = require("../Managers/TokensManager")
 
 router.get("/", async (req, res) => {
     const relations = await TokenManager.getAllTokens();

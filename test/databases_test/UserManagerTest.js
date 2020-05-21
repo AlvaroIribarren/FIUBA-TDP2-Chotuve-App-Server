@@ -1,7 +1,7 @@
 const assert = require('chai').assert;
 
-const Manager = require("../.././databases/DBManager")
-const UserManager = require("../.././databases/UsersManager")
+const Manager = require("../../Managers/DBManager")
+const UserManager = require("../../Managers/Users/UsersManager")
 
 let userId = 0;
 let userFromDB;

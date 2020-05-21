@@ -1,5 +1,4 @@
-const NotificationManager = require("../../databases/ExternalManagers/NotificationManager")
-const TokenManager = require("../../databases/TokensManager")
+const TokenManager = require("../../Managers/TokensManager")
 const Joi = require("joi")
 
 class Notification {

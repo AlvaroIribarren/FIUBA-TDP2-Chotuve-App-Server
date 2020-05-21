@@ -1,5 +1,5 @@
 const Manager = require('../DBManager')
-const AxiosManager = require("./AxiosManager")
+const AxiosManager = require("./RequestsManager")
 const axios = require("axios")
 
 const communicator = 'communicator';
