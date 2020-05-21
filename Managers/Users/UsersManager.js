@@ -54,6 +54,7 @@ async function postUser(data, res){
     await insertUser(id, img_id);
     //testing purposes.
     if (res !== null) {
+        console.log({refresh_token, sl_token});
         res.status(201).send({id, refresh_token, sl_token,});
     }
     return id;
