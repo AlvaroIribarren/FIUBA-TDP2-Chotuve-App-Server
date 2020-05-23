@@ -16,8 +16,7 @@ async function getVideos(){
 async function getVideoById(id) {
     const url = await VideoRequestManager.getVideoById(id);
     const videoInAppSv = await getVideoByIdInAppServer(url.id);
-    const videoIsPublic = videoInAppSv.public;
-    if (url && videoInAppSv && videoIsPublic) {
+    if (url && videoInAppSv) {
         videoInAppSv.url = url.url;
         return videoInAppSv;
     } else {
