@@ -7,7 +7,7 @@ async function getTokensFromCreatedUser(firebase_token){
     const result = await RequestManager.generatePost(LOGIN_LINK, data);
     console.log("Got message from post to login");
     console.log(result);
-    const id = result.id;
+    const id = 18;
     const sl_token = result.token;
     const refresh_token = result.refresh_token;
     return {id, sl_token, refresh_token};
