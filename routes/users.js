@@ -25,7 +25,7 @@ router.get("/", auth, async (req, res) =>{
 
 //pre:
 //post: sends the user if he exists. Sends an error if he doesn't
-router.get("/:id", auth, async (req, res) =>{
+router.get("/:id", auth ,async (req, res) =>{
     const id = parseInt(req.params.id);
     const user = await UserManager.getUserById(id);
     if(user)

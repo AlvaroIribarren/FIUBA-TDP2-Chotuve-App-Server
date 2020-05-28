@@ -22,7 +22,8 @@ async function getUsers(){
 
 async function getUserById(id){
     const userFromAppSv = await Manager.getIdFromTable(id, users);
-    const image = await MediaRequestManager.getImageById(userFromAppSv.img_id);
+    const id_from_media = userFromAppSv.img_id;
+    const image = await MediaRequestManager.getImageById(id_from_media);
     return await UsersRequestManager.addDataToUser(userFromAppSv, image);
 }
 

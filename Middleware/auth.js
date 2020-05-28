@@ -24,8 +24,10 @@ module.exports = async (req, res, next) => {
             const authorized = await authorize(sl_token);
             console.log("Imprimo sl_token de validacion:" + sl_token);
             if (!authorized) {
+                console.log("NO AUTORIZADO");
                 res.status(401).send("Invalid request.");
             } else {
+                console.log("AUTORIZADO");
                 next();
             }
         } else if (refresh_token) {

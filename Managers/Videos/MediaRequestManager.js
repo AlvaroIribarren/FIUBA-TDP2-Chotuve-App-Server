@@ -25,7 +25,7 @@ async function getUrlById(src, id){
 
 async function getImageById(id){
     const url = await getUrlById(IMAGES_URL, id);
-    return url[0];
+    return url;
 }
 
 async function getVideoById(id){
