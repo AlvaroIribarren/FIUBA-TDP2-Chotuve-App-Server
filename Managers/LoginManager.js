@@ -21,7 +21,7 @@ async function getNewSLToken(refresh_token){
         }
     }
     const result = await RequestManager.getResponseByLinkWithHeader(LOGIN_LINK, header);
-    const sl_token = await result.token;
+    const sl_token = await result.data.token;
     return sl_token;
 }
 
