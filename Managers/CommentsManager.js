@@ -3,98 +3,89 @@ const UserManager = require('./Users/UsersManager')
 const VideoManager = require('./Videos/VideosManager')
 const Joi = require('joi')
 
-const comments = 'comments'
+const comments = 'comments';
 
-async function getAllComments(){
-    try {
-        const result = Manager.getRows(comments);
-        return result;
-    } catch(e){
-        console.log(e);
+class CommentsManager {
+    async getAllComments() {
+        try {
+            const result = Manager.getRows(comments);
+            return result;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async getCommentByItsId(id) {
+        return await Manager.getIdFromTable(id, comments);
+    }
+
+    async getAllCommentsFromVideo(video_id) {
+        const text = 'SELECT * FROM comments WHERE video_id = ' + video_id;
+        const res = await Manager.executeQueryInTableWithoutValues(text);
+        console.log(res.rows);
+        return res.rows;
+    }
+
+    async insertComment(author_id, author_name, video_id, comment) {
+        const id = await Manager.generateNewIdInTable(comments);
+        const text = 'INSERT INTO comments(id, author_id, author_name, video_id, comment) ' +
+            'VALUES($1, $2, $3, $4, $5)';
+        const values = [id, author_id, author_name, video_id, comment];
+        await Manager.executeQueryInTable(text, values);
+        return id;
+    }
+
+    async deleteCommentById(id) {
+        console.log("Deleting video");
+        const condition = ' id = ' + id;
+        return await Manager.executeQueryInTableWithoutValues(condition);
+    }
+
+    async deleteAllCommentsFromVideo(video_id) {
+        console.log("Deleting all comments");
+        const condition = ' video_id = ' + video_id;
+        await Manager.deleteAllRowsWithCondition(comments, condition);
+    }
+
+    async deleteAllCommentsFromUsers(user_id) {
+        const condition = ' author_id = ' + user_id;
+        return await Manager.deleteAllRowsWithCondition(comments, condition);
+    }
+
+    async validateUserInfo(author_id, author_name) {
+        return await UserManager.checkCorrectIdAndName(author_id, author_name);
+    }
+
+    async validateVideoInfo(video_id) {
+        return await VideoManager.getVideoById(video_id);
+    }
+
+    async postComment(data, res) {
+        const author_id = data.author_id;
+        const author_name = data.author_name;
+        const video_id = data.video_id;
+        const comment = data.comment;
+        const rightUserInfo = await this.validateUserInfo(author_id, author_name);
+        const rightVideoInfo = await this.validateVideoInfo(video_id);
+
+        if (rightUserInfo && rightVideoInfo) {
+            const id = await this.insertComment(author_id, author_name, video_id, comment);
+            res.send({id, author_id, author_name, video_id, comment});
+        } else {
+            res.status(404).send("User or videos information is incorrect or doesn't exist.");
+        }
+    }
+
+    async validateInput(body) {
+        const schema = {
+            author_id: Joi.number().positive().required(),
+            author_name: Joi.string().required(),
+            video_id: Joi.number().positive().required(),
+            comment: Joi.string().required(),
+        }
+        return Joi.validate(body, schema);
     }
 }
 
-async function getCommentByItsId(id){
-    return await Manager.getIdFromTable(id, comments);
-}
-
-async function getAllCommentsFromVideo(video_id){
-    const text = 'SELECT * FROM comments WHERE video_id = ' + video_id;
-    const res = await Manager.executeQueryInTableWithoutValues(text);
-    console.log(res.rows);
-    return res.rows;
-}
-
-async function insertComment(author_id, author_name, video_id, comment) {
-    const id = await Manager.generateNewIdInTable(comments);
-    const text = 'INSERT INTO comments(id, author_id, author_name, video_id, comment) ' +
-        'VALUES($1, $2, $3, $4, $5)';
-    const values = [id, author_id, author_name, video_id, comment];
-    await Manager.executeQueryInTable(text, values);
-    return id;
-}
-
-async function deleteCommentById(id) {
-    console.log("Deleting video");
-    const condition = ' id = ' + id;
-    return await Manager.executeQueryInTableWithoutValues(condition);
-}
-
-async function deleteAllCommentsFromVideo(video_id){
-    console.log("Deleting all comments");
-    const condition = ' video_id = ' + video_id;
-    await Manager.deleteAllRowsWithCondition(comments, condition);
-}
-
-async function deleteAllCommentsFromUsers(user_id){
-    const condition = ' author_id = ' + user_id;
-    return await Manager.deleteAllRowsWithCondition(comments, condition);
-}
-
-async function validateUserInfo(author_id, author_name){
-    return await UserManager.checkCorrectIdAndName(author_id, author_name);
-}
-
-async function validateVideoInfo(video_id){
-    return await VideoManager.getVideoById(video_id);
-}
-
-async function postComment(data, res){
-    const author_id = data.author_id;
-    const author_name = data.author_name;
-    const video_id = data.video_id;
-    const comment = data.comment;
-    const rightUserInfo = await validateUserInfo(author_id, author_name);
-    const rightVideoInfo = await validateVideoInfo(video_id);
-
-    if (rightUserInfo && rightVideoInfo){
-        const id = await CommentManager.insertComment(author_id, author_name, video_id, comment);
-        res.send({id, author_id, author_name, video_id, comment});
-    } else {
-        res.status(404).send("User or videos information is incorrect or doesn't exist.");
-    }
-}
-
-async function validateInput(body){
-    const schema = {
-        author_id: Joi.number().positive().required(),
-        author_name: Joi.string().required(),
-        video_id: Joi.number().positive().required(),
-        comment: Joi.string().required(),
-    }
-    return Joi.validate(body, schema);
-}
-
-
-CommentManager = {};
-CommentManager.getAllComments = getAllComments;
-CommentManager.getCommentByItsId = getCommentByItsId;
-CommentManager.getAllCommentsFromVideo = getAllCommentsFromVideo;
-CommentManager.insertComment = insertComment;
-CommentManager.deleteCommentById = deleteCommentById;
-CommentManager.deleteAllCommentsFromVideo = deleteAllCommentsFromVideo;
-CommentManager.deleteAllCommentsFromUsers = deleteAllCommentsFromUsers;
-CommentManager.postComment = postComment;
-CommentManager.validateInput = validateInput;
-
-module.exports = CommentManager;
+const commentManager = new CommentsManager();
+module.exports = commentManager;

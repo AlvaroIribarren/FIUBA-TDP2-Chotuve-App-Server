@@ -4,8 +4,8 @@ const CommentManager = require("../Managers/CommentsManager")
 const auth = require("../Middleware/auth")
 
 router.get("/", auth, async (req, res) => {
-    const relations = await CommentManager.getAllComments();
-    res.send(relations);
+    const comments = await CommentManager.getAllComments();
+    res.send(comments);
 })
 
 router.get("/:id", auth, async (req, res) => {
@@ -14,7 +14,7 @@ router.get("/:id", auth, async (req, res) => {
     res.send(relation);
 })
 
-router.post("/", auth, async (req, res) => {
+router.post("/", async (req, res) => {
     const error = await CommentManager.validateInput(req.body).error;
     if (!error) {
         const author_id = req.body.author_id;

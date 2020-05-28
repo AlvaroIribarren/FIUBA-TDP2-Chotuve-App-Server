@@ -1,9 +1,6 @@
 const Manager = require('../DBManager')
 const UsersRequestManager = require("./UsersRequestManager")
 const MediaRequestManager = require("../Videos/MediaRequestManager")
-const VideosManager = require("../Videos/VideosManager")
-const CommentManager = require("../CommentsManager")
-const ReactionManager = require("../ReactionsManager")
 const Joi = require('joi')
 
 const users = 'users';
