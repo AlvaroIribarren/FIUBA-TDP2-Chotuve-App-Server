@@ -1,5 +1,7 @@
 const Manager = require('../DBManager')
 const VideoRequestManager = require("./MediaRequestManager")
+const CommentManager = require("../CommentsManager")
+const ReactionManager = require("../ReactionsManager")
 
 const videos = 'videos';
 
@@ -40,7 +42,6 @@ async function getAllVideosFromUser(userid, showPrivateVideos){
     if (!showPrivateVideos){ //muestro solo los publicos
         videosWithUrls = videosWithUrls.filter(video => video.public === true);
     }
-
     return videosWithUrls;
 }
 
@@ -92,14 +93,21 @@ async function insertVideo(id, author_id, author_name, title, description, locat
 
 async function deleteVideoByVideosId(id) {
     console.log("Deleting video");
-    const text = 'DELETE FROM videos WHERE id = ' + id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = ' id = ' + id;
+    await Manager.executeQueryInTableWithoutValues(condition);
+
+    await CommentManager.deleteAllCommentsFromVideo(id);
+    await ReactionManager.deleteAllReactionsFromVideo(id);
 }
 
 async function deleteAllVideosFromUser(userId){
-    console.log("Deleting all videos");
-    const text = 'DELETE FROM friends WHERE authorid = ' + userId;
-    await Manager.executeQueryInTableWithoutValues(text);
+    console.log("Deleting all videos from user");
+    const videos = await getAllVideosFromUser(userId, true);
+
+    for (let video of videos){
+        await VideoRequestManager.deleteVideoById(video.id);
+        await deleteVideoByVideosId(video.id);
+    }
 }
 
 //post: returns related videos by user's search. The video is related if
@@ -125,6 +133,7 @@ const VideosManager = {}
 VideosManager.getVideos = getVideos;
 VideosManager.getVideoById = getVideoById;
 VideosManager.getAllVideosFromUser = getAllVideosFromUser;
+VideosManager.getVideosInAppServer = getVideosInAppServer;
 VideosManager.insertVideo = insertVideo;
 VideosManager.deleteVideoByVideosId = deleteVideoByVideosId;
 VideosManager.deleteAllVideosFromUser = deleteAllVideosFromUser;

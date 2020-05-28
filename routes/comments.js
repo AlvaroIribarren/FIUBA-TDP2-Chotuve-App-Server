@@ -1,19 +1,20 @@
 const express = require('express')
 const router = express.Router();
 const CommentManager = require("../Managers/CommentsManager")
+const auth = require("../Middleware/auth")
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
     const relations = await CommentManager.getAllComments();
     res.send(relations);
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
     const id = parseInt(req.params.id);
     const relation = await CommentManager.getCommentByItsId(id);
     res.send(relation);
 })
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     const error = await CommentManager.validateInput(req.body).error;
     if (!error) {
         const author_id = req.body.author_id;

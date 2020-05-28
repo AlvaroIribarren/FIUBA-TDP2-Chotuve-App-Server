@@ -57,6 +57,16 @@ async function deleteAllMessagesSentByUser(sender_id){
     return await Manager.deleteAllRowsWithCondition(messages, condition);
 }
 
+async function deleteAllMessagesReceivedByUser(receiver_id){
+    const condition = ' receiver_id = ' + receiver_id;
+    return await Manager.deleteAllRowsWithCondition(messages, condition);
+}
+
+async function deleteAllMessagesWithUserInvolved(user_id){
+    await deleteAllMessagesSentByUser(user_id);
+    await deleteAllMessagesReceivedByUser(user_id);
+}
+
 //pre: users ids have been checked
 //post: deletes all messages sent by id1 to id2
 async function deleteAllMessagesSentById1ToId2(id1, id2){
@@ -148,5 +158,6 @@ MessageManager.postMessage = postMessage;
 MessageManager.validateInput = validateInput;
 MessageManager.getAllMessagesSentById1ToId2 = getAllMessagesSentById1ToId2;
 MessageManager.deleteAllMessagesBetweenUsers = deleteAllMessagesBetweenUsers;
+MessageManager.deleteAllMessagesWithUserInvolved = deleteAllMessagesWithUserInvolved;
 
 module.exports = MessageManager;

@@ -42,11 +42,14 @@ async function deleteCommentById(id) {
 
 async function deleteAllCommentsFromVideo(video_id){
     console.log("Deleting all comments");
-    const text = 'DELETE FROM friends WHERE video_id = ' + video_id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = ' video_id = ' + video_id;
+    await Manager.deleteAllRowsWithCondition(comments, condition);
 }
 
-
+async function deleteAllCommentsFromUsers(user_id){
+    const condition = ' author_id = ' + user_id;
+    return await Manager.deleteAllRowsWithCondition(comments, condition);
+}
 
 async function validateUserInfo(author_id, author_name){
     return await UserManager.checkCorrectIdAndName(author_id, author_name);
@@ -90,6 +93,7 @@ CommentManager.getAllCommentsFromVideo = getAllCommentsFromVideo;
 CommentManager.insertComment = insertComment;
 CommentManager.deleteCommentById = deleteCommentById;
 CommentManager.deleteAllCommentsFromVideo = deleteAllCommentsFromVideo;
+CommentManager.deleteAllCommentsFromUsers = deleteAllCommentsFromUsers;
 CommentManager.postComment = postComment;
 CommentManager.validateInput = validateInput;
 

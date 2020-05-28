@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router();
-const UserManager = require("../Managers/Users/UsersManager")
 const MessageManager = require("../Managers/MessagesManager")
+const auth = require("../Middleware/auth")
 
-router.get("/", async (req, res) =>{
+router.get("/", auth, async (req, res) =>{
     try {
         const users = await MessageManager.getAllMessages();
         console.log(users);
@@ -14,7 +14,7 @@ router.get("/", async (req, res) =>{
     }
 })
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     try{
         await MessageManager.postMessage(req.body, res);
     } catch (err) {

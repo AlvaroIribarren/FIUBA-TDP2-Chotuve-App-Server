@@ -4,12 +4,15 @@ const UserManager = require("../Managers/Users/UsersManager")
 const FriendManager = require("../Managers/FriendsManager")
 const VideosManager = require("../Managers/Videos/VideosManager")
 const TokenManager = require("../Managers/TokensManager")
-const RequestManager = require("../Managers/FriendRequestManager")
+const FriendRequestManager = require("../Managers/FriendRequestManager")
 const MessageManager = require("../Managers/MessagesManager")
+const CommentManager = require("../Managers/CommentsManager")
+const ReactionManager = require("../Managers/ReactionsManager")
+const auth = require("../Middleware/auth")
 
 //pre:
 //post: sends all users. Sends nothing if empty.
-router.get("/", async (req, res) =>{
+router.get("/", auth, async (req, res) =>{
     try {
         const users = await UserManager.getUsers();
         console.log(users);
@@ -22,7 +25,7 @@ router.get("/", async (req, res) =>{
 
 //pre:
 //post: sends the user if he exists. Sends an error if he doesn't
-router.get("/:id", async (req, res) =>{
+router.get("/:id", auth, async (req, res) =>{
     const id = parseInt(req.params.id);
     const user = await UserManager.getUserById(id);
     if(user)
@@ -34,7 +37,7 @@ router.get("/:id", async (req, res) =>{
 
 //pre: user exists
 //post: sends all friend from user id.
-router.get("/:id/friends", async (req, res) => {
+router.get("/:id/friends", auth, async (req, res) => {
     const userId = parseInt(req.params.id);
     const userExists = await UserManager.getUserById(userId);
     if (userExists){
@@ -48,7 +51,7 @@ router.get("/:id/friends", async (req, res) => {
 //pre: user exists.
 //post: sends all videos from user id. If the requester_id is equal to the user_id also the private videos are
 //returned.
-router.get("/:id/videos", async (req, res) => {
+router.get("/:id/videos", auth, async (req, res) => {
     const requester_id = parseInt(req.header("requester_id"));
     const userId = parseInt(req.params.id);
     const userExists = await UserManager.getUserById(userId);
@@ -63,7 +66,7 @@ router.get("/:id/videos", async (req, res) => {
 
 //pre: user exists.
 //post: sends token from user.
-router.get("/:id/token", async (req, res) => {
+router.get("/:id/token", auth, async (req, res) => {
     const userId = parseInt(req.params.id);
     const userExists = await UserManager.getUserById(userId);
     if (userExists){
@@ -76,7 +79,7 @@ router.get("/:id/token", async (req, res) => {
 
 //pre: id1 and id2 users exist.
 //post: sends all messages sent by id1 to id2.
-router.get("/:id1/messages/:id2", async (req,res) => {
+router.get("/:id1/messages/:id2", auth, async (req,res) => {
     const id1 = parseInt(req.params.id1);
     const id2 = parseInt(req.params.id2);
 
@@ -94,9 +97,9 @@ router.get("/:id1/messages/:id2", async (req,res) => {
     }
 })
 
-router.get("/:receiver_id/requests", async (req,res) => {
+router.get("/:receiver_id/requests", auth, async (req,res) => {
     const receiver_id = parseInt(req.params.receiver_id);
-    const requests = await RequestManager.getAllRequestsReceivedByUserId(receiver_id);
+    const requests = await FriendRequestManager.getAllRequestsReceivedByUserId(receiver_id);
     const listToReturn = [];
     for (let request of requests){
         const user = await UserManager.getUserById(request.sender_id);
@@ -110,7 +113,7 @@ router.get("/:receiver_id/requests", async (req,res) => {
 });
 
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const error = await UserManager.validateUser(req.body).error;
     if (!error){
         await UserManager.postUser(req.body, res);
@@ -119,7 +122,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.post('/:receiver_id/friends', async (req, res) => {
+router.post('/:receiver_id/friends', auth, async (req, res) => {
     const data = {
         id1: parseInt(req.params.receiver_id),  //id1: received/accepted request
         id2: parseInt(req.body.sender_id)       //id2: sent request
@@ -132,22 +135,29 @@ router.post('/:receiver_id/friends', async (req, res) => {
     }
 })
 
-router.post("/:receiver_id/requests", async (req, res)=> {
+router.post("/:receiver_id/requests", auth, async (req, res)=> {
     const data = {
         sender_id: parseInt(req.body.sender_id),
         receiver_id: parseInt(req.params.receiver_id)
     }
     console.log("Post in request");
-    await RequestManager.postRequest(data, res);
+    await FriendRequestManager.postRequest(data, res);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     const id = parseInt(req.params.id);
     await UserManager.deleteUserById(id);
+    await VideosManager.deleteAllVideosFromUser(id);
+    await CommentManager.deleteAllCommentsFromUsers(id);
+    await ReactionManager.deleteAllReactionsFromUser(id);
+    await MessageManager.deleteAllMessagesWithUserInvolved(id);
+    await FriendManager.deleteAllRelationsFromUser(id);
+    await FriendRequestManager.deleteAllRequestsWhereUserIsInvolved(id);
+
     res.status(200).send("User eliminated");
 })
 
-router.delete('/:id1/friends/:id2', async (req,res) => {
+router.delete('/:id1/friends/:id2', auth, async (req,res) => {
     const id1 = parseInt(req.params.id1);
     const id2 = parseInt(req.params.id2);
     const positiveResult = await FriendManager.deleteRelationBetweenUsers(id1, id2);
@@ -160,7 +170,7 @@ router.delete('/:id1/friends/:id2', async (req,res) => {
     }
 })
 
-router.put('/:id/image', async (req,res) => {
+router.put('/:id/image', auth, async (req,res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateImageModification(req.body);
     const user = await UserManager.getUserById(id);
@@ -180,7 +190,7 @@ router.put('/:id/image', async (req,res) => {
     }
 })
 
-router.put('/:id/profile', async (req, res) => {
+router.put('/:id/profile', auth, async (req, res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateProfileModification(req.body).error;
     const user = await UserManager.getUserById(id);

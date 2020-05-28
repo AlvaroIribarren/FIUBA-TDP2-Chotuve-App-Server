@@ -1,5 +1,4 @@
 const RequestManager = require("../ExternalManagers/RequestsManager")
-const Authorizer = require("../../classes/Authorizer")
 const USERS_URL = "https://chotuve-auth-server-g5-dev.herokuapp.com/users"
 
 async function getAllUsersFromAuthServer(){

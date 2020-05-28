@@ -67,6 +67,18 @@ async function changeProfileImage(img_id, img_url, img_uuid){
     return await RequestManager.generatePutRequest(imageLinkWithId, data);
 }
 
+async function deleteById(src, id){
+    return await RequestManager.deleteById(src, id);
+}
+
+async function deleteVideoById(id){
+    return await deleteById(VIDEOS_URL, id);
+}
+
+async function deleteImageById(id){
+    return await deleteById(IMAGES_URL, id);
+}
+
 const MediaRequestManager = {}
 MediaRequestManager.addUrlsToVideos = addUrlsToVideos;
 MediaRequestManager.getImageById = getImageById;
@@ -77,5 +89,7 @@ MediaRequestManager.getAllVideosWithAddedUrls = getAllVideosWithAddedUrls;
 MediaRequestManager.postVideoToMedia = postVideoToMedia;
 MediaRequestManager.postImageToMedia = postImageToMedia;
 MediaRequestManager.changeProfileImage = changeProfileImage;
+MediaRequestManager.deleteVideoById = deleteVideoById;
+MediaRequestManager.deleteImageById = deleteImageById;
 
 module.exports = MediaRequestManager;

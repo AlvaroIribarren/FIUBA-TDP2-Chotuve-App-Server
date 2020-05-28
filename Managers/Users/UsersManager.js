@@ -1,6 +1,9 @@
 const Manager = require('../DBManager')
 const UsersRequestManager = require("./UsersRequestManager")
 const MediaRequestManager = require("../Videos/MediaRequestManager")
+const VideosManager = require("../Videos/VideosManager")
+const CommentManager = require("../CommentsManager")
+const ReactionManager = require("../ReactionsManager")
 const Joi = require('joi')
 
 const users = 'users';
@@ -103,10 +106,10 @@ function validateUser(body){
     const schema = {
         name: Joi.string().min(minNameLength).required(),
         email: Joi.string().required(),
-        phone: Joi.string().required(),
+        phone: Joi.string(),
         sign_in_method: Joi.string().required(),
-        img_url: Joi.string().required(),
-        img_uuid: Joi.string().required(),
+        img_url: Joi.string(),
+        img_uuid: Joi.string(),
         firebase_token: Joi.string().required()
     }
     return Joi.validate(body, schema);

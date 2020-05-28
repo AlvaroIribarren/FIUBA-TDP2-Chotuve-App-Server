@@ -36,13 +36,18 @@ async function insertReaction(author_id, author_name, video_id, positive_reactio
 
 async function deleteReactionById(id) {
     console.log("Deleting video");
-    const text = 'DELETE FROM reactions WHERE id = ' + id;
-    await Manager.executeQueryInTableWithoutValues(text);
+    await Manager.deleteRowFromTable(id, reactions);
 }
 
 async function deleteAllReactionsFromVideo(video_id){
     console.log("Deleting all reactions");
     const condition = ' video_id = ' + video_id;
+    return await Manager.deleteAllRowsWithCondition(reactions, condition);
+}
+
+async function deleteAllReactionsFromUser(user_id){
+    console.log("Deleting all reactions from user");
+    const condition = ' author_id = ' + user_id;
     return await Manager.deleteAllRowsWithCondition(reactions, condition);
 }
 
@@ -116,6 +121,7 @@ ReactionsManager.getReactionById = getReactionById;
 ReactionsManager.getAllReactionsFromVideo = getAllReactionsFromVideo;
 ReactionsManager.insertReaction = insertReaction;
 ReactionsManager.deleteReactionById = deleteReactionById;
+ReactionsManager.deleteAllReactionsFromUser = deleteAllReactionsFromUser;
 ReactionsManager.deleteAllReactionsFromVideo = deleteAllReactionsFromVideo;
 ReactionsManager.getReactionFromUserInVideo = getReactionFromUserInVideo;
 ReactionsManager.postReaction = postReaction;

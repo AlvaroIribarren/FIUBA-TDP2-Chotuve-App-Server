@@ -82,6 +82,11 @@ async function deleteRelationBetweenUsers(id1, id2){
     }
 }
 
+async function deleteAllRelationsFromUser(user_id){
+    const condition = ' id1 = ' + user_id + ' OR id2 = ' + user_id;
+    return await Manager.deleteAllRowsWithCondition(friends, condition);
+}
+
 //valid: User1 and 2 exist, they aren't friends and there is a request from one to another.
 //post: returns true if the relation is valid.
 async function checkNewValidRelation(id1, id2){
@@ -145,6 +150,7 @@ FriendsManager.getRelations = getRelations;
 FriendsManager.getRelationById = getRelationById;
 FriendsManager.insertRelation = insertRelation;
 FriendsManager.deleteRelationBetweenUsers = deleteRelationBetweenUsers;
+FriendsManager.deleteAllRelationsFromUser = deleteAllRelationsFromUser;
 FriendsManager.getAllFriendsFromUser = getAllFriendsFromUser;
 FriendsManager.postRelation = postRelation;
 FriendsManager.validateInput = validateInput;

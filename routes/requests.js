@@ -1,15 +1,16 @@
 const express = require('express')
 const router = express.Router();
 const RequestManager = require("../Managers/FriendRequestManager")
+const auth = require("../Middleware/auth")
 
 const Joi = require("joi")
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
     const requests = await RequestManager.getRequests();
     res.send(requests);
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
     const id = parseInt(req.params.id);
     const relation = await RequestManager.getRequestById(id);
     res.send(relation);
@@ -17,7 +18,7 @@ router.get("/:id", async (req, res) => {
 
 
 //todo: refactor
-router.get("/:senderid/:receiverid", async (req, res) => {
+router.get("/:senderid/:receiverid", auth, async (req, res) => {
     console.log("You asked for a certain request between users")
     const request = await RequestManager.getRequestByUsersIds(req.params.senderid, req.params.receiverid);
     res.send(request);
@@ -33,7 +34,7 @@ async function validateInput(body){
     return Joi.validate(body, schema);
 }
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     const error = await validateInput(req.body).error;
     if (!error){
         await RequestManager.postRequest(req.body, res);
@@ -41,7 +42,7 @@ router.post("/", async (req, res) => {
 })
 
 //refactor
-router.delete("/:senderid/:receiverid", async (req,res) => {
+router.delete("/:senderid/:receiverid", auth, async (req,res) => {
     const sender_id = parseInt(req.params.id1);
     const receiver_id = parseInt(req.params.id2);
 

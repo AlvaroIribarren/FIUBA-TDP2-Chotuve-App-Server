@@ -4,7 +4,7 @@ const UserManager = require("../Managers/Users/UsersManager")
 const VideosManager = require("../Managers/Videos/VideosManager")
 const CommentManager = require("../Managers/CommentsManager")
 const ReactionManager = require("../Managers/ReactionsManager")
-const MediaManager = require("../Managers/ExternalManagers/RequestsManager")
+const auth = require("../Middleware/auth")
 
 const Joi = require("joi")
 
@@ -12,7 +12,7 @@ async function noSearchQuery(search){
     return search === undefined || search === null || search === "" || search === " ";
 }
 
-router.get("/", async(req, res) => {
+router.get("/", auth, async(req, res) => {
     let search = req.query.search_query;
     const videos = await VideosManager.getVideos();
     if (await noSearchQuery(search)){
@@ -23,24 +23,24 @@ router.get("/", async(req, res) => {
     }
 })
 
-router.get("/appServer", async (req,res)=>{
+router.get("/appServer", auth, async (req,res)=>{
     const videosInAppSv = await VideosManager.getVideosInAppServer();
     res.send(videosInAppSv);
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
     const id = parseInt(req.params.id);
     const video = await VideosManager.getVideoById(id);
     res.send(video);
 })
 
-router.get("/:video_id/comments", async (req, res) => {
+router.get("/:video_id/comments", auth, async (req, res) => {
     const video_id = parseInt(req.params.video_id);
     const comments = await CommentManager.getAllCommentsFromVideo(video_id);
     res.send(comments);
 })
 
-router.get("/:video_id/reactions", async(req, res) => {
+router.get("/:video_id/reactions", auth, async(req, res) => {
     const video_id = parseInt(req.params.video_id);
     const reactions = await ReactionManager.getAllReactionsFromVideo(video_id);
     res.send(reactions);
@@ -64,7 +64,7 @@ async function validateUserInfo(author_id, author_name){
     return await UserManager.checkCorrectIdAndName(author_id, author_name);
 }
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
     const error = await validateInput(req.body).error;
     if (!error){
         const author_id = parseInt(req.body.author_id);
@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.post("/:video_id/reactions", async (req, res) => {
+router.post("/:video_id/reactions", auth, async (req, res) => {
     const error = await ReactionManager.validateInput(req.body).error;
 
     if (!error) {
@@ -111,7 +111,7 @@ router.post("/:video_id/reactions", async (req, res) => {
     }
 })
 
-router.post("/:video_id/comments", async (req, res) => {
+router.post("/:video_id/comments", auth, async (req, res) => {
     const error = await CommentManager.validateInput(req.body).error;
     if (!error) {
         const author_id = req.body.author_id;
@@ -125,7 +125,7 @@ router.post("/:video_id/comments", async (req, res) => {
     }
 })
 
-router.delete("/video_id", async (req,res) => {
+router.delete("/:video_id", auth, async (req,res) => {
     const video_id = parseInt(req.params.video_id);
     const videoExists = await VideosManager.getVideoById(video_id);
     if (videoExists){
@@ -137,7 +137,7 @@ router.delete("/video_id", async (req,res) => {
 })
 
 
-router.delete("/:video_id/comments/:comment_id", async (req, res) =>{
+router.delete("/:video_id/comments/:comment_id", auth, async (req, res) =>{
     const video_id = parseInt(req.params.video_id);
     const videoExist = await VideosManager.getVideoById(video_id);
     const comment_id = parseInt(req.params.comment_id);

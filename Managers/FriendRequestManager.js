@@ -55,8 +55,13 @@ async function insertRequest(sender_id, receiver_id) {
 
 async function deleteRequestFromSenderToReceiver(id1, id2) {
     console.log("Deleting friendship (so sad :( )");
-    const text = 'DELETE FROM requests WHERE sender_id = ' + id1 + ' AND receiver_id = ' + id2;
-    await Manager.executeQueryInTableWithoutValues(text);
+    const condition = ' sender_id = ' + id1 + ' AND receiver_id = ' + id2;
+    await Manager.deleteAllRowsWithCondition(requests, condition);
+}
+
+async function deleteAllRequestsWhereUserIsInvolved(user_id){
+    const condition = ' sender_id = ' + user_id + ' OR receiver_id = ' + user_id;
+    return await Manager.deleteAllRowsWithCondition(requests, condition);
 }
 
 async function getRequestByUsersIds(sender_id, receiver_id){
@@ -124,5 +129,6 @@ RequestManager.postRequest = postRequest;
 RequestManager.getRequestSentBySenderToReceiver = getRequestSentBySenderToReceiver;
 RequestManager.isThereAtLeastARequestBetweenUsers = isThereAtLeastARequestBetweenUsers;
 RequestManager.deleteRequestsBetweenUsers = deleteRequestsBetweenUsers;
+RequestManager.deleteAllRequestsWhereUserIsInvolved = deleteAllRequestsWhereUserIsInvolved;
 
 module.exports = RequestManager;

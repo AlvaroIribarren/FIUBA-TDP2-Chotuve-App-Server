@@ -27,7 +27,7 @@ async function getResponseByLinkWithHeader(link, header){
     try {
         response = await axios.get(link, header);
     } catch (error) {
-        console.error(error);
+        response = error.response;
     }
     return response;
 }
