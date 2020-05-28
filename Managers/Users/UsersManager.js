@@ -40,7 +40,6 @@ async function insertUser(id, img_id) {
 //todo: mandar firebase_token a Auth
 async function postUser(data, res){
     const name = data.name;
-    const password = "soy_terrible_rancio";
     const email = data.email;
     const phone = data.phone;
     const sign_in_method = data.sign_in_method;
@@ -49,7 +48,7 @@ async function postUser(data, res){
     const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
     const img_id = resultFromMedia.id;
     const firebase_token = data.firebase_token;
-    const userToAuth = {display_name: name, password, email, phone_number: phone, sign_in_method};
+    const userToAuth = {display_name: name, email, phone_number: phone, sign_in_method, firebase_token};
     const resultFromAuth = await UsersRequestManager.postUserToAuth(userToAuth);
     const id = resultFromAuth.id;
     const refresh_token = resultFromAuth.refresh_token;

@@ -113,7 +113,7 @@ router.get("/:receiver_id/requests", auth, async (req,res) => {
 });
 
 
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     const error = await UserManager.validateUser(req.body).error;
     if (!error){
         await UserManager.postUser(req.body, res);
