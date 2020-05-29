@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const UserManager = require("../Managers/Users/UsersManager")
 const VideosManager = require("../Managers/Videos/VideosManager")
-const CommentManager = require("../Managers/CommentsManager")
-const ReactionManager = require("../Managers/ReactionsManager")
+const CommentManager = require("../Managers/Exportables/CommentManagerBuilder")
+const ReactionManager = require("../Managers/Exportables/ReactionManagerBuilder")
 const auth = require("../Middleware/auth")
 
 const Joi = require("joi")
@@ -53,7 +53,7 @@ async function validateInput(body){
         title: Joi.string().required(),
         description: Joi.string(),
         location: Joi.string(),
-        public: Joi.required(),
+        public_video: Joi.required(),
         url: Joi.string().required(),
         uuid: Joi.required()
     }
@@ -77,17 +77,15 @@ router.post("/", auth, async (req, res) => {
             const location = req.body.location;
             const url = req.body.url;
             //Cambio nombre para no tener problemas con la palabra reservada public.
-            const localPublic =  req.body.public;
+            const public_video =  req.body.public_video;
             const uuid = req.body.uuid;
 
             const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid});
             const id = resultFromMedia.id;
-            console.log(res);
-            console.log("Id recibida de media: " + id);
 
-            await VideosManager.insertVideo(id, author_id, author_name, title, description, location, localPublic, uuid);
+            await VideosManager.insertVideo(id, author_id, author_name, title, description, location, public_video);
 
-            res.send({id, author_id, author_name, title, description, public: localPublic, url, location, uuid});
+            res.send({id, author_id, author_name, title, description, public_video, url, location, uuid});
         } else {
             res.status(404).send("Author's id or name was not found");
         }
@@ -150,8 +148,6 @@ router.delete("/:video_id/comments/:comment_id", auth, async (req, res) =>{
         res.status(404).send("Video or comment not found");
     }
 })
-
-
 
 
 module.exports = router;

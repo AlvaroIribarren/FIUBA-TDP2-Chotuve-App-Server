@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const ReactionManager = require("../Managers/ReactionsManager")
+const ReactionManager = require("../Managers/Exportables/ReactionManagerBuilder")
 const auth = require("../Middleware/auth")
 
 router.get("/", auth, async (req, res) => {

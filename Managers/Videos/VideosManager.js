@@ -1,5 +1,5 @@
 const Manager = require('../DBManager')
-const VideoRequestManager = require("./MediaRequestManager")
+const VideoRequestManager = require("../Videos/MediaRequestManager")
 const CommentManager = require("../CommentsManager")
 const ReactionManager = require("../ReactionsManager")
 
@@ -82,13 +82,13 @@ class VideosManager {
         await Manager.updateRowWithNewValue(id, videos, 'dislikes', 'dislikes - 1');
     }
 
-    async insertVideo(id, author_id, author_name, title, description, location, public_video, uuid) {
+    async insertVideo(id, author_id, author_name, title, description, location, public_video) {
         const likes = 0;
         const dislikes = 0;
-        const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public_video, likes, dislikes, uuid) ' +
-            'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+        const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public_video, likes, dislikes) ' +
+            'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
         const values = [id, author_id, author_name, title, description, location,
-            public_video, likes, dislikes, uuid];
+            public_video, likes, dislikes];
 
         await Manager.executeQueryInTable(text, values);
     }

@@ -12,10 +12,9 @@ create table videos(
     title text NOT NULL,
     description text NOT NULL,
     location text NOT NULL,
-    public boolean NOT NULL,
+    public_video boolean NOT NULL,
     likes serial,
-    dislikes serial,
-    uuid text UNIQUE NOT NULL
+    dislikes serial
 );
 
 create table urls(

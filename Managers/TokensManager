@@ -4,96 +4,90 @@ const Joi = require('joi')
 
 const tokens = 'tokens'
 
-async function getAllTokens(){
-    try {
-        const result = Manager.getRows(tokens);
-        return result;
-    } catch(e){
-        console.log(e);
-    }
-}
 
-async function getTokenById(id){
-    return await Manager.getIdFromTable(id, tokens);
-}
-
-async function getTokenByUserId(user_id){
-    return await Manager.getValueFromRow(user_id, "user_id", tokens);
-}
-
-async function insertToken(user_id, token) {
-    const id = await Manager.generateNewIdInTable(tokens);
-    const text = 'INSERT INTO tokens(id, user_id, token) VALUES($1, $2, $3)';
-    const values = [id, user_id, token];
-    await Manager.executeQueryInTable(text, values);
-    return id;
-}
-
-async function deleteTokenById(id) {
-    console.log("Deleting token");
-    const text = 'DELETE FROM tokens WHERE id = ' + id;
-    await Manager.executeQueryInTableWithoutValues(text);
-}
-
-async function checkIfUserAlreadyHasToken(user_id) {
-    const str1 = 'SELECT * FROM ' + tokens + ' WHERE';
-    const str2 = ' user_id =' + user_id;
-    const text = str1 + str2;
-    const equalReaction = await Manager.executeQueryInTableWithoutValues(text);
-    return equalReaction.rows.length > 0;
-}
-
-async function validateUsersExistance(user_id){
-    return await UserManager.getUserById(user_id);
-}
-
-async function updateToken(user_id, token){
-    token = "'" + token + "'";
-    const id = getTokenByUserId(user_id).id;
-    const operation = "UPDATE tokens SET ";
-    const update = "token = " + token;
-    const condition = " WHERE user_id = " + user_id;
-    const text = operation + update + condition;
-    console.log("Text: " + text);
-    await Manager.executeQueryInTableWithoutValues(text);
-    return id;
-}
-
-async function postToken(data, res){
-    const user_id = data.user_id;
-    const token = data.token;
-
-    const rightUserInfo = await validateUsersExistance(user_id);
-    if (rightUserInfo){
-        const hasToken = await checkIfUserAlreadyHasToken(user_id);
-        if (!hasToken){
-            const id = await insertToken(user_id, token);
-            res.send({id, user_id, token});
-        } else {
-            const id = await updateToken(user_id, token);
-            res.send({id, user_id, token});
+class TokenManager {
+    async getAllTokens() {
+        try {
+            const result = Manager.getRows(tokens);
+            return result;
+        } catch (e) {
+            console.log(e);
         }
+    }
 
-    } else {
-        res.status(404).send("User was not found");
+    async getTokenById(id) {
+        return await Manager.getIdFromTable(id, tokens);
+    }
+
+    async getTokenByUserId(user_id) {
+        return await Manager.getValueFromRow(user_id, "user_id", tokens);
+    }
+
+    async insertToken(user_id, token) {
+        const id = await Manager.generateNewIdInTable(tokens);
+        const text = 'INSERT INTO tokens(id, user_id, token) VALUES($1, $2, $3)';
+        const values = [id, user_id, token];
+        await Manager.executeQueryInTable(text, values);
+        return id;
+    }
+
+    async deleteTokenById(id) {
+        console.log("Deleting token");
+        const text = 'DELETE FROM tokens WHERE id = ' + id;
+        await Manager.executeQueryInTableWithoutValues(text);
+    }
+
+    async checkIfUserAlreadyHasToken(user_id) {
+        const str1 = 'SELECT * FROM ' + tokens + ' WHERE';
+        const str2 = ' user_id =' + user_id;
+        const text = str1 + str2;
+        const equalReaction = await Manager.executeQueryInTableWithoutValues(text);
+        return equalReaction.rows.length > 0;
+    }
+
+    async validateUsersExistance(user_id) {
+        return await UserManager.getUserById(user_id);
+    }
+
+    async updateToken(user_id, token) {
+        token = "'" + token + "'";
+        const id = this.getTokenByUserId(user_id).id;
+        const operation = "UPDATE tokens SET ";
+        const update = "token = " + token;
+        const condition = " WHERE user_id = " + user_id;
+        const text = operation + update + condition;
+        console.log("Text: " + text);
+        await Manager.executeQueryInTableWithoutValues(text);
+        return id;
+    }
+
+    async postToken(data, res) {
+        const user_id = data.user_id;
+        const token = data.token;
+
+        const rightUserInfo = await this.validateUsersExistance(user_id);
+        if (rightUserInfo) {
+            const hasToken = await this.checkIfUserAlreadyHasToken(user_id);
+            if (!hasToken) {
+                const id = await this.insertToken(user_id, token);
+                res.send({id, user_id, token});
+            } else {
+                const id = await this.updateToken(user_id, token);
+                res.send({id, user_id, token});
+            }
+
+        } else {
+            res.status(404).send("User was not found");
+        }
+    }
+
+    async validateInput(body) {
+        const schema = {
+            user_id: Joi.number().positive().required(),
+            token: Joi.string().required(),
+        }
+        return Joi.validate(body, schema);
     }
 }
 
-async function validateInput(body){
-    const schema = {
-        user_id: Joi.number().positive().required(),
-        token: Joi.string().required(),
-    }
-    return Joi.validate(body, schema);
-}
-
-const TokensManager = {}
-TokensManager.getAllTokens = getAllTokens;
-TokensManager.getTokenById = getTokenById;
-TokensManager.insertToken = insertToken;
-TokensManager.checkIfUserAlreadyHasToken = checkIfUserAlreadyHasToken;
-TokensManager.postToken = postToken;
-TokensManager.validateInput = validateInput;
-TokensManager.getTokenByUserId = getTokenByUserId;
-
-module.exports = TokensManager;
+module.exports = new TokenManager();

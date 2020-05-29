@@ -1,6 +1,6 @@
 const Manager = require('./DBManager')
 const UserManager = require('./Users/UsersManager')
-const VideoManager = require('./Videos/VideosManager')
+
 const Joi = require('joi')
 
 const comments = 'comments';
@@ -8,8 +8,7 @@ const comments = 'comments';
 class CommentsManager {
     async getAllComments() {
         try {
-            const result = Manager.getRows(comments);
-            return result;
+            return Manager.getRows(comments);
         } catch (e) {
             console.log(e);
         }
@@ -56,9 +55,6 @@ class CommentsManager {
         return await UserManager.checkCorrectIdAndName(author_id, author_name);
     }
 
-    async validateVideoInfo(video_id) {
-        return await VideoManager.getVideoById(video_id);
-    }
 
     async postComment(data, res) {
         const author_id = data.author_id;
@@ -66,9 +62,9 @@ class CommentsManager {
         const video_id = data.video_id;
         const comment = data.comment;
         const rightUserInfo = await this.validateUserInfo(author_id, author_name);
-        const rightVideoInfo = await this.validateVideoInfo(video_id);
 
-        if (rightUserInfo && rightVideoInfo) {
+
+        if (rightUserInfo) {
             const id = await this.insertComment(author_id, author_name, video_id, comment);
             res.send({id, author_id, author_name, video_id, comment});
         } else {

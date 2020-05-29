@@ -35,7 +35,7 @@ module.exports = async (req, res, next) => {
                 console.log("asked for Refresh token")
                 console.log(refresh_token);
                 const sl_token = await LoginManager.getNewSLToken(refresh_token);
-                console.log("NEW SL_TOKEN" + sl_token);
+                console.log("NEW SL_TOKEN: " + sl_token);
                 res.header({sl_token});
                 res.send();
             } catch {

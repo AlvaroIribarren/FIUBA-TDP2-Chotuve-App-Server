@@ -13,6 +13,12 @@ const tokensRoute = require("./routes/tokens")
 const loginRoute = require("./routes/login")
 const unknownRoute = require("./routes/unknown")
 
+const madge = require('madge');
+
+madge('./index.js').then((res) => {
+    console.log(res.circular());
+});
+
 const bodyParser = require("body-parser")
 const server = express();
 
