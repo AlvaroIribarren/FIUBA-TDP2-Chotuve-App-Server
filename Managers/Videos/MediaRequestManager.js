@@ -26,8 +26,7 @@ class MediaRequestManager {
     }
 
     async getImageById(id) {
-        const url = await this.getUrlById(IMAGES_URL, id);
-        return url;
+        return await this.getUrlById(IMAGES_URL, id);
     }
 
     async getVideoById(id) {

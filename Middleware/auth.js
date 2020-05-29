@@ -37,7 +37,8 @@ module.exports = async (req, res, next) => {
                 console.log(refresh_token);
                 const Sl_Token = await LoginManager.getNewSLToken(refresh_token);
                 console.log("NEW SL_TOKEN: " + sl_token);
-                res.header({"Sl-Token" : Sl_Token});
+                res.locals.sl_token = Sl_Token;
+                //res.header({"Sl-Token" : Sl_Token});
                 next();
             } catch {
                 res.status(401).send("Invalid request in relogin, probably refresh token missing");

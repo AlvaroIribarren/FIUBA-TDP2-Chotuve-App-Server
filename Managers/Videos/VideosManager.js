@@ -9,7 +9,7 @@ class VideosManager {
     async getVideos() {
         try {
             let videos = await this.getVideosInAppServer();
-            videos = videos.filter(video => video.public === true);
+            videos = videos.filter(video => video.public_video === true);
             return VideoRequestManager.getAllVideosWithAddedUrls(videos);
         } catch (e) {
             console.log(e);
@@ -41,7 +41,7 @@ class VideosManager {
         let videosWithUrls = await VideoRequestManager.addUrlsToVideos(allVideos);
 
         if (!showPrivateVideos) { //muestro solo los publicos
-            videosWithUrls = videosWithUrls.filter(video => video.public === true);
+            videosWithUrls = videosWithUrls.filter(video => video.public_video === true);
         }
         return videosWithUrls;
     }
@@ -117,7 +117,7 @@ class VideosManager {
     async getSearchRelatedVideos(videos, search) {
         const listOfVideos = [];
         for (let video of videos) {
-            if (video.public) {
+            if (video.public_video) {
                 let title = video.title.toUpperCase();
                 search = search.toUpperCase();
                 search = search.replace(/_/g, ' ');
