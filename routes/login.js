@@ -7,7 +7,8 @@ router.post("/", async (req, res) => {
     try {
         const email = req.body.email;
         const user = await UserManager.getUserByEmail(email);
-        if (user){
+        if (!user){
+            console.log("Creando nuevo user desde login");
             await UserManager.postUser(req.body, res);
         } else {
             const firebase_token = req.body.firebase_token;
