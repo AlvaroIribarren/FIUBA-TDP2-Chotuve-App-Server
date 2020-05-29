@@ -28,4 +28,5 @@ class LoginManager {
     }
 }
 
-module.exports = LoginManager;
+const loginManager = new LoginManager();
+module.exports = loginManager;
