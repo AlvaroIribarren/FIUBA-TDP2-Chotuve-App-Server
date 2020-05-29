@@ -90,4 +90,5 @@ class TokenManager {
     }
 }
 
-module.exports = new TokenManager();
+const tokenManager = new TokenManager();
+module.exports = tokenManager;

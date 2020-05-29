@@ -64,8 +64,8 @@ class MessagesManager {
     }
 
     async deleteAllMessagesWithUserInvolved(user_id) {
-        await deleteAllMessagesSentByUser(user_id);
-        await deleteAllMessagesReceivedByUser(user_id);
+        await this.deleteAllMessagesSentByUser(user_id);
+        await this.deleteAllMessagesReceivedByUser(user_id);
     }
 
 //pre: users ids have been checked
@@ -78,8 +78,8 @@ class MessagesManager {
 //pre: users ids have been checked
 //post: deletes all messages sent by id1 to id2
     async deleteAllMessagesBetweenUsers(id1, id2) {
-        const res1 = await deleteAllMessagesSentById1ToId2(id1, id2);
-        const res2 = await deleteAllMessagesSentById1ToId2(id2, id1);
+        const res1 = await this.deleteAllMessagesSentById1ToId2(id1, id2);
+        const res2 = await this.deleteAllMessagesSentById1ToId2(id2, id1);
         return {res1, res2};
     }
 
@@ -121,15 +121,15 @@ class MessagesManager {
         const sender_id = data.sender_id;
         const receiver_id = data.receiver_id;
         const message = data.message;
-        const time = await getActualTime();
+        const time = await this.getActualTime();
 
-        const rightSenderInfo = await validateUsersExistance(sender_id);
-        const rightReceiverInfo = await validateUsersExistance(receiver_id);
+        const rightSenderInfo = await this.validateUsersExistance(sender_id);
+        const rightReceiverInfo = await this.validateUsersExistance(receiver_id);
         const areFriends = await FriendManager.doesRelationExistBetween(sender_id, receiver_id);
 
         if (rightSenderInfo && rightReceiverInfo && areFriends) {
-            const id = await insertMessage(sender_id, receiver_id, message, time);
-            const state = await sendMessageNotification(sender_id, receiver_id, message, time);
+            const id = await this.insertMessage(sender_id, receiver_id, message, time);
+            const state = await this.sendMessageNotification(sender_id, receiver_id, message, time);
             res.send({id, sender_id, receiver_id, message, time, state});
         } else {
             res.status(404).send("One of the users doesn't exist.");
@@ -147,4 +147,5 @@ class MessagesManager {
     }
 }
 
-module.exports = MessagesManager;
+const messagesManager = new MessagesManager();
+module.exports = messagesManager;

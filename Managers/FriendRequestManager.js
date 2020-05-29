@@ -119,4 +119,5 @@ class FriendRequestManager {
     }
 }
 
-module.exports = FriendRequestManager;
+const friendRequestManager = new FriendRequestManager();
+module.exports = friendRequestManager;
