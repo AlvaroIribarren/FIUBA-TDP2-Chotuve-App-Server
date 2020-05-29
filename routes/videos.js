@@ -15,11 +15,14 @@ async function noSearchQuery(search){
 router.get("/", auth, async(req, res) => {
     console.log("Entrando a videos");
     console.log("Desde videos: " + res.locals.sl_token);
-    const sl_token = res.locals.sl_token;
-    res.header({"Mierda": "asd"});
-    res.header({"Sl-Token": sl_token});
+
+    if (res.locals.sl_token) {
+        const sl_token = res.locals.sl_token;
+        res.header({"Sl-Token": sl_token});
+    }
     let search = req.query.search_query;
     const videos = await VideosManager.getVideos();
+    console.log("Videos:" + videos);
     if (await noSearchQuery(search)){
         res.send(videos);
     } else {
