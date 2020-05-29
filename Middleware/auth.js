@@ -20,7 +20,8 @@ module.exports = async (req, res, next) => {
         const sl_token = req.headers.sl_token;
         const refresh_token = req.headers.refresh_token;
 
-        if (sl_token) {
+
+        if (sl_token && !refresh_token) {
             const authorized = await authorize(sl_token);
             console.log("Imprimo sl_token de validacion:" + sl_token);
             if (!authorized) {
@@ -30,7 +31,7 @@ module.exports = async (req, res, next) => {
                 console.log("AUTORIZADO");
                 next();
             }
-        } else if (refresh_token) {
+        } else if (sl_token && refresh_token) {
             try {
                 console.log("asked for Refresh token")
                 console.log(refresh_token);
@@ -41,6 +42,8 @@ module.exports = async (req, res, next) => {
             } catch {
                 res.status(401).send("Invalid request in relogin, probably refresh token missing");
             }
+        } else {
+            res.status(5000).send("Unknown error");
         }
     } catch {
         res.status(401).json({
