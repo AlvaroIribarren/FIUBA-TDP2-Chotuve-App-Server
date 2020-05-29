@@ -17,8 +17,8 @@ async function authorize(sl_token){
 
 module.exports = async (req, res, next) => {
     try {
-        const sl_token = req.headers.Sl-Token;
-        const refresh_token = req.headers.Refresh-Token;
+        const sl_token = req.headers["sl-token"];
+        const refresh_token = req.headers["refresh-token"];
 
 
         if (sl_token && !refresh_token) {
