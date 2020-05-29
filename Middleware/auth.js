@@ -17,8 +17,8 @@ async function authorize(sl_token){
 
 module.exports = async (req, res, next) => {
     try {
-        const sl_token = req.headers.sl_token;
-        const refresh_token = req.headers.refresh_token;
+        const sl_token = req.headers.Sl-Token;
+        const refresh_token = req.headers.Refresh-Token;
 
 
         if (sl_token && !refresh_token) {
@@ -35,9 +35,9 @@ module.exports = async (req, res, next) => {
             try {
                 console.log("asked for Refresh token")
                 console.log(refresh_token);
-                const sl_token = await LoginManager.getNewSLToken(refresh_token);
+                const Sl_Token = await LoginManager.getNewSLToken(refresh_token);
                 console.log("NEW SL_TOKEN: " + sl_token);
-                res.header({sl_token: sl_token});
+                res.header({"Sl-Token" : Sl_Token});
                 next();
             } catch {
                 res.status(401).send("Invalid request in relogin, probably refresh token missing");
