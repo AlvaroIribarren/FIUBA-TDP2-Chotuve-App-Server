@@ -37,14 +37,17 @@ class UsersManager {
 
 //todo: mandar firebase_token a Auth
     async postUser(data, res) {
+        let img_id = 0;
         const name = data.name;
         const email = data.email;
         const phone = data.phone;
         const sign_in_method = data.sign_in_method;
         const img_url = data.img_url;
         const img_uuid = data.img_uuid;
-        const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
-        const img_id = resultFromMedia.id;
+        if (img_url && img_uuid) {
+            const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
+            img_id = resultFromMedia.id;
+        }
         const firebase_token = data.firebase_token;
         const userToAuth = {display_name: name, email, phone_number: phone, sign_in_method, firebase_token};
         const resultFromAuth = await UsersRequestManager.postUserToAuth(userToAuth);

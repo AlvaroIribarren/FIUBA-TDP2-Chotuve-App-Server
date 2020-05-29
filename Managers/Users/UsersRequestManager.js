@@ -23,12 +23,10 @@ class UsersRequestManager {
         return array.find(element => element.id === id);
     }
 
-    async getElementByEmailFromArray(array, email) {
-        return array.find(element => element.email === email);
-    }
 
     async getUserByEmail(email) {
-        const result = await RequestManager.getResponseWithBody(USERS_URL, {data: {user_email: email}});
+        const URL = USERS_URL + "/" + email;
+        const result = await RequestManager.getResponseByLink(URL);
 
         if (result) {
             return result;
