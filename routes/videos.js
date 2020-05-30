@@ -132,13 +132,22 @@ router.post("/:video_id/comments", auth, async (req, res) => {
 })
 
 router.delete("/:video_id", auth, async (req,res) => {
+    const requester_id = parseInt(req.headers["requester-id"]);
     const video_id = parseInt(req.params.video_id);
     const videoExists = await VideosManager.getVideoById(video_id);
-    if (videoExists){
+    const author_id = videoExists.author_id;
+    const userAllowedToDelete = requester_id === author_id;
+    if (videoExists && userAllowedToDelete){
         const result = await VideosManager.deleteVideoByVideosId(video_id);
         res.send(result);
     } else {
-        res.status(404).send("Video not found");
+        if (!videoExists)
+            res.status(404).send("Video not found or user is ");
+        else if (!userAllowedToDelete) {
+            res.status(401).send("User not allowed to delete video");
+        } else {
+            res.status(404).send("User not allowed to delete and video was not found");
+        }
     }
 })
 
