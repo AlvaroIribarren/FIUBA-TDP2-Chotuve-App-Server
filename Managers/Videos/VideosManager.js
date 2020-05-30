@@ -100,6 +100,7 @@ class VideosManager {
     async deleteVideoByVideosId(id) {
         console.log("Deleting video");
         await Manager.deleteRowFromTableById(id, videos);
+        await VideoRequestManager.deleteVideoById(id);
 
         await CommentManager.deleteAllCommentsFromVideo(id);
         await ReactionManager.deleteAllReactionsFromVideo(id);
