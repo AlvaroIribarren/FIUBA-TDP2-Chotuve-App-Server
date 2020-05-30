@@ -12,7 +12,8 @@ router.post("/", async (req, res) => {
             await UserManager.postUser(req.body, res);
         } else {
             const firebase_token = req.body.firebase_token;
-            const data = await LoginManager.getTokensFromCreatedUser(firebase_token);
+            const email = req.body.email;
+            const data = await LoginManager.getTokensFromCreatedUser(firebase_token, email);
             res.send(data);
         }
     } catch {

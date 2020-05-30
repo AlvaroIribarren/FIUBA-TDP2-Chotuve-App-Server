@@ -1,15 +1,16 @@
 const RequestManager = require("./ExternalManagers/RequestsManager")
-
+const UserRequestManager = require("./Users/UsersRequestManager");
 const LOGIN_LINK = "https://chotuve-auth-server-g5-dev.herokuapp.com/login";
 
 class LoginManager {
 
-    async getTokensFromCreatedUser(firebase_token) {
+    async getTokensFromCreatedUser(firebase_token, email) {
         const data = {firebase_token};
         const result = await RequestManager.generatePost(LOGIN_LINK, data);
         console.log("Got message from post to login");
         console.log(result);
-        const id = 23;
+        const user = await UserRequestManager.getUserByEmail(email);
+        const id = user.id;
         const sl_token = result.token;
         const refresh_token = result.refresh_token;
         return {id, sl_token, refresh_token};

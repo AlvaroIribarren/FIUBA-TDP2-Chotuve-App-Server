@@ -110,3 +110,8 @@ Messages
 	"receiver_id" : 1,
 	"message": "TEMasdUCO",
 }
+
+
+TEXT {
+    insert into text values (1, '');
+}
