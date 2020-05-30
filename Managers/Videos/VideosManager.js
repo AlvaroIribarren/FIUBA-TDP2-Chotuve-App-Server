@@ -16,6 +16,10 @@ class VideosManager {
         }
     }
 
+    async getVideoWithNoUrlById(id){
+        return await this.getVideoByIdInAppServer(id);
+    }
+
     async getVideoById(id) {
         const url = await VideoRequestManager.getVideoById(id);
         const videoInAppSv = await this.getVideoByIdInAppServer(url.id);
@@ -95,8 +99,7 @@ class VideosManager {
 
     async deleteVideoByVideosId(id) {
         console.log("Deleting video");
-        const condition = ' id = ' + id;
-        await Manager.executeQueryInTableWithoutValues(condition);
+        await Manager.deleteRowFromTableById(id, videos);
 
         await CommentManager.deleteAllCommentsFromVideo(id);
         await ReactionManager.deleteAllReactionsFromVideo(id);
@@ -129,6 +132,10 @@ class VideosManager {
             }
         }
         return listOfVideos;
+    }
+
+    async modifiyVideo(video_id, key, newValue){
+        await Manager.updateRowWithNewValue(video_id, videos, key, newValue);
     }
 }
 

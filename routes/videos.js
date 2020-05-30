@@ -54,7 +54,7 @@ router.get("/:video_id/reactions", auth, async(req, res) => {
     res.send(reactions);
 })
 
-async function validateInput(body){
+async function validateInputForPost(body){
     const schema = {
         author_id: Joi.number().positive().required(),
         author_name: Joi.string().required(),
@@ -68,12 +68,26 @@ async function validateInput(body){
     return Joi.validate(body, schema);
 }
 
+async function validateModifyVideo(body){
+    const schema = {
+        author_id: Joi.number().positive().required(),
+        author_name: Joi.string().required(),
+        title: Joi.string().required(),
+        description: Joi.string().required(),
+        location: Joi.string().required(),
+        public_video: Joi.required()
+    }
+    return Joi.validate(body, schema);
+}
+
+
+
 async function validateUserInfo(author_id, author_name){
     return await UserManager.checkCorrectIdAndName(author_id, author_name);
 }
 
-router.post("/", auth, async (req, res) => {
-    const error = await validateInput(req.body).error;
+router.post("/", async (req, res) => {
+    const error = await validateInputForPost(req.body).error;
     if (!error){
         const author_id = parseInt(req.body.author_id);
         const author_name = req.body.author_name;
@@ -131,7 +145,29 @@ router.post("/:video_id/comments", auth, async (req, res) => {
     }
 })
 
-router.delete("/:video_id", auth, async (req,res) => {
+router.put("/:video_id", async (req,res) => {
+    const error = await validateModifyVideo(req.body).error;
+    if (!error) {
+        const video_id = parseInt(req.params.video_id);
+        const videoToModify = await VideosManager.getVideoWithNoUrlById(video_id);
+        const modifiedVideo = await req.body;
+        const requester_id = parseInt(req.headers["requester-id"]);
+        const isAllowedToModify = (requester_id === videoToModify.author_id);
+
+        if (videoToModify && isAllowedToModify) {
+            for (let key in modifiedVideo) {
+                if (modifiedVideo.hasOwnProperty(key)) {
+                    if (modifiedVideo[key] !== videoToModify[key]) {
+                        const newValue = modifiedVideo[key];
+                        await VideosManager.modifiyVideo(video_id, key, newValue);
+                    }
+                }
+            }
+        }
+    }
+})
+
+router.delete("/:video_id", async (req,res) => {
     const requester_id = parseInt(req.headers["requester-id"]);
     const video_id = parseInt(req.params.video_id);
     const videoExists = await VideosManager.getVideoById(video_id);

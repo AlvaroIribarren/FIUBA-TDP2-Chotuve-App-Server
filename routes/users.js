@@ -145,28 +145,41 @@ router.post("/:receiver_id/requests", auth, async (req, res)=> {
 });
 
 router.delete('/:id', auth, async (req, res) => {
+    const requester_id = parseInt(req.headers["requester-id"]);
     const id = parseInt(req.params.id);
-    await UserManager.deleteUserById(id);
-    await VideosManager.deleteAllVideosFromUser(id);
-    await CommentManager.deleteAllCommentsFromUsers(id);
-    await ReactionManager.deleteAllReactionsFromUser(id);
-    await MessageManager.deleteAllMessagesWithUserInvolved(id);
-    await FriendManager.deleteAllRelationsFromUser(id);
-    await FriendRequestManager.deleteAllRequestsWhereUserIsInvolved(id);
+    const userAllowed = requester_id === id;
+    if (userAllowed) {
+        await UserManager.deleteUserById(id);
+        await VideosManager.deleteAllVideosFromUser(id);
+        await CommentManager.deleteAllCommentsFromUsers(id);
+        await ReactionManager.deleteAllReactionsFromUser(id);
+        await MessageManager.deleteAllMessagesWithUserInvolved(id);
+        await FriendManager.deleteAllRelationsFromUser(id);
+        await FriendRequestManager.deleteAllRequestsWhereUserIsInvolved(id);
 
-    res.status(200).send("User eliminated");
+        res.status(200).send("User eliminated");
+    } else {
+        console.log("User cant delete another's profile");
+        res.status(401).send("User cant delete another's profile");
+    }
 })
 
 router.delete('/:id1/friends/:id2', auth, async (req,res) => {
     const id1 = parseInt(req.params.id1);
     const id2 = parseInt(req.params.id2);
-    const positiveResult = await FriendManager.deleteRelationBetweenUsers(id1, id2);
+    const requester_id = parseInt(req.headers["requester-id"])
 
-    if (positiveResult){
-        await MessageManager.deleteAllMessagesBetweenUsers(id1, id2);
-        res.send("Amistad eliminada");
+    if (id1 === requester_id || id2 === requester_id) {
+        const positiveResult = await FriendManager.deleteRelationBetweenUsers(id1, id2);
+        if (positiveResult) {
+            await MessageManager.deleteAllMessagesBetweenUsers(id1, id2);
+            res.send("Amistad eliminada");
+        } else {
+            res.status(404).send("Users not found or they weren't friends");
+        }
     } else {
-       res.status(404).send("Users not found or they weren't friends");
+        console.log("User not allowed to delete this friendship");
+        res.status(401).send("User not allowed to delete this friendship");
     }
 })
 

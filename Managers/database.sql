@@ -99,7 +99,7 @@ VIDEO
 	"title" : "Tumbando asdel club",
 	"description": "TEMasdUCO",
 	"location": "EN EL CasdLUB",
-	"public": true,
+	"public_video": true,
 	"url": "asd",
 	"uuid": "asdasd"
 }
