@@ -29,7 +29,7 @@ class UsersRequestManager {
         const result = await RequestManager.getResponseByLink(URL);
 
         if (result) {
-            return result;
+            return result.data;
         } else {
             return null;
         }
