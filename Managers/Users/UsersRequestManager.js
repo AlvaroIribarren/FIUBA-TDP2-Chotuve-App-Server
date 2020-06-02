@@ -71,6 +71,11 @@ class UsersRequestManager {
     async deleteUserFromAuth(id) {
         return await RequestManager.deleteById(USERS_URL, id);
     }
+
+    async modifyUser(id, data){
+        const link = USERS_URL + "/" + id;
+        return await RequestManager.generatePutRequest(link, data);
+    }
 }
 
 const usersRequestManager = new UsersRequestManager();

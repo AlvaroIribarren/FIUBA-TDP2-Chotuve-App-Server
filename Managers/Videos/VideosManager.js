@@ -1,7 +1,10 @@
 const Manager = require('../DBManager')
 const VideoRequestManager = require("../Videos/MediaRequestManager")
+const RulesEngine = require("../../Rules/RulesEngine")
 const CommentManager = require("../CommentsManager")
-const ReactionManager = require("../ReactionsManager")
+const ReactionManager = require("../Reactions/ReactionsManager")
+const InformationCollector = require("../../Rules/InformationCollector")
+const DistanceCalculator = require("../../Utils/DistanceCalculator")
 
 const videos = 'videos';
 
@@ -16,8 +19,32 @@ class VideosManager {
         }
     }
 
+    async getVideosWithImportance(requester_id){
+        let videos = await this.getVideos();
+        const videosWithoutInfo = JSON.parse(JSON.stringify(videos));
+        await InformationCollector.addInformationToVideos(requester_id, videos);
+
+        await RulesEngine.getImportanceOnVideos(requester_id, videos).then(
+                function() {
+                    console.log(videos)
+                });
+
+        for (let video of videos){
+            const actualVideoToAddImportance = videosWithoutInfo.filter(vid => vid.id === video.id);
+            actualVideoToAddImportance[0].importance = video.importance;
+        }
+
+        return videosWithoutInfo;
+    }
+
     async getVideoWithNoUrlById(id){
         return await this.getVideoByIdInAppServer(id);
+    }
+
+    async doesVideoExist(video_id){
+        const condition = " id = " + video_id;
+        const result = await Manager.getAllRowsWithCondition(videos, condition);
+        return result;
     }
 
     async getVideoById(id) {
@@ -87,12 +114,9 @@ class VideosManager {
     }
 
     async insertVideo(id, author_id, author_name, title, description, location, public_video) {
-        const likes = 0;
-        const dislikes = 0;
-        const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public_video, likes, dislikes) ' +
-            'VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)';
-        const values = [id, author_id, author_name, title, description, location,
-            public_video, likes, dislikes];
+        const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public_video) ' +
+            'VALUES($1, $2, $3, $4, $5, $6, $7)';
+        const values = [id, author_id, author_name, title, description, location, public_video];
 
         await Manager.executeQueryInTable(text, values);
     }
@@ -122,20 +146,21 @@ class VideosManager {
         const listOfVideos = [];
         for (let video of videos) {
             if (video.public_video) {
-                let title = video.title.toUpperCase();
-                search = search.toUpperCase();
-                search = search.replace(/_/g, ' ');
-                const areEqual = (title === search);
-                const isASubString = title.includes(search);
-                if (areEqual || isASubString) {
+                let title = video.title;
+                const similarity = await DistanceCalculator.similarity(title, search);
+                console.log("Similaritiy: " + similarity + " of video: " + video.id);
+                if (similarity > 0.3){
+                    video.importance = (video.importance + similarity)/2;
                     listOfVideos.push(video);
                 }
             }
         }
+
         return listOfVideos;
     }
 
     async modifiyVideo(video_id, key, newValue){
+        newValue = "'" + newValue + "'";
         await Manager.updateRowWithNewValue(video_id, videos, key, newValue);
     }
 }

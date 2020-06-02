@@ -1,7 +1,12 @@
 const express = require('express')
 const router = express.Router();
-const CommentManager = require("../Managers/Exportables/CommentManagerBuilder")
+const CommentManager = require("../Managers/CommentsManager")
+const VideoManager = require("../Managers/Videos/VideosManager")
 const auth = require("../Middleware/auth")
+
+async function validateVideoInfo(video_id) {
+    return await VideoManager.getVideoById(video_id);
+}
 
 router.get("/", auth, async (req, res) => {
     const comments = await CommentManager.getAllComments();
@@ -18,7 +23,7 @@ router.post("/", auth, async (req, res) => {
     const error = await CommentManager.validateInput(req.body).error;
     if (!error) {
         const video_id = req.body.video_id;
-        const rightVideoInfo = await CommentManager.validateVideoInfo(video_id);
+        const rightVideoInfo = await validateVideoInfo(video_id);
         if (rightVideoInfo){
             const author_id = req.body.author_id;
             const author_name = req.body.author_name;

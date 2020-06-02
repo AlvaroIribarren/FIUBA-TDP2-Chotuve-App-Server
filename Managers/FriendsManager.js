@@ -20,13 +20,6 @@ class FriendsManager {
         return await Manager.getIdFromTable(id, friends);
     }
 
-    async getAllRelationsFromUser(id) {
-        const text = 'SELECT * FROM friends WHERE id1 = ' + id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
-    }
-
     async getRelationByIds(id1, id2) {
         const condition = " id1 = " + id1 + " and " + " id2 = " + id2;
         const response = await Manager.getAllRowsWithCondition(friends, condition);
@@ -46,6 +39,19 @@ class FriendsManager {
             users.push(await UserManager.getUserById(relation.id2));
         }
         return users;
+    }
+
+    async getAllRelationsFromUser(id) {
+        const text = 'SELECT * FROM friends WHERE id1 = ' + id;
+        const res = await Manager.executeQueryInTableWithoutValues(text);
+        console.log(res.rows);
+        return res.rows;
+    }
+
+    //Evita la conexion con el auth para ganar velocidad.
+    async getAmountOfFriendsFromUser(user_id){
+        const relations = await this.getAllRelationsFromUser(user_id);
+        return relations.length;
     }
 
     async insertRelationBetweenUsers(id1, id2) {

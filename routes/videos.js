@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const UserManager = require("../Managers/Users/UsersManager")
 const VideosManager = require("../Managers/Videos/VideosManager")
-const CommentManager = require("../Managers/Exportables/CommentManagerBuilder")
-const ReactionManager = require("../Managers/Exportables/ReactionManagerBuilder")
+const CommentManager = require("../Managers/CommentsManager")
+const ReactionManager = require("../Managers/Reactions/ReactionsManager")
+const postReaction = require("../Managers/Reactions/ReactionsIndex")
 const auth = require("../Middleware/auth")
 
 const Joi = require("joi")
@@ -12,21 +13,30 @@ async function noSearchQuery(search){
     return search === undefined || search === null || search === "" || search === " ";
 }
 
-router.get("/", auth, async(req, res) => {
+const sortArray = require("../Utils/sortByImportance");
+const removeImportance = require("../Utils/removeImportance");
+
+router.get("/", async(req, res) => {
     console.log("Entrando a videos");
     console.log("Desde videos: " + res.locals.sl_token);
+
+    const requester_id = req.headers["requester-id"];
 
     if (res.locals.sl_token) {
         const sl_token = res.locals.sl_token;
         res.header({"Sl-Token": sl_token});
     }
     let search = req.query.search_query;
-    const videos = await VideosManager.getVideos();
+    const videos = await VideosManager.getVideosWithImportance(requester_id);
     console.log("Videos:" + videos);
     if (await noSearchQuery(search)){
+        await sortArray(videos);
+        await removeImportance(videos);
         res.send(videos);
     } else {
         const filtratedVideos = await VideosManager.getSearchRelatedVideos(videos, search);
+        await sortArray(filtratedVideos);
+        await removeImportance(filtratedVideos);
         res.send(filtratedVideos);
     }
 })
@@ -97,9 +107,9 @@ router.post("/", async (req, res) => {
             const title = req.body.title;
             const description = req.body.description;
             const location = req.body.location;
-            const url = req.body.url;
-            //Cambio nombre para no tener problemas con la palabra reservada public.
             const public_video =  req.body.public_video;
+
+            const url = req.body.url;
             const uuid = req.body.uuid;
 
             const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid});
@@ -116,7 +126,12 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.post("/:video_id/reactions", auth, async (req, res) => {
+async function validateVideoInfo(video_id){
+    const video = await VideosManager.doesVideoExist(video_id);
+    return video.length > 0;
+}
+
+router.post("/:video_id/reactions", async (req, res) => {
     const error = await ReactionManager.validateInput(req.body).error;
 
     if (!error) {
@@ -124,8 +139,15 @@ router.post("/:video_id/reactions", auth, async (req, res) => {
         const author_name = req.body.author_name;
         const video_id = parseInt(req.params.video_id);
         const positive_reaction = req.body.positive_reaction;
-        const data = {author_id, author_name, video_id, positive_reaction};
-        await ReactionManager.postReaction(data, res);
+        const rightUserInfo = await validateUserInfo(author_id, author_name);
+        const rightVideoInfo = await validateVideoInfo(video_id);
+
+        if (rightUserInfo && rightVideoInfo) {
+            const data = {author_id, author_name, video_id, positive_reaction};
+            await postReaction(data, res);
+        } else {
+            res.status(400).send("Video or user doesn't exist");
+        }
     } else {
         res.status(400).send(error.details[0].message);
     }
@@ -164,6 +186,8 @@ router.put("/:video_id", async (req,res) => {
                 }
             }
         }
+        const video = await VideosManager.getVideoById(video_id);
+        res.send(video);
     }
 })
 

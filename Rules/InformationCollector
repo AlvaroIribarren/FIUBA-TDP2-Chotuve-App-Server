@@ -1,0 +1,56 @@
+const CommentManager = require("../Managers/CommentsManager")
+const ReactionManager = require("../Managers/Reactions/ReactionsManager")
+const FriendManager = require("../Managers/FriendsManager")
+const UserManager = require("../Managers/Users/UsersManager")
+
+async function getLikesBalanceFromUsersFriends(requester_id, video_id){
+    const friends = await FriendManager.getAllRelationsFromUser(requester_id);
+    let count = 0;
+    for (let actualUser of friends) {
+        const actualUserFriend = actualUser.id2;
+        const reaction = await ReactionManager.getReactionFromUserInVideo(actualUserFriend, video_id);
+        if (reaction) {
+            const liked = reaction.positive_reaction;
+            if (liked) {
+                count++;
+            } else {
+                count --;
+            }
+        }
+    }
+    return count;
+}
+
+async function requesterAndAuthorAreFriends(requester_id, author_id){
+    return await FriendManager.doesRelationExistBetween(requester_id, author_id);
+}
+
+async function calculateTotalAmountOfViews(videos){
+    let counter = 0;
+
+    for (let video of videos){
+        counter += video.views;
+    }
+    return counter;
+}
+
+class InformationCollector {
+    async addInformationToVideos(requester_id, videos) {
+        const totalUsers = await UserManager.getAmountOfUsers();
+        const totalViews = await calculateTotalAmountOfViews(videos);
+        for (let video of videos){
+            const actualId = video.id;
+            const actualAuthorId = video.author_id;
+            video.comments = await CommentManager.getAmountOfCommentsFromVideo(actualId);
+            video.author_friends = await FriendManager.getAmountOfFriendsFromUser(actualAuthorId);
+            video.likesBalanceFromFriends = await getLikesBalanceFromUsersFriends(requester_id, actualId);
+            video.isAuthorAFriend = await requesterAndAuthorAreFriends(requester_id, actualAuthorId);
+            video.amountOfUsers = totalUsers;
+            video.totalAmountOfViews = totalViews;
+            video.importance = 0;
+        }
+        return videos;
+    }
+}
+
+module.exports = new InformationCollector();

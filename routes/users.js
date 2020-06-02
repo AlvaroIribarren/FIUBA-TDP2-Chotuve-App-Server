@@ -7,7 +7,7 @@ const TokenManager = require("../Managers/TokensManager")
 const FriendRequestManager = require("../Managers/FriendRequestManager")
 const MessageManager = require("../Managers/MessagesManager")
 const CommentManager = require("../Managers/CommentsManager")
-const ReactionManager = require("../Managers/ReactionsManager")
+const ReactionManager = require("../Managers/Reactions/ReactionsManager")
 const auth = require("../Middleware/auth")
 
 //pre:
@@ -203,21 +203,20 @@ router.put('/:id/image', auth, async (req,res) => {
     }
 })
 
-router.put('/:id/profile', auth, async (req, res) => {
+router.put('/:id/profile', async (req, res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateProfileModification(req.body).error;
-    const user = await UserManager.getUserById(id);
+    const userExists = await UserManager.doesUserExist(id);
 
-    if(!error && user){
-        const data = req.body;
-        for (let key in data) {
-            if (data.hasOwnProperty(key)) {
-                console.log(key + " -> " + data[key]);
-                const value = data[key];
-                await UserManager.editUser(id, key, value);
-            }
+    if(!error && userExists){
+        const data = {
+            display_name: req.body.name,
+            email: req.body.email,
+            phone_number: req.body.phone,
+            sign_in_method: req.body.sign_in_method
         }
-        res.send("Se deberia haber hecho bien");
+        const result = await UserManager.editUser(id, data);
+        res.status(200).send(result);
     } else {
         res.status(400).send("Error en validacion: " + error.details[0].message);
     }

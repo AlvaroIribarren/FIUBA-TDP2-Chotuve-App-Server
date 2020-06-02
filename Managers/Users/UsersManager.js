@@ -17,6 +17,15 @@ class UsersManager {
         }
     }
 
+    async getAmountOfUsers(){
+        const allUsers = await Manager.getRows(users);
+        return allUsers.length;
+    }
+
+    async doesUserExist(id){
+        return await Manager.getIdFromTable(id, users);
+    }
+
     async getUserById(id) {
         const userFromAppSv = await Manager.getIdFromTable(id, users);
         const id_from_media = userFromAppSv.img_id;
@@ -74,8 +83,9 @@ class UsersManager {
     }
 
 //todo: put a auth
-    async editUser() {
+    async editUser(id, data) {
         try {
+            return await UsersRequestManager.modifyUser(id, data);
         } catch (e) {
             console.log(e);
         }
@@ -125,11 +135,10 @@ class UsersManager {
 
     async validateProfileModification(body) {
         const schema = {
-            name: Joi.string().min(minNameLength),
-            email: Joi.string(),
-            phone: Joi.string(),
-            sign_in_method: Joi.string(),
-            firebase_token: Joi.string()
+            name: Joi.string().min(minNameLength).required(),
+            email: Joi.string().required(),
+            phone: Joi.string().required(),
+            sign_in_method: Joi.string().required()
         }
         return Joi.validate(body, schema);
     }

@@ -14,7 +14,9 @@ create table videos(
     location text NOT NULL,
     public_video boolean NOT NULL,
     likes serial,
-    dislikes serial
+    dislikes serial,
+    views serial,
+    upload_date DATE NOT NULL DEFAULT NOW;
 );
 
 create table urls(
@@ -67,17 +69,17 @@ create table urls(
 
 //Reaction
 {
-	"author_id" : 1,
+	"author_id" : 23,
 	"author_name" : "Santiago Beroch",
-	"video_id": 1,
+	"video_id": 85,
 	"positive_reaction": true
 }
 
 Comments
 {
-	"author_id" : 1,
+	"author_id" : 23,
 	"author_name" : "Santiago Beroch",
-	"video_id": 1,
+	"video_id": 85,
 	"comment": "Wenardo"
 }
 

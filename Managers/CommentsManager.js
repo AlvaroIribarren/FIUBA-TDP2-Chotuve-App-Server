@@ -25,6 +25,11 @@ class CommentsManager {
         return res.rows;
     }
 
+    async getAmountOfCommentsFromVideo(video_id){
+        const videos = await this.getAllCommentsFromVideo(video_id);
+        return videos.length;
+    }
+
     async insertComment(author_id, author_name, video_id, comment) {
         const id = await Manager.generateNewIdInTable(comments);
         const text = 'INSERT INTO comments(id, author_id, author_name, video_id, comment) ' +

@@ -1,5 +1,5 @@
-const Manager = require('./DBManager')
-const UserManager = require('./Users/UsersManager')
+const Manager = require('../DBManager')
+const UserManager = require('../Users/UsersManager')
 
 const Joi = require('joi')
 
@@ -23,6 +23,23 @@ class ReactionsManager {
         const res = await Manager.executeQueryInTableWithoutValues(text);
         console.log(res.rows);
         return res.rows;
+    }
+
+    async didUserReactToVideo(author_id, video_id, reaction_condition){
+        const search = "author_id = " + author_id + " AND " + " video_id = " + video_id;
+        const condition = search + " " + reaction_condition;
+        const result = await Manager.getAllRowsWithCondition(reactions, condition);
+        return result;
+    }
+
+    async didUserLikedTheVideo(author_id, video_id){
+        const reaction_condition = " positive_reaction = true ";
+        return await this.didUserReactToVideo(author_id, video_id, reaction_condition);
+    }
+
+    async didUserDislikedTheVideo(author_id, video_id){
+        const reaction_condition = " positive_reaction = false ";
+        return await this.didUserReactToVideo(author_id, video_id, reaction_condition);
     }
 
     async insertReaction(author_id, author_name, video_id, positive_reaction) {
