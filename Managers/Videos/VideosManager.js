@@ -97,6 +97,10 @@ class VideosManager {
         }
     }
 
+    async addViewToVideo(id) {
+        await Manager.incrementRowValueById(id, videos, 'views');
+    }
+
     async addLikeToVideo(id) {
         await Manager.incrementRowValueById(id, videos, 'likes');
     }

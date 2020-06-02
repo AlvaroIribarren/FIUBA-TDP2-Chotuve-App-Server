@@ -212,8 +212,7 @@ router.put('/:id/profile', async (req, res) => {
         const data = {
             display_name: req.body.name,
             email: req.body.email,
-            phone_number: req.body.phone,
-            sign_in_method: req.body.sign_in_method
+            phone_number: req.body.phone
         }
         const result = await UserManager.editUser(id, data);
         res.status(200).send(result);

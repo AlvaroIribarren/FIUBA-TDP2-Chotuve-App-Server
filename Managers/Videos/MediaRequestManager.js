@@ -5,7 +5,7 @@ const IMAGES_URL = "https://chotuve-media-server-g5-dev.herokuapp.com/images"
 
 class MediaRequestManager {
 
-    async getAllVideosFromMedia() {
+    async getAllUrls() {
         const response = await RequestManager.getResponseByLink(VIDEOS_URL);
         return response.data;
     }
@@ -35,10 +35,11 @@ class MediaRequestManager {
 
     async addUrlsToVideos(videos) {
         const listOfVideos = [];
+        const urls = await this.getAllUrls();
         for (let video of videos) {
-            const url = await this.getVideoById(video.id);
+            const url = urls.filter(element => element.id === video.id);
             if (url) {
-                video.url = url.url;
+                video.url = url[0].url;
                 listOfVideos.push(video);
             } else {
                 console.log("No se encontro un video con id: " + video);

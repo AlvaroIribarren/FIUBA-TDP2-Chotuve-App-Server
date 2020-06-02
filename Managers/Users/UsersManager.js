@@ -137,8 +137,7 @@ class UsersManager {
         const schema = {
             name: Joi.string().min(minNameLength).required(),
             email: Joi.string().required(),
-            phone: Joi.string().required(),
-            sign_in_method: Joi.string().required()
+            phone: Joi.string().required()
         }
         return Joi.validate(body, schema);
     }

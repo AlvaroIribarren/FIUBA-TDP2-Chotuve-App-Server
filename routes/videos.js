@@ -48,6 +48,7 @@ router.get("/appServer", auth, async (req,res)=>{
 
 router.get("/:id", auth, async (req, res) => {
     const id = parseInt(req.params.id);
+    await VideosManager.addViewToVideo(id);
     const video = await VideosManager.getVideoById(id);
     res.send(video);
 })
