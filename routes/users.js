@@ -183,15 +183,19 @@ router.delete('/:id1/friends/:id2', auth, async (req,res) => {
     }
 })
 
-router.put('/:id/image', auth, async (req,res) => {
+router.put('/:id/image', async (req,res) => {
     const id = parseInt(req.params.id);
-    const error = await UserManager.validateImageModification(req.body);
+    const error = await UserManager.validateImageModification(req.body).error;
     const user = await UserManager.getUserById(id);
+    const requester_id = parseInt(req.headers["requester-id"]);
+    const hasPermissionToModify = requester_id === user.id;
 
-    if (!error && user){
+
+    if (!error && user && hasPermissionToModify){
+        const img_id = user.img_id;
         const img_url = req.body.img_url;
         const img_uuid = req.body.img_uuid;
-        const result = await UserManager.changeProfilePicture(id, img_url, img_uuid);
+        const result = await UserManager.changeProfilePicture(id, img_id, img_url, img_uuid);
 
         if (result){
             res.status(200).send({id, img_url, img_uuid});
@@ -199,7 +203,11 @@ router.put('/:id/image', auth, async (req,res) => {
             res.status(400).send("Something failed :)");
         }
     } else {
-        res.status(404).send(error.details[0].message);
+        if (!hasPermissionToModify){
+            res.status(401).send("Flaco no podes modificar un perfil que no es tuyo");
+        } else {
+            res.status(404).send(error.details[0].message);
+        }
     }
 })
 

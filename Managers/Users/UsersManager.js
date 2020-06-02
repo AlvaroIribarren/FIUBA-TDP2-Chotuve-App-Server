@@ -96,9 +96,7 @@ class UsersManager {
         return user.name;
     }
 
-    async changeProfilePicture(user_id, newImgUrl, newImgUuid) {
-        const user = await this.getUserById(user_id);
-        const img_id = user.img_id;
+    async changeProfilePicture(user_id, img_id, newImgUrl, newImgUuid) {
         return await MediaRequestManager.changeProfileImage(img_id, newImgUrl, newImgUuid);
     }
 
