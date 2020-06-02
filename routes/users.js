@@ -211,7 +211,7 @@ router.put('/:id/image', async (req,res) => {
     }
 })
 
-router.put('/:id/profile', async (req, res) => {
+router.put('/:id/profile', auth, async (req, res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateProfileModification(req.body).error;
     const userExists = await UserManager.doesUserExist(id);
