@@ -5,7 +5,7 @@ const IMAGES_URL = "https://chotuve-media-server-g5-dev.herokuapp.com/images"
 
 class MediaRequestManager {
 
-    async getAllUrls() {
+    async getAllInfo() {
         const response = await RequestManager.getResponseByLink(VIDEOS_URL);
         return response.data;
     }
@@ -15,7 +15,7 @@ class MediaRequestManager {
         return response.data;
     }
 
-    async getUrlById(src, id) {
+    async getMediaInfoById(src, id) {
         const str = "/" + id;
         const link = src + str;
         const res = await RequestManager.getResponseByLink(link);
@@ -26,20 +26,21 @@ class MediaRequestManager {
     }
 
     async getImageById(id) {
-        return await this.getUrlById(IMAGES_URL, id);
+        return await this.getMediaInfoById(IMAGES_URL, id);
     }
 
     async getVideoById(id) {
-        return await this.getUrlById(VIDEOS_URL, id);
+        return await this.getMediaInfoById(VIDEOS_URL, id);
     }
 
-    async addUrlsToVideos(videos) {
+    async addMediaInfoToVideos(videos) {
         const listOfVideos = [];
-        const urls = await this.getAllUrls();
+        const info = await this.getAllInfo();
         for (let video of videos) {
-            const url = urls.filter(element => element.id === video.id);
-            if (url) {
-                video.url = url[0].url;
+            const actualInfo = info.filter(element => element.id === video.id);
+            if (actualInfo) {
+                video.url = actualInfo[0].url;
+                video.video_size = actualInfo[0].video_size;
                 listOfVideos.push(video);
             } else {
                 console.log("No se encontro un video con id: " + video);
@@ -48,8 +49,8 @@ class MediaRequestManager {
         return listOfVideos;
     }
 
-    async getAllVideosWithAddedUrls(videos) {
-        return await this.addUrlsToVideos(videos);
+    async getAllVideosWithAddedInfo(videos) {
+        return await this.addMediaInfoToVideos(videos);
     }
 
     async postVideoToMedia(video) {

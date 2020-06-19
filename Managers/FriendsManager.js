@@ -16,6 +16,12 @@ class FriendsManager {
         }
     }
 
+    async getAmountOfRelations(){
+        const relations = await this.getRelations();
+        const amount = relations.length / 2;
+        return amount;
+    }
+
     async getRelationById(id) {
         return await Manager.getIdFromTable(id, friends);
     }

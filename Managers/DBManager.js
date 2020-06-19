@@ -129,22 +129,34 @@ class Manager {
 //post: updates column_name with new value where id is found.
     async updateRowWithNewValue(id, table, column_name, newValue) {
         const operation = 'UPDATE ' + table + ' SET ';
-        const expression = column_name + '=' + newValue;
+        const expression = column_name + ' = ' + newValue;
         const condition = ' WHERE id = ' + id;
         const text = operation + expression + condition;
-        await this.executeQueryInTableWithoutValues(text);
+        return await this.executeQueryInTableWithoutValues(text);
     }
+
+    async turnColumnValueToTrueById(id, table, column_name){
+        return await this.updateRowWithNewValue(id, table, column_name, true);
+    }
+
+    async turnColumnValueToFalseById(id, table, column_name){
+        return await this.updateRowWithNewValue(id, table, column_name, false);
+    }
+
+
 
 //pre: table exists and has a column named: column_name
 //post: updates column_name with the value+1.
     async incrementRowValueById(id, table, column_name) {
+        const condition = ' id = ' + id;
+        return await this.incrementRowValueByCondition(table, column_name, condition);
+    }
+
+    async incrementRowValueByCondition(table, column_name, condition) {
         const operation = 'UPDATE ' + table + ' SET ';
         const mathExpression = column_name + '=' + column_name + '+1 ';
-        const condition = 'WHERE id = ' + id;
-        const text = operation + mathExpression + condition;
-        await this.executeQueryInTableWithoutValues(text);
-    }
-}
+        const text = operation + mathExpression + ' WHERE ' + condition;
+        return await this.executeQueryInTableWithoutValues(text);
+    }}
 
-const manager = new Manager();
-module.exports = manager;
+module.exports = new Manager();

@@ -2,7 +2,14 @@ create database library;
 
 create table users(
     id serial PRIMARY KEY,
-    img_id serial UNIQUE NOT NULL
+    img_id serial UNIQUE NOT NULL,
+    last_login DATE NOT NULL DEFAULT NOW;
+);
+
+create table searches(
+    id serial PRIMARY KEY,
+    word text NOT NULL CHECK (word <> '' AND word <> ' '),
+    amount integer DEFAULT 0
 );
 
 create table videos(
@@ -65,6 +72,15 @@ create table urls(
     url text NOT NULL
 );
 
+create table http_requests(
+    id serial PRIMARY KEY NOT NULL,
+    method text NOT NULL,
+    url text NOT NULL,
+    status text NOT NULL,
+    res_length integer NOT NULL,
+    res_time float NOT NULL,
+    upload_date DATE NOT NULL DEFAULT NOW()
+);
 
 
 //Reaction
@@ -112,6 +128,8 @@ Messages
 	"receiver_id" : 1,
 	"message": "TEMasdUCO",
 }
+
+
 
 
 TEXT {

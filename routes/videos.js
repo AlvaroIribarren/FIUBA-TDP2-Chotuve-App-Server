@@ -20,24 +20,30 @@ router.get("/", async(req, res) => {
     console.log("Entrando a videos");
     console.log("Desde videos: " + res.locals.sl_token);
 
-    const requester_id = req.headers["requester-id"];
+    const requester_id = req.headers["requester-id"];       //Me fijo quien solicita los videos
+    const requester_exists = await UserManager.doesUserExist(requester_id);
 
-    if (res.locals.sl_token) {
-        const sl_token = res.locals.sl_token;
-        res.header({"Sl-Token": sl_token});
-    }
-    let search = req.query.search_query;
-    const videos = await VideosManager.getVideosWithImportance(requester_id);
-    console.log("Videos:" + videos);
-    if (await noSearchQuery(search)){
-        await sortArray(videos);
-        await removeImportance(videos);
-        res.send(videos);
-    } else {
-        const filtratedVideos = await VideosManager.getSearchRelatedVideos(videos, search);
-        await sortArray(filtratedVideos);
-        await removeImportance(filtratedVideos);
-        res.send(filtratedVideos);
+    if (requester_exists) {
+        await UserManager.updateLastLogin(requester_id);        //Actualizo el último login del usuario
+                                                                //Lo hago aca porque esta es la pantalla principal
+        if (res.locals.sl_token) {
+            const sl_token = res.locals.sl_token;
+            res.header({"Sl-Token": sl_token});
+        }
+
+        let search = req.query.search_query;
+        const videos = await VideosManager.getVideosWithImportance(requester_id);
+        if (await noSearchQuery(search)) {
+            await sortArray(videos);
+            await removeImportance(videos);
+            res.send(videos);
+        } else {
+            //Adentro se agrega la busqueda a la lista
+            const filtratedVideos = await VideosManager.getSearchRelatedVideos(videos, search);
+            await sortArray(filtratedVideos);
+            await removeImportance(filtratedVideos);
+            res.send(filtratedVideos);
+        }
     }
 })
 
@@ -74,7 +80,8 @@ async function validateInputForPost(body){
         location: Joi.string(),
         public_video: Joi.required(),
         url: Joi.string().required(),
-        uuid: Joi.required()
+        uuid: Joi.required(),
+        video_size: Joi.required()
     }
     return Joi.validate(body, schema);
 }
@@ -112,8 +119,9 @@ router.post("/", async (req, res) => {
 
             const url = req.body.url;
             const uuid = req.body.uuid;
+            const video_size = req.body.video_size;
 
-            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid});
+            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid, video_size});
             const id = resultFromMedia.id;
 
             await VideosManager.insertVideo(id, author_id, author_name, title, description, location, public_video);
@@ -189,6 +197,18 @@ router.put("/:video_id", async (req,res) => {
         }
         const video = await VideosManager.getVideoById(video_id);
         res.send(video);
+    }
+})
+
+router.put("/:video_id/enabled", async (req,res) => {
+    const video_id = parseInt(req.params.video_id);
+    const enabled = await VideosManager.isVideoEnabled(video_id);
+    if (enabled) {
+        await VideosManager.disableVideo(video_id);
+        res.send("Video disabled");
+    } else {
+        await VideosManager.enableVideo(video_id);
+        res.send("Video enabled");
     }
 })
 

@@ -44,8 +44,10 @@ class UsersRequestManager {
             userToModify.email = userFromAuth.email;
             userToModify.phone = userFromAuth.phone_number;
             userToModify.sign_in_method = userFromAuth.sign_in_method;
-            userToModify.img_url = image.url;
-            userToModify.img_uuid = image.uuid;
+            if (image) {
+                userToModify.img_url = image.url;
+                userToModify.img_uuid = image.uuid;
+            }
             return userToModify
         } else {
             return null;
@@ -56,9 +58,11 @@ class UsersRequestManager {
         const usersToReturn = [];
         for (let userFromAppServer of usersFromAppServer) {
             const image = await this.getElementByIdFromArray(images, userFromAppServer.img_id);
-            usersFromAppServer = await this.addDataToUser(userFromAppServer, image);
-            if (userFromAppServer) {
-                usersToReturn.push(userFromAppServer);
+            if (image) {
+                usersFromAppServer = await this.addDataToUser(userFromAppServer, image);
+                if (userFromAppServer) {
+                    usersToReturn.push(userFromAppServer);
+                }
             }
         }
         return usersToReturn;

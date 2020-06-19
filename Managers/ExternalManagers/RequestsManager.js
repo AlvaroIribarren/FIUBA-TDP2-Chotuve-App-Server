@@ -2,13 +2,17 @@ const axios = require('axios');
 
 async function generatePost(link, data){
     let response = null;
-    await axios.post(link, data)
-        .then(function (res) {
-            response = res.data;
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    try {
+        await axios.post(link, data)
+            .then(function (res) {
+                response = res.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    } catch (error) {
+        console.log(error);
+    }
     return response;
 }
 

@@ -3,6 +3,7 @@ const VideoRequestManager = require("../Videos/MediaRequestManager")
 const RulesEngine = require("../../Rules/RulesEngine")
 const CommentManager = require("../CommentsManager")
 const ReactionManager = require("../Reactions/ReactionsManager")
+const SearchManager = require("../SearchManager")
 const InformationCollector = require("../../Rules/InformationCollector")
 const DistanceCalculator = require("../../Utils/DistanceCalculator")
 
@@ -13,10 +14,15 @@ class VideosManager {
         try {
             let videos = await this.getVideosInAppServer();
             videos = videos.filter(video => video.public_video === true);
-            return VideoRequestManager.getAllVideosWithAddedUrls(videos);
+            return VideoRequestManager.getAllVideosWithAddedInfo(videos);
         } catch (e) {
             console.log(e);
         }
+    }
+
+    async getAmountOfVideos(){
+        const allVideos = await Manager.getRows(videos);
+        return allVideos.length;
     }
 
     async getVideosWithImportance(requester_id){
@@ -48,10 +54,11 @@ class VideosManager {
     }
 
     async getVideoById(id) {
-        const url = await VideoRequestManager.getVideoById(id);
-        const videoInAppSv = await this.getVideoByIdInAppServer(url.id);
-        if (url && videoInAppSv) {
-            videoInAppSv.url = url.url;
+        const mediaInfo = await VideoRequestManager.getVideoById(id);
+        const videoInAppSv = await this.getVideoByIdInAppServer(mediaInfo.id);
+        if (mediaInfo && videoInAppSv) {
+            videoInAppSv.url = mediaInfo.url;
+            videoInAppSv.video_size = mediaInfo.video_size;
             return videoInAppSv;
         } else {
             return null;
@@ -69,7 +76,7 @@ class VideosManager {
     async getAllVideosFromUser(userid, showPrivateVideos) {
         const condition = ' author_id = ' + userid;
         const allVideos = await Manager.getAllRowsWithCondition(videos, condition);
-        let videosWithUrls = await VideoRequestManager.addUrlsToVideos(allVideos);
+        let videosWithUrls = await VideoRequestManager.addMediaInfoToVideos(allVideos);
 
         if (!showPrivateVideos) { //muestro solo los publicos
             videosWithUrls = videosWithUrls.filter(video => video.public_video === true);
@@ -147,6 +154,7 @@ class VideosManager {
 //post: returns related videos by user's search. The video is related if
 //the string is the same or if the search is included in the video's title.
     async getSearchRelatedVideos(videos, search) {
+        await SearchManager.addSearch(search);
         const listOfVideos = [];
         for (let video of videos) {
             if (video.public_video) {
@@ -166,6 +174,29 @@ class VideosManager {
     async modifiyVideo(video_id, key, newValue){
         newValue = "'" + newValue + "'";
         await Manager.updateRowWithNewValue(video_id, videos, key, newValue);
+    }
+
+    async isVideoEnabled(video_id){
+        const video = await this.getVideoByIdInAppServer(video_id);
+        return video.enabled;
+    }
+
+    async enableVideo(video_id) {
+        return await Manager.turnColumnValueToTrueById(video_id, videos, ' enabled ');
+    }
+
+    async disableVideo(video_id){
+        const value = await Manager.turnColumnValueToFalseById(video_id, videos, ' enabled ');
+        return value.rowCount;
+    }
+
+    async getTotalViews(){
+        let acum = 0;
+        const videos = await this.getVideosInAppServer();
+        for (let actualVideo of videos){
+            acum += actualVideo.views;
+        }
+        return acum;
     }
 }
 

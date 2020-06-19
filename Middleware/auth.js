@@ -20,7 +20,6 @@ module.exports = async (req, res, next) => {
         const sl_token = req.headers["sl-token"];
         const refresh_token = req.headers["refresh-token"];
 
-
         if (sl_token && !refresh_token) {
             const authorized = await authorize(sl_token);
             console.log("Imprimo sl_token de validacion:" + sl_token);
@@ -33,7 +32,7 @@ module.exports = async (req, res, next) => {
             }
         } else if (sl_token && refresh_token) {
             try {
-                console.log("asked for Refresh token")
+                console.log("Asked for Refresh token")
                 console.log(refresh_token);
                 const Sl_Token = await LoginManager.getNewSLToken(refresh_token);
                 console.log("NEW SL_TOKEN: " + sl_token);
@@ -47,7 +46,7 @@ module.exports = async (req, res, next) => {
         }
     } catch {
         res.status(401).json({
-            error: new Error('Error terrible!')
+            error: new Error('Si estas viendo esto, Houston, tenemos un problema! (auth)')
         });
     }
 };

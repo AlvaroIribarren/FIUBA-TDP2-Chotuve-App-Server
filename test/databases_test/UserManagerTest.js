@@ -4,95 +4,72 @@ const Manager = require("../../Managers/DBManager")
 const UserManager = require("../../Managers/Users/UsersManager")
 
 let userId = 0;
-let userFromDB;
+let user;
 const data = {
      "name" : 'Alvaro',
-     "password" : 'asdasd',
      "email" : 'alvarito@alvarito.com',
      "phone" : '1234567890',
+     "sign_in_method": 'google',
+     "firebase_token": "asdasdasd",
      "img_url" : 'asdasd',
      "img_uuid" : 'asdasd'
 };
 
 
-
-describe('Users test', async ()=> {
+describe('Users test', async function () {
+    this.timeout(15000);
     it('Add User', async ()=>{
-        const users = await UserManager.getUsers();
-        const amount = users.length;
+        const length1 = await UserManager.getAmountOfUsers();
         userId = await UserManager.postUser(data, null);
-        const messages2 = await UserManager.getUsers();
-        const amount2 = messages2.length;
+        const length2 = await UserManager.getAmountOfUsers();
 
-        assert.equal(amount+1, amount2);
-        return userId;
+        assert.equal(length1+1, length2);
     });
 
     it('Check users existance', async ()=>{
-        userFromDB = await UserManager.getUserById(userId);
-        assert.notEqual(userFromDB, null);
-    })
-
-    it('Check name existance', async() =>{
-        assert.property(userFromDB, 'name');
-    })
-
-    it('Check password existance', async () =>{
-        assert.property(userFromDB, 'password');
-    })
-
-    it('Check email property existance', async () =>{
-        assert.property(userFromDB, 'email');
-    })
-
-    it('Check phone existance', async () =>{
-        assert.property(userFromDB, 'phone');
+        console.log("Valor de id: " + userId);
+        user = await UserManager.getUserById(userId);
+        assert.notEqual(user, null);
     })
 
     it('Check img_url existance', async () =>{
-        assert.property(userFromDB, 'img_url');
-    })
-
-    it('Check img_uuid existance', async () =>{
-        assert.property(userFromDB, 'img_uuid');
+        assert.property(user, 'img_id');
     })
 
     it('Check message info: name', async ()=>{
-        const nameFromDB = userFromDB.name;
+        const nameFromDB = user.name;
         assert.equal(nameFromDB, data.name);
     });
 
     it('Check message info: password', async ()=>{
-        const passwordFromDB = userFromDB.password;
+        const passwordFromDB = user.password;
         assert.equal(passwordFromDB, data.password);
     });
 
     it('Check message info: email', async ()=>{
-        const emailFromDB = userFromDB.email;
+        const emailFromDB = user.email;
         assert.equal(emailFromDB, data.email);
     });
 
     it('Check message info: phone', async ()=>{
-        const phoneFromDB = userFromDB.phone;
+        const phoneFromDB = user.phone;
         assert.equal(phoneFromDB, data.phone);
     });
 
     it('Check message info: img_url', async ()=>{
-        const imgUrlFromDB = userFromDB.img_url;
+        const imgUrlFromDB = user.img_url;
         assert.equal(imgUrlFromDB, data.img_url);
     });
 
     it('Check message info: img_uuid', async ()=>{
-        const imgUuidFromDB = userFromDB.img_uuid;
+        const imgUuidFromDB = user.img_uuid;
         assert.equal(imgUuidFromDB, data.img_uuid);
     });
 
-    it('Delete message', async () =>{
-        const messages = await UserManager.getUsers();
-        const amount = messages.length;
+    it('Delete user', async () =>{
+        const length1 = await UserManager.getAmountOfUsers();
         await UserManager.deleteUserById(userId);
-        const newMessages = await UserManager.getUsers();
-        const newAmount = newMessages.length;
-        assert.equal(amount-1, newAmount);
+        const length2 = await UserManager.getAmountOfUsers();
+        assert.equal(length1-1, length2);
     })
 });
