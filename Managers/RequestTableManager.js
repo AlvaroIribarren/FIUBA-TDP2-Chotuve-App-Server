@@ -20,6 +20,10 @@ class RequestTableManager{
         const res_time = tokens['response-time'](req, res);
         return await insertValues(method, url, status, res_length, res_time);
     }
+
+    async getRequests(){
+        return await Manager.getRows(http_requests);
+    }
 }
 
 module.exports = new RequestTableManager();
