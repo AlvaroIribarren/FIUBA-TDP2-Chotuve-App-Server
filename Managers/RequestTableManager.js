@@ -12,15 +12,18 @@ async function insertValues(method, url, status, res_length, res_time){
 }
 
 class RequestTableManager{
-    async insertRequest(req, res, tokens){
-        const method = tokens.method(req,res);
-        const url = tokens.url(req,res);
-        const status = tokens.status(req,res);
+    async insertRequest(req, res, tokens) {
+        const method = tokens.method(req, res);
+        const url = tokens.url(req, res);
+        const status = tokens.status(req, res);
         const res_length = tokens.res(req, res, 'content-length');
         const res_time = tokens['response-time'](req, res);
-        return await insertValues(method, url, status, res_length, res_time);
+        if (res_length > 0) {
+            return await insertValues(method, url, status, res_length, res_time);
+        } else {
+            return null;
+        }
     }
-
     async getRequests(){
         return await Manager.getRows(http_requests);
     }
