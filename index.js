@@ -13,8 +13,11 @@ const pingRoute = require("./routes/ping")
 const loginRoute = require("./routes/login")
 const statusRoute = require("./routes/status")
 const unknownRoute = require("./routes/unknown")
-
+const cors = require('cors')
 const madge = require('madge');
+
+
+
 
 madge('./index.js').then((res) => {
     console.log(res.circular());
@@ -22,6 +25,7 @@ madge('./index.js').then((res) => {
 
 const bodyParser = require("body-parser")
 const server = express();
+server.use(cors())
 
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: false}));
