@@ -16,9 +16,6 @@ const unknownRoute = require("./routes/unknown")
 const cors = require('cors')
 const madge = require('madge');
 
-
-
-
 madge('./index.js').then((res) => {
     console.log(res.circular());
 });
