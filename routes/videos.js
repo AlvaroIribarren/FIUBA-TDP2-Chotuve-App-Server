@@ -119,8 +119,8 @@ router.post("/", async (req, res) => {
 
             const url = req.body.url;
             const uuid = req.body.uuid;
-            const video_size = req.body.video_size;
-            video_size.replace(/,/g, ".");
+            let video_size = req.body.video_size;
+            video_size = video_size.replace(",", ".");
 
             const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid, video_size});
             const id = resultFromMedia.id;
