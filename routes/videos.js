@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
             const uuid = req.body.uuid;
             const video_size = req.body.video_size;
 
-            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid});
+            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid, video_size});
             const id = resultFromMedia.id;
 
             await VideosManager.insertVideo(id, author_id, author_name, title, description, location, public_video);
