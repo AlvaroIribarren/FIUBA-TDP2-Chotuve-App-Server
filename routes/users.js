@@ -215,8 +215,10 @@ router.put('/:id/profile', async (req, res) => {
     const id = parseInt(req.params.id);
     const error = await UserManager.validateProfileModification(req.body).error;
     const userExists = await UserManager.doesUserExist(id);
+    const requester_id = parseInt(req.headers["requester-id"]);
+    const hasPermissionToModify = requester_id === user.id;
 
-    if(!error && userExists){
+    if(!error && userExists && hasPermissionToModify){
         const data = {
             display_name: req.body.name,
             email: req.body.email,

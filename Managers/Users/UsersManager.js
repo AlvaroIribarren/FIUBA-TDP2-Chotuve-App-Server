@@ -1,7 +1,10 @@
 const Manager = require('../DBManager')
 const UsersRequestManager = require("./UsersRequestManager")
 const MediaRequestManager = require("../Videos/MediaRequestManager")
+const { v4: uuidv4 } = require('uuid');
 const Joi = require('joi')
+
+const DEFAULT_IMAGE = "https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png";
 
 const users = 'users';
 const minNameLength = 3;
@@ -85,15 +88,26 @@ class UsersManager {
         let img_id = 0;
         const name = data.name;
         const email = data.email;
-        const phone = data.phone;
         const sign_in_method = data.sign_in_method;
-        const img_url = data.img_url;
-        const img_uuid = data.img_uuid;
-        if (img_url && img_uuid) {
+        let phone;
+
+        if (data.phone)
+            phone = data.phone;
+
+        if (data.img_url && data.img_uuid) {
+            const img_url = data.img_url;
+            const img_uuid = data.img_uuid;
+            const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
+            img_id = resultFromMedia.id;
+        } else {
+            const img_url = DEFAULT_IMAGE;
+            const img_uuid = uuidv4();
+            console.log("uuid: " + img_uuid);
             const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
             img_id = resultFromMedia.id;
         }
         const firebase_token = data.firebase_token;
+
         const userToAuth = {display_name: name, email, phone_number: phone, sign_in_method, firebase_token};
         const resultFromAuth = await UsersRequestManager.postUserToAuth(userToAuth);
         if (resultFromAuth) {

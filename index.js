@@ -31,7 +31,6 @@ const port = process.env.PORT || 5000
 server.listen(port, ()=>{
     console.log("Servidor escuchando en el puerto:", port);
 });
-
 server.set("views", __dirname + "/views");
 
 const RequestTableManager = require("./Managers/RequestTableManager")
@@ -47,7 +46,6 @@ server.use(morgan(function (tokens, req, res) {
         return str;
     })
 );
-
 
 server.use("/", baseRoute);
 server.use("/users", usersRoute);
