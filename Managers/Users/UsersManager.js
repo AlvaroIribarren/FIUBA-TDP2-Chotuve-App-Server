@@ -1,10 +1,10 @@
 const Manager = require('../DBManager')
 const UsersRequestManager = require("./UsersRequestManager")
 const MediaRequestManager = require("../Videos/MediaRequestManager")
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const Joi = require('joi')
 
-const DEFAULT_IMAGE = "https://www.pngitem.com/pimgs/m/421-4212617_person-placeholder-image-transparent-hd-png-download.png";
+const DEFAULT_IMAGE = "https://firebasestorage.googleapis.com/v0/b/chotuve-467b2.appspot.com/o/images%2Fplaceholder.png?alt=media&token=8c10759b-43bc-4b29-8c3e-73049771036f";
 
 const users = 'users';
 const minNameLength = 3;
@@ -89,8 +89,8 @@ class UsersManager {
         const name = data.name;
         const email = data.email;
         const sign_in_method = data.sign_in_method;
-        let phone;
 
+        let phone;
         if (data.phone)
             phone = data.phone;
 
