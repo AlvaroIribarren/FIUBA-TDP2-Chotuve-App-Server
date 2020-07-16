@@ -15,7 +15,7 @@ async function authorize(sl_token){
         'App-Server-Api-Key': server_token
     }
 
-    const result = await RequestManager.getResponseByLinkWithHeader(AUTHORIZE_URL, header);
+    const result = await RequestManager.generatePostWithHeaders(AUTHORIZE_URL, null, header);
     return (result.status === 200);
 }
 
