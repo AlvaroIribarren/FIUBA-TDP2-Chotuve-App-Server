@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
                 await UserManager.postUser(req.body, res);
             } else {
                 const firebase_token = req.body.firebase_token;
-                console.log("Firebase token: " + firebase_token);
+                console.log("FB TOKEN ACA AAAAAAAAAAAAAAAA: " + firebase_token);
                 const headers = {
                     "App-Server-Api-Key": server_token,
                     "Firebase-Token": firebase_token
