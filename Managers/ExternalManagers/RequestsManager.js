@@ -47,10 +47,13 @@ class MediaManager {
         return response;
     }
 
-    async getResponseWithBody(link, data) {
-        let res;
+    async generatePutRequestWithHeaders(link, data, headers){
         try {
-            await axios.get(link, data)
+            let res = null;
+            let axiosHeaders = {
+                headers: headers
+            }
+            await axios.put(link, data, axiosHeaders)
                 .then((response) => {
                     res = response.data;
                 })
@@ -58,8 +61,8 @@ class MediaManager {
                     console.log(error);
                 })
             return res;
-        } catch (error) {
-
+        } catch (e) {
+            console.log("Error: " + e);
         }
     }
 
@@ -77,6 +80,20 @@ class MediaManager {
         } catch (e) {
             console.log("Error: " + e);
         }
+    }
+
+    async deleteByIdWithHeader(url, id, headers){
+        const modifiedLink = url + "/" + id;
+        let response;
+        let axiosHeaders = {
+            headers: headers
+        }
+        try {
+            response = await axios.delete(modifiedLink, axiosHeaders);
+        } catch (error) {
+            console.error(error);
+        }
+        return response;
     }
 
     async deleteById(link, id) {

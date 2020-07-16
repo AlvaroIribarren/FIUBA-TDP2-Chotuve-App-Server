@@ -22,15 +22,14 @@ router.post("/", async (req, res) => {
                 await UserManager.postUser(req.body, res);
             } else {
                 const firebase_token = req.body.firebase_token;
-                console.log("FB TOKEN ACA AAAAAAAAAAAAAAAA: " + firebase_token);
                 const headers = {
                     "App-Server-Api-Key": server_token,
                     "Firebase-Token": firebase_token
                 }
-
                 const tokens_and_id = await LoginManager.getTokensFromCreatedUser(headers);
+                const id = user.id;
                 await UserManager.updateLastLogin(id);          //actualiza la nueva fecha de login
-                tokens_and_id.id = user.id;
+                tokens_and_id.id = id;
                 res.send(tokens_and_id);
             }
         }

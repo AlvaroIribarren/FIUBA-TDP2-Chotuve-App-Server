@@ -97,7 +97,7 @@ class UsersManager {
             const img_url = data.img_url;
             const img_uuid = data.img_uuid;
             const resultFromMedia = await MediaRequestManager.postImageToMedia({url: img_url, uuid: img_uuid});
-            img_id = resultFromMedia.id;
+            img_id = resultFromMedia.data.id;
         } else {
             const img_url = DEFAULT_IMAGE;
             const img_uuid = uuidv4();
@@ -110,9 +110,9 @@ class UsersManager {
         const userToAuth = {display_name: name, email, phone_number: phone, sign_in_method, firebase_token};
         const resultFromAuth = await UsersRequestManager.postUserToAuth(userToAuth);
         if (resultFromAuth) {
-            const id = resultFromAuth.id;
-            const refresh_token = resultFromAuth.refresh_token;
-            const sl_token = resultFromAuth.token;
+            const id = resultFromAuth.data.id;
+            const refresh_token = resultFromAuth.data.refresh_token;
+            const sl_token = resultFromAuth.data.token;
             await this.insertUser(id, img_id);
             //testing purposes.
             if (res !== null) {
@@ -127,7 +127,7 @@ class UsersManager {
     }
 
     async deleteUserById(id) {
-        const user = await this.getUserById(id);
+        const user = await this.doesUserExist(id);
         if (user) {
             await Manager.deleteRowFromTableById(id, users);
             const img_id = user.img_id;

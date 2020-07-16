@@ -7,7 +7,7 @@ let userId = 0;
 let user;
 const data = {
      "name" : 'Alvaro',
-     "email" : 'alvarito@alvarito.com',
+     "email" : 'alvarito@xalvaritox.com',
      "phone" : '1234567890',
      "sign_in_method": 'google',
      "firebase_token": "asdasdasd",
@@ -17,7 +17,7 @@ const data = {
 
 
 describe('Users test', async function () {
-    this.timeout(15000);
+    this.timeout(30000);
     it('Add User', async ()=>{
         const length1 = await UserManager.getAmountOfUsers();
         userId = await UserManager.postUser(data, null);

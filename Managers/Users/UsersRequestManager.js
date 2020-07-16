@@ -1,17 +1,24 @@
 const RequestManager = require("../ExternalManagers/RequestsManager")
-const USERS_URL = "https://chotuve-auth-server-g5-dev.herokuapp.com/users"
+const USERS_URL = "https://chotuve-auth-server-g5-dev.herokuapp.com/users";
+const server_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTQ4NTM0MzIsIm5iZiI6MTU5NDg1MzQz" +
+    "MiwianRpIjoiZWMwYWIxZWMtNmIxNS00NGNjLWE0ZTItNWI4ZWE1OTZjOTZkIiwiaWRlbnRpdHkiOiJodHRwczovL2Nob" +
+    "3R1dmUtYXBwbGljYXRpb24tc2VydmVyLmhlcm9rdWFwcC5jb20vIiwidHlwZSI6InJlZnJl" +
+    "c2giLCJ1c2VyX2NsYWltcyI6eyJzZXJ2ZXIiOnRydWV9fQ.klLra18fVSmrwKhENMGiLskZ5z2a8pRLEymBDZmVwnw";
+
+const header_with_server_key = {
+    "App-Server-Api-Key" : server_token
+}
 
 class UsersRequestManager {
-
     async getAllUsersFromAuthServer() {
-        const response = await RequestManager.getResponseByLink(USERS_URL);
+        const response = await RequestManager.getResponseByLinkWithHeader(USERS_URL, header_with_server_key);
         return response.data;
     }
 
     async getUserFromAuthById(id) {
         const str = "/" + id;
         const link = USERS_URL + str;
-        const res = await RequestManager.getResponseByLink(link);
+        const res = await RequestManager.getResponseByLinkWithHeader(link, header_with_server_key);
         if (res) {
             return await res.data;
         } else {
@@ -26,7 +33,7 @@ class UsersRequestManager {
 
     async getUserByEmail(email) {
         const URL = USERS_URL + "/" + email;
-        const result = await RequestManager.getResponseByLink(URL);
+        const result = await RequestManager.getResponseByLinkWithHeader(URL, header_with_server_key);
 
         if (result) {
             return result.data;
@@ -69,16 +76,16 @@ class UsersRequestManager {
     }
 
     async postUserToAuth(user) {
-        return await RequestManager.generatePost(USERS_URL, user);
+        return await RequestManager.generatePostWithHeaders(USERS_URL, user, header_with_server_key);
     }
 
     async deleteUserFromAuth(id) {
-        return await RequestManager.deleteById(USERS_URL, id);
+        return await RequestManager.deleteByIdWithHeader(USERS_URL, id, header_with_server_key);
     }
 
     async modifyUser(id, data){
         const link = USERS_URL + "/" + id;
-        return await RequestManager.generatePutRequest(link, data);
+        return await RequestManager.generatePutRequestWithHeaders(link, data, header_with_server_key);
     }
 }
 

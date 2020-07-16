@@ -1,20 +1,22 @@
 const RequestManager = require("../Managers/ExternalManagers/RequestsManager")
 const LoginManager = require("../Managers/LoginManager")
 
-const AUTHORIZER_URL = "https://chotuve-auth-server-g5-dev.herokuapp.com/authorizer";
+const server_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTQ4NTM0MzIsIm5iZiI6MTU5NDg1MzQz" +
+    "MiwianRpIjoiZWMwYWIxZWMtNmIxNS00NGNjLWE0ZTItNWI4ZWE1OTZjOTZkIiwiaWRlbnRpdHkiOiJodHRwczovL2Nob" +
+    "3R1dmUtYXBwbGljYXRpb24tc2VydmVyLmhlcm9rdWFwcC5jb20vIiwidHlwZSI6InJlZnJl" +
+    "c2giLCJ1c2VyX2NsYWltcyI6eyJzZXJ2ZXIiOnRydWV9fQ.klLra18fVSmrwKhENMGiLskZ5z2a8pRLEymBDZmVwnw";
+
+const AUTHORIZE_URL = "https://chotuve-auth-server-g5-dev.herokuapp.com/authorize";
 
 async function authorize(sl_token){
     const header = {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': sl_token
-        }
+        'Content-Type': 'application/json',
+        'Authorization': sl_token,
+        'App-Server-Api-Key': server_token
     }
 
-    //todo: post a
-    const result = await RequestManager.getResponseByLinkWithHeader(AUTHORIZER_URL, header);
-    const status = result.status;
-    return (status === 200);
+    const result = await RequestManager.getResponseByLinkWithHeader(AUTHORIZE_URL, header);
+    return (result.status === 200);
 }
 
 module.exports = async (req, res, next) => {
@@ -36,7 +38,7 @@ module.exports = async (req, res, next) => {
             try {
                 console.log("Asked for Refresh token")
                 console.log(refresh_token);
-                const Sl_Token = await LoginManager.getNewSLToken(refresh_token);
+                const Sl_Token = await LoginManager.getNewSLToken(refresh_token, server_token);
                 console.log("NEW SL_TOKEN: " + sl_token);
                 res.locals.sl_token = Sl_Token;
                 next();
