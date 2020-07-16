@@ -10,6 +10,7 @@ const server_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTQ4NTM0M
 
 
 router.post("/", async (req, res) => {
+    console.log("token:" + req.body.firebase_token);
     try {
         if (req.body.email === "admin" && req.body.password === "admin"){
             res.status(200).send("Todo bien");
@@ -27,10 +28,10 @@ router.post("/", async (req, res) => {
                     "Firebase-Token": firebase_token
                 }
 
-                //const tokens_and_id = await LoginManager.getTokensFromCreatedUser(headers);
+                const tokens_and_id = await LoginManager.getTokensFromCreatedUser(headers);
                 await UserManager.updateLastLogin(id);          //actualiza la nueva fecha de login
-                //tokens_and_id.id = user.id;
-                //res.send(tokens_and_id);
+                tokens_and_id.id = user.id;
+                res.send(tokens_and_id);
             }
         }
     } catch {
