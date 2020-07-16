@@ -46,7 +46,7 @@ module.exports = async (req, res, next) => {
                 res.status(401).send("Invalid request in relogin, probably refresh token missing");
             }
         } else {
-            res.status(5000).send("Unknown error");
+            res.status(500).send("Unknown error");
         }
     } catch {
         res.status(401).json({

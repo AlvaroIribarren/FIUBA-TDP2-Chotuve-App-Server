@@ -21,7 +21,7 @@ class LoginManager {
             'Authorization': refresh_token,
             'App-Server-Api-Key': server_token
         }
-        const result = await RequestManager.getResponseByLinkWithHeader(AUTHENTICATE_URL, headers);
+        const result = await RequestManager.generatePostWithHeaders(AUTHENTICATE_URL, null, headers);
         return await result.data.token;     //short lived token
     }
 }
