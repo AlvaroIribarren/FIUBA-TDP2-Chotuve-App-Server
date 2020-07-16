@@ -83,7 +83,6 @@ class UsersManager {
         await Manager.executeQueryInTable(text, values);
     }
 
-//todo: mandar firebase_token a Auth
     async postUser(data, res) {
         let img_id = 0;
         const name = data.name;
@@ -131,13 +130,14 @@ class UsersManager {
         const user = await this.getUserById(id);
         if (user) {
             await Manager.deleteRowFromTableById(id, users);
+            const img_id = user.img_id;
+            await MediaRequestManager.deleteImageById(img_id);
             return await UsersRequestManager.deleteUserFromAuth(id);
         } else {
             return null;
         }
     }
 
-//todo: put a auth
     async editUser(id, data) {
         try {
             return await UsersRequestManager.modifyUser(id, data);
@@ -193,6 +193,14 @@ class UsersManager {
             phone: Joi.string().required()
         }
         return Joi.validate(body, schema);
+    }
+
+    async enableUser(user_id){
+        return await Manager.turnColumnValueToTrueById(user_id, users, ' enabled ');
+    }
+
+    async disableUser(user_id) {
+        return await Manager.turnColumnValueToFalseById(user_id, users, ' enabled ');
     }
 }
 

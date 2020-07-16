@@ -15,15 +15,24 @@ class FriendRequestManager {
         }
     }
 
+    async getAmountOfRequests(){
+        const allRequests = await this.getRequests();
+        return allRequests.length;
+    }
+
     async getRequestById(id) {
         return await Manager.getIdFromTable(id, requests);
     }
 
     async getAllRequestsSentById(sender_id) {
-        const text = 'SELECT * FROM requests WHERE sender_id = ' + sender_id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
+        const condition = ' sender_id = ' + sender_id;
+        return await Manager.getAllRowsWithCondition(requests, condition);
+    }
+
+    async getAmountOfRequestsSentById(sender_id){
+        const allRequests = await this.getAllRequestsSentById(sender_id);
+        if (allRequests)
+            return allRequests.length;
     }
 
     async getRequestSentBySenderToReceiver(sender_id, receiver_id) {
@@ -34,10 +43,14 @@ class FriendRequestManager {
     }
 
     async getAllRequestsReceivedByUserId(receiver_id) {
-        const text = 'SELECT * FROM requests WHERE receiver_id = ' + receiver_id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
+        const condition = ' receiver_id = ' + receiver_id;
+        return await Manager.getAllRowsWithCondition(requests, condition);
+    }
+
+    async getAmountOfRequestsReceivedByUser(receiver_id){
+        const allRequests = await this.getAllRequestsReceivedByUserId(receiver_id);
+        if (allRequests)
+            return allRequests.length;
     }
 
     async isThereAtLeastARequestBetweenUsers(id1, id2) {
@@ -51,11 +64,11 @@ class FriendRequestManager {
         const text = 'INSERT INTO requests(id, sender_id, receiver_id) VALUES($1, $2, $3)';
         const values = [id, sender_id, receiver_id];
         await Manager.executeQueryInTable(text, values);
+        return id;
     }
 
 
     async deleteRequestFromSenderToReceiver(id1, id2) {
-        console.log("Deleting friendship (so sad :( )");
         const condition = ' sender_id = ' + id1 + ' AND receiver_id = ' + id2;
         await Manager.deleteAllRowsWithCondition(requests, condition);
     }
@@ -66,21 +79,19 @@ class FriendRequestManager {
     }
 
     async getRequestByUsersIds(sender_id, receiver_id) {
-        console.log("Relation between 2 users");
-        const text = 'SELECT * FROM requests WHERE sender_id = ' + sender_id + ' AND receiver_id = ' + receiver_id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows[0]);
-        return res.rows[0];
+        const condition = ' sender_id = ' + sender_id + ' AND receiver_id = ' + receiver_id;
+        const allRequests = await Manager.getAllRowsWithCondition(requests, condition);
+        if (allRequests.length > 0)
+            return allRequests[0];
+        else
+            return null;
     }
 
 
     async checkValidRequest(sender_id, receiver_id) {
-        const user1 = await UserManager.getUserById(sender_id);
-        const user2 = await UserManager.getUserById(receiver_id);
-
-        //const relation = await getRelationByIds(sender_id, receiver_id);
+        const user1 = await UserManager.doesUserExist(sender_id);
+        const user2 = await UserManager.doesUserExist(receiver_id);
         const request = await this.getRequestByUsersIds(sender_id, receiver_id);
-
         return (user1 && user2 && !request);
     }
 
@@ -90,11 +101,16 @@ class FriendRequestManager {
 
         const validRequest = await this.checkValidRequest(sender_id, receiver_id);
         if (validRequest) {
-            await this.insertRequest(sender_id, receiver_id);
-            const response = await this.sendRequestNotification(sender_id, receiver_id);
-            res.send(response);
+            const id = await this.insertRequest(sender_id, receiver_id);
+
+            if (res) {
+                const response = await this.sendRequestNotification(sender_id, receiver_id);
+                res.send(response);
+            }
+            return id;
         } else {
-            res.status(404).send("Request invalida, ids no validas, ya son amigos o ya se envio la request");
+            if (res)
+                res.status(404).send("Request invalida, ids no validas, ya son amigos o ya se envio la request");
         }
     }
 

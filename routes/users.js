@@ -229,6 +229,18 @@ router.put('/:id/profile', async (req, res) => {
     } else {
         res.status(400).send("Error en validacion: " + error.details[0].message);
     }
+});
+
+router.put("/:user_id/enabled", async (req,res) => {
+    const user_id = parseInt(req.params.user_id);
+    const enabled = await VideosManager.isVideoEnabled(user_id);
+    if (enabled) {
+        await UserManager.disableUser(user_id);
+        res.send("User disabled");
+    } else {
+        await UserManager.enableUser(user_id);
+        res.send("User enabled");
+    }
 })
 
 module.exports = router;

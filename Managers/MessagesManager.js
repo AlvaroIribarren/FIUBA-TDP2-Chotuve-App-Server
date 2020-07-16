@@ -18,14 +18,13 @@ class MessagesManager {
         }
     }
 
-    async getMessageByItsId(id) {
-        return await Manager.getIdFromTable(id, messages);
+    async getAmountOfMessages(){
+        const allMessages = await this.getAllMessages();
+        return allMessages.length;
     }
 
-//post: returns array of messages sent by user.
-    async getAllMessagesSentByUser(sender_id) {
-        const condition = "sender_id = " + sender_id;
-        return await Manager.getAllRowsWithCondition(messages, condition);
+    async getMessageByItsId(id) {
+        return await Manager.getIdFromTable(id, messages);
     }
 
 //post: returns an array of messages sent by id1 to id2.
@@ -93,8 +92,7 @@ class MessagesManager {
         const date = new Date();
         const hours = date.getHours() - HOURS_DIFFERENCE;
         date.setHours(hours);
-        const timeAsString = date.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-        return timeAsString;
+        return date.toISOString().replace(/T/, ' ').replace(/\..+/, '');
     }
 
 
@@ -129,10 +127,14 @@ class MessagesManager {
 
         if (rightSenderInfo && rightReceiverInfo && areFriends) {
             const id = await this.insertMessage(sender_id, receiver_id, message, time);
-            const state = await this.sendMessageNotification(sender_id, receiver_id, message, time);
-            res.send({id, sender_id, receiver_id, message, time, state});
+            if (res) {
+                const state = await this.sendMessageNotification(sender_id, receiver_id, message, time);
+                res.send({id, sender_id, receiver_id, message, time, state});
+            }
+            return id;
         } else {
-            res.status(404).send("One of the users doesn't exist.");
+            if (res)
+                res.status(404).send("One of the users doesn't exist.");
         }
     }
 

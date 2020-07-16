@@ -6,8 +6,8 @@ async function insertSearch(word){
     const id = await Manager.generateNewIdInTable(searches);
     const text = 'INSERT INTO searches (id, word) VALUES ($1, $2)';
     const values = [id, word];
-    const result = await Manager.executeQueryInTable(text, values);
-    return result;
+    await Manager.executeQueryInTable(text, values);
+    return id;
 }
 
 async function addOneToAmount(search){
@@ -18,6 +18,15 @@ async function addOneToAmount(search){
 
 
 class SearchManager {
+    async getSearches(){
+        return await Manager.getRows(searches);
+    }
+
+    async getAmountOfSearches(){
+        const allSearches = await this.getSearches();
+        return allSearches.length;
+    }
+
     async doesSearchExist(search){
         const allSearches = await Manager.getRows(searches);
         for (let actualSearch of allSearches) {
@@ -39,8 +48,12 @@ class SearchManager {
         }
     }
 
-    async getSearches(){
-        return await Manager.getRows(searches);
+    async getSearchById(id){
+        return await Manager.getIdFromTable(id, searches);
+    }
+
+    async deleteSearchById(id){
+        return await Manager.deleteRowFromTableById(id, searches);
     }
 }
 

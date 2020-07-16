@@ -14,6 +14,11 @@ class CommentsManager {
         }
     }
 
+    async getAmountOfComments(){
+        const comments = await this.getAllComments();
+        return comments.length;
+    }
+
     async getCommentByItsId(id) {
         return await Manager.getIdFromTable(id, comments);
     }
@@ -23,6 +28,16 @@ class CommentsManager {
         const res = await Manager.executeQueryInTableWithoutValues(text);
         console.log(res.rows);
         return res.rows;
+    }
+
+    async getAllCommentsFromUser(user_id) {
+        const condition = ' author_id = ' + user_id;
+        return await Manager.getAllRowsWithCondition(comments, condition);
+    }
+
+    async getAmountOfCommentsByUser(user_id) {
+        const allComments = await this.getAllCommentsFromUser(user_id);
+        return allComments.length;
     }
 
     async getAmountOfCommentsFromVideo(video_id){
@@ -40,9 +55,7 @@ class CommentsManager {
     }
 
     async deleteCommentById(id) {
-        console.log("Deleting video");
-        const condition = ' id = ' + id;
-        return await Manager.executeQueryInTableWithoutValues(condition);
+        return await Manager.deleteRowFromTableById(id, comments);
     }
 
     async deleteAllCommentsFromVideo(video_id) {
@@ -71,7 +84,11 @@ class CommentsManager {
 
         if (rightUserInfo) {
             const id = await this.insertComment(author_id, author_name, video_id, comment);
-            res.send({id, author_id, author_name, video_id, comment});
+
+            if (res)
+                res.send({id, author_id, author_name, video_id, comment});
+
+            return id;
         } else {
             res.status(404).send("User or videos information is incorrect or doesn't exist.");
         }

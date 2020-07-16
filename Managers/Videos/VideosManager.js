@@ -167,7 +167,6 @@ class VideosManager {
                 }
             }
         }
-
         return listOfVideos;
     }
 

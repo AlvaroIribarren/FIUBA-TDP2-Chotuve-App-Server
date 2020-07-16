@@ -10,6 +10,8 @@ async function authorize(sl_token){
             'Authorization': sl_token
         }
     }
+
+    //todo: post a
     const result = await RequestManager.getResponseByLinkWithHeader(AUTHORIZER_URL, header);
     const status = result.status;
     return (status === 200);

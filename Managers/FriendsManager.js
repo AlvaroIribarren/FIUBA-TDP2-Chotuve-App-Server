@@ -18,8 +18,7 @@ class FriendsManager {
 
     async getAmountOfRelations(){
         const relations = await this.getRelations();
-        const amount = relations.length / 2;
-        return amount;
+        return relations.length / 2;
     }
 
     async getRelationById(id) {
@@ -28,8 +27,7 @@ class FriendsManager {
 
     async getRelationByIds(id1, id2) {
         const condition = " id1 = " + id1 + " and " + " id2 = " + id2;
-        const response = await Manager.getAllRowsWithCondition(friends, condition);
-        return response;
+        return await Manager.getAllRowsWithCondition(friends, condition);
     }
 
     async doesRelationExistBetween(id1, id2) {
@@ -48,10 +46,8 @@ class FriendsManager {
     }
 
     async getAllRelationsFromUser(id) {
-        const text = 'SELECT * FROM friends WHERE id1 = ' + id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
+        const condition = ' id1 = ' + id;
+        return await Manager.getAllRowsWithCondition(friends, condition);
     }
 
     //Evita la conexion con el auth para ganar velocidad.
@@ -75,9 +71,8 @@ class FriendsManager {
     }
 
     async deleteRelationByUsersId(id1, id2) {
-        console.log("Deleting friendship (so sad :( )");
-        const text = 'DELETE FROM friends WHERE id1 = ' + id1 + ' AND id2 = ' + id2;
-        return await Manager.executeQueryInTableWithoutValues(text);
+        const condition = ' id1 = ' + id1 + ' AND id2 = ' + id2;
+        return await Manager.deleteAllRowsWithCondition(friends, condition);
     }
 
     async deleteRelationBetweenUsers(id1, id2) {
@@ -137,14 +132,15 @@ class FriendsManager {
 
         if (newValidRelation) {
             await FriendRequestManager.deleteRequestsBetweenUsers(data.id1, data.id2);
-            await this.sendAcceptedRequestNotification(data.id1, data.id2);
             const relationsIds = await this.insertRelationBetweenUsers(id1, id2);
-            if (res !== null)
+            if (res) {
+                await this.sendAcceptedRequestNotification(data.id1, data.id2);
                 res.send("Amistad agregada entre: " + id1 + "/" + id2);
-
+            }
             return relationsIds;
         } else {
-            res.status(404).send("ID inexistente");
+            if (res)
+                res.status(404).send("ID inexistente");
         }
     }
 
