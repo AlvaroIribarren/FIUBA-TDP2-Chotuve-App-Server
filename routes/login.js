@@ -27,10 +27,10 @@ router.post("/", async (req, res) => {
                     "Firebase-Token": firebase_token
                 }
 
-                const tokens_and_id = await LoginManager.getTokensFromCreatedUser(headers);
+                //const tokens_and_id = await LoginManager.getTokensFromCreatedUser(headers);
                 await UserManager.updateLastLogin(id);          //actualiza la nueva fecha de login
-                tokens_and_id.id = user.id;
-                res.send(tokens_and_id);
+                //tokens_and_id.id = user.id;
+                //res.send(tokens_and_id);
             }
         }
     } catch {
