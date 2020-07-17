@@ -38,12 +38,12 @@ class MediaRequestManager {
         const info = await this.getAllInfo();
         for (let video of videos) {
             const actualInfo = info.filter(element => element.id === video.id);
-            if (actualInfo) {
+            if (actualInfo.length > 0) {
                 video.url = actualInfo[0].url;
                 video.video_size = actualInfo[0].video_size;
                 listOfVideos.push(video);
             } else {
-                console.log("No se encontro un video con id: " + video);
+                console.log("No se encontro un video con id: " + video.id);
             }
         }
         return listOfVideos;

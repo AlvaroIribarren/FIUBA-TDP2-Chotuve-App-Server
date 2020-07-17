@@ -71,7 +71,8 @@ class VideosManager {
 
     async getVideoByIdInAppServer(id) {
         let video = await Manager.getIdFromTable(id, videos);
-        video = await UserManager.addNameToElementById(id, video);
+        const author_id = video.author_id;
+        video = await UserManager.addNameToElementById(author_id, video);
         return video;
     }
 
@@ -91,6 +92,11 @@ class VideosManager {
             videosWithUrls = videosWithUrls.filter(video => video.public_video === true);
         }
         return videosWithUrls;
+    }
+
+    async getAmountOfVideosFromUser(userId, showPrivateVideos){
+        const allVideos = await this.getAllVideosFromUser(userId, showPrivateVideos);
+        return allVideos.length;
     }
 
     async createVideoInMedia(json) {
@@ -133,6 +139,16 @@ class VideosManager {
         await Manager.updateRowWithNewValue(id, videos, 'dislikes', 'dislikes - 1');
     }
 
+    async getLikesFromVideo(id){
+        const actualVideo = await Manager.getIdFromTable(id, videos);
+        return actualVideo.likes;
+    }
+
+    async getDislikesFromVideo(id){
+        const actualVideo = await Manager.getIdFromTable(id, videos);
+        return actualVideo.dislikes;
+    }
+
     async insertVideo(id, author_id, title, description, location, public_video) {
         const text = 'INSERT INTO videos(id, author_id, title, description, location, public_video) ' +
             'VALUES($1, $2, $3, $4, $5, $6)';
@@ -154,7 +170,6 @@ class VideosManager {
         const videos = await this.getAllVideosFromUser(userId, true);
 
         for (let video of videos) {
-            await VideoRequestManager.deleteVideoById(video.id);
             await this.deleteVideoByVideosId(video.id);
         }
     }

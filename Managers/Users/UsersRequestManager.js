@@ -98,8 +98,8 @@ class UsersRequestManager {
         return allElements;
     }
 
-    async addDisplayNameToElementById(id, element){
-        const userFromAuth = await this.getUserFromAuthById(id);
+    async addDisplayNameToElementById(user_id, element){
+        const userFromAuth = await this.getUserFromAuthById(user_id);
         element.author_name = userFromAuth.display_name;
         return element;
     }

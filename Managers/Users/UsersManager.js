@@ -30,8 +30,8 @@ class UsersManager {
         return await UsersRequestManager.addDisplayNameToElements(elements);
     }
 
-    async addNameToElementById(id, element){
-        return await UsersRequestManager.addDisplayNameToElementById(id, element);
+    async addNameToElementById(user_id, element){
+        return await UsersRequestManager.addDisplayNameToElementById(user_id, element);
     }
 
     async updateLastLogin(user_id){

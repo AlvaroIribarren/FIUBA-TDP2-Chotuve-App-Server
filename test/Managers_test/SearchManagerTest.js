@@ -5,7 +5,7 @@ const SearchManager = require("../../Managers/SearchManager")
 let searchId = 0;
 let search;
 
-const word = "testing";
+const word = "newSearch";
 
 
 describe('Search manager test', async function () {
