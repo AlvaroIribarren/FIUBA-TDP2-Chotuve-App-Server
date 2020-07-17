@@ -8,7 +8,9 @@ const comments = 'comments';
 class CommentsManager {
     async getAllComments() {
         try {
-            return Manager.getRows(comments);
+            let allComments = await Manager.getRows(comments);
+            allComments = await UserManager.addNamesToElements(allComments);
+            return allComments;
         } catch (e) {
             console.log(e);
         }
@@ -20,19 +22,21 @@ class CommentsManager {
     }
 
     async getCommentByItsId(id) {
-        return await Manager.getIdFromTable(id, comments);
+        let comment = await Manager.getIdFromTable(id, comments);
+        comment = await UserManager.addNameToElementById(id, comment);
+        return comment;
     }
 
     async getAllCommentsFromVideo(video_id) {
-        const text = 'SELECT * FROM comments WHERE video_id = ' + video_id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
+        const condition = ' video_id = ' + video_id;
+        return await Manager.getAllRowsWithCondition(comments, condition);
     }
 
     async getAllCommentsFromUser(user_id) {
         const condition = ' author_id = ' + user_id;
-        return await Manager.getAllRowsWithCondition(comments, condition);
+        let allComments = await Manager.getAllRowsWithCondition(comments, condition);
+        allComments = await UserManager.addNamesToElements(allComments);
+        return allComments;
     }
 
     async getAmountOfCommentsByUser(user_id) {
@@ -45,11 +49,11 @@ class CommentsManager {
         return videos.length;
     }
 
-    async insertComment(author_id, author_name, video_id, comment) {
+    async insertComment(author_id, video_id, comment) {
         const id = await Manager.generateNewIdInTable(comments);
-        const text = 'INSERT INTO comments(id, author_id, author_name, video_id, comment) ' +
-            'VALUES($1, $2, $3, $4, $5)';
-        const values = [id, author_id, author_name, video_id, comment];
+        const text = 'INSERT INTO comments(id, author_id, video_id, comment) ' +
+            'VALUES($1, $2, $3, $4)';
+        const values = [id, author_id, video_id, comment];
         await Manager.executeQueryInTable(text, values);
         return id;
     }
@@ -69,24 +73,16 @@ class CommentsManager {
         return await Manager.deleteAllRowsWithCondition(comments, condition);
     }
 
-    async validateUserInfo(author_id, author_name) {
-        return await UserManager.checkCorrectIdAndName(author_id, author_name);
-    }
-
-
     async postComment(data, res) {
         const author_id = data.author_id;
-        const author_name = data.author_name;
         const video_id = data.video_id;
         const comment = data.comment;
-        const rightUserInfo = await this.validateUserInfo(author_id, author_name);
+        const correctUser = await UserManager.doesUserExist(author_id);
 
-
-        if (rightUserInfo) {
-            const id = await this.insertComment(author_id, author_name, video_id, comment);
-
+        if (correctUser) {
+            const id = await this.insertComment(author_id, video_id, comment);
             if (res)
-                res.send({id, author_id, author_name, video_id, comment});
+                res.send({id, author_id, video_id, comment});
 
             return id;
         } else {
@@ -97,7 +93,6 @@ class CommentsManager {
     async validateInput(body) {
         const schema = {
             author_id: Joi.number().positive().required(),
-            author_name: Joi.string().required(),
             video_id: Joi.number().positive().required(),
             comment: Joi.string().required(),
         }

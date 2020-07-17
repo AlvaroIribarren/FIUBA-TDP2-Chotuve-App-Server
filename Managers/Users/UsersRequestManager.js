@@ -87,6 +87,22 @@ class UsersRequestManager {
         const link = USERS_URL + "/" + id;
         return await RequestManager.generatePutRequestWithHeaders(link, data, header_with_server_key);
     }
+
+    async addDisplayNameToElements(allElements){
+        const allUsersFromAuth = await this.getAllUsersFromAuthServer();
+        for (let actualElement of allElements){
+            const user_id = actualElement.author_id;
+            const actualUser = await allUsersFromAuth.find(actualUser => actualUser.id === user_id);
+            actualElement.author_name = actualUser.display_name;        //nombre del usuario desde auth
+        }
+        return allElements;
+    }
+
+    async addDisplayNameToElementById(id, element){
+        const userFromAuth = await this.getUserFromAuthById(id);
+        element.author_name = userFromAuth.display_name;
+        return element;
+    }
 }
 
 const usersRequestManager = new UsersRequestManager();

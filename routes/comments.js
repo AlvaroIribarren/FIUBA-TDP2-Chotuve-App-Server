@@ -26,9 +26,8 @@ router.post("/", auth, async (req, res) => {
         const rightVideoInfo = await validateVideoInfo(video_id);
         if (rightVideoInfo){
             const author_id = req.body.author_id;
-            const author_name = req.body.author_name;
             const comment = req.body.comment;
-            const data = {author_id, author_name, video_id, comment};
+            const data = {author_id, video_id, comment};
             await CommentManager.postComment(data, res);
         }
     } else {

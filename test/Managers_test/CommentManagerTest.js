@@ -11,7 +11,6 @@ const video_id = 85;
 
 const data = {
     "author_id": user_id,
-    "author_name": "Ignacio Nitz",
     "video_id": video_id,
     "comment": "Comentario de prueba"
 };

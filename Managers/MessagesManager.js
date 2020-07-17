@@ -121,8 +121,8 @@ class MessagesManager {
         const message = data.message;
         const time = await this.getActualTime();
 
-        const rightSenderInfo = await this.validateUsersExistance(sender_id);
-        const rightReceiverInfo = await this.validateUsersExistance(receiver_id);
+        const rightSenderInfo = await UserManager.doesUserExist(sender_id);
+        const rightReceiverInfo = await UserManager.doesUserExist(receiver_id);
         const areFriends = await FriendManager.doesRelationExistBetween(sender_id, receiver_id);
 
         if (rightSenderInfo && rightReceiverInfo && areFriends) {

@@ -74,7 +74,6 @@ router.get("/:video_id/reactions", auth, async(req, res) => {
 async function validateInputForPost(body){
     const schema = {
         author_id: Joi.number().positive().required(),
-        author_name: Joi.string().required(),
         title: Joi.string().required(),
         description: Joi.string(),
         location: Joi.string(),
@@ -89,7 +88,6 @@ async function validateInputForPost(body){
 async function validateModifyVideo(body){
     const schema = {
         author_id: Joi.number().positive().required(),
-        author_name: Joi.string().required(),
         title: Joi.string().required(),
         description: Joi.string().required(),
         location: Joi.string().required(),
@@ -98,39 +96,10 @@ async function validateModifyVideo(body){
     return Joi.validate(body, schema);
 }
 
-
-
-async function validateUserInfo(author_id, author_name){
-    return await UserManager.checkCorrectIdAndName(author_id, author_name);
-}
-
 router.post("/", async (req, res) => {
     const error = await validateInputForPost(req.body).error;
     if (!error){
-        const author_id = parseInt(req.body.author_id);
-        const author_name = req.body.author_name;
-        const rightUserInfo = await validateUserInfo(author_id, author_name);
-
-        if (rightUserInfo){
-            const title = req.body.title;
-            const description = req.body.description;
-            const location = req.body.location;
-            const public_video =  req.body.public_video;
-
-            const url = req.body.url;
-            const uuid = req.body.uuid;
-            let video_size = req.body.video_size;
-            video_size = video_size.replace(",", ".");
-
-            const resultFromMedia = await VideosManager.createVideoInMedia({url, uuid, video_size});
-            const id = resultFromMedia.id;
-
-            await VideosManager.insertVideo(id, author_id, author_name, title, description, location, public_video);
-
-            res.send({id, author_id, author_name, title, description, public_video, url, location, uuid});
-        } else {
-            res.status(404).send("Author's id or name was not found");
-        }
+        await VideosManager.postVideo()
     } else {
         res.status(400).send(error.details[0].message);
     }
@@ -143,17 +112,14 @@ async function validateVideoInfo(video_id){
 
 router.post("/:video_id/reactions", async (req, res) => {
     const error = await ReactionManager.validateInput(req.body).error;
-
     if (!error) {
         const author_id = req.body.author_id;
-        const author_name = req.body.author_name;
         const video_id = parseInt(req.params.video_id);
         const positive_reaction = req.body.positive_reaction;
-        const rightUserInfo = await validateUserInfo(author_id, author_name);
         const rightVideoInfo = await validateVideoInfo(video_id);
-
-        if (rightUserInfo && rightVideoInfo) {
-            const data = {author_id, author_name, video_id, positive_reaction};
+        const userExists = await UserManager.doesUserExist(author_id);
+        if (userExists && rightVideoInfo) {
+            const data = {author_id, video_id, positive_reaction};
             await postReaction(data, res);
         } else {
             res.status(400).send("Video or user doesn't exist");
@@ -167,10 +133,9 @@ router.post("/:video_id/comments", auth, async (req, res) => {
     const error = await CommentManager.validateInput(req.body).error;
     if (!error) {
         const author_id = req.body.author_id;
-        const author_name = req.body.author_name;
         const video_id = parseInt(req.params.video_id);
         const comment = req.body.comment;
-        const data = {author_id, author_name, video_id, comment};
+        const data = {author_id, video_id, comment};
         await CommentManager.postComment(data, res);
     } else {
         res.status(400).send(error.details[0].message);

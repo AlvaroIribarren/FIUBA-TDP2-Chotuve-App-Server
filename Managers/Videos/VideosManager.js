@@ -1,5 +1,6 @@
 const Manager = require('../DBManager')
 const VideoRequestManager = require("../Videos/MediaRequestManager")
+const UserManager = require("../Users/UsersManager")
 const RulesEngine = require("../../Rules/RulesEngine")
 const CommentManager = require("../CommentsManager")
 const ReactionManager = require("../Reactions/ReactionsManager")
@@ -14,7 +15,9 @@ class VideosManager {
         try {
             let videos = await this.getVideosInAppServer();
             videos = videos.filter(video => video.public_video === true);
-            return VideoRequestManager.getAllVideosWithAddedInfo(videos);
+            videos = await VideoRequestManager.getAllVideosWithAddedInfo(videos);
+            videos = await UserManager.addNamesToElements(videos);
+            return videos;
         } catch (e) {
             console.log(e);
         }
@@ -44,13 +47,14 @@ class VideosManager {
     }
 
     async getVideoWithNoUrlById(id){
-        return await this.getVideoByIdInAppServer(id);
+        let actualVideo = await this.getVideoByIdInAppServer(id);
+        actualVideo = await UserManager.addNameToElementById(id, actualVideo);
+        return actualVideo;
     }
 
     async doesVideoExist(video_id){
         const condition = " id = " + video_id;
-        const result = await Manager.getAllRowsWithCondition(videos, condition);
-        return result;
+        return await Manager.getAllRowsWithCondition(videos, condition);
     }
 
     async getVideoById(id) {
@@ -66,16 +70,21 @@ class VideosManager {
     }
 
     async getVideoByIdInAppServer(id) {
-        return await Manager.getIdFromTable(id, videos);
+        let video = await Manager.getIdFromTable(id, videos);
+        video = await UserManager.addNameToElementById(id, video);
+        return video;
     }
 
     async getVideosInAppServer() {
-        return await Manager.getRows(videos);
+        let allVideos = await Manager.getRows(videos);
+        allVideos = await UserManager.addNamesToElements(allVideos);
+        return allVideos;
     }
 
     async getAllVideosFromUser(userid, showPrivateVideos) {
         const condition = ' author_id = ' + userid;
-        const allVideos = await Manager.getAllRowsWithCondition(videos, condition);
+        let allVideos = await Manager.getAllRowsWithCondition(videos, condition);
+        allVideos = await UserManager.addNamesToElements(allVideos);
         let videosWithUrls = await VideoRequestManager.addMediaInfoToVideos(allVideos);
 
         if (!showPrivateVideos) { //muestro solo los publicos
@@ -124,11 +133,10 @@ class VideosManager {
         await Manager.updateRowWithNewValue(id, videos, 'dislikes', 'dislikes - 1');
     }
 
-    async insertVideo(id, author_id, author_name, title, description, location, public_video) {
-        const text = 'INSERT INTO videos(id, author_id, author_name, title, description, location, public_video) ' +
-            'VALUES($1, $2, $3, $4, $5, $6, $7)';
-        const values = [id, author_id, author_name, title, description, location, public_video];
-
+    async insertVideo(id, author_id, title, description, location, public_video) {
+        const text = 'INSERT INTO videos(id, author_id, title, description, location, public_video) ' +
+            'VALUES($1, $2, $3, $4, $5, $6)';
+        const values = [id, author_id, title, description, location, public_video];
         await Manager.executeQueryInTable(text, values);
     }
 
@@ -196,6 +204,34 @@ class VideosManager {
             acum += actualVideo.views;
         }
         return acum;
+    }
+
+    async postVideo(data, res){
+        const author_id = parseInt(data.author_id);
+        const rightUserInfo = await UserManager.doesUserExist(author_id);
+
+        if (rightUserInfo){
+            const title = data.title;
+            const description = data.description;
+            const location = data.location;
+            const public_video = data.public_video;
+
+            const url = data.url;
+            const uuid = data.uuid;
+            let video_size = data.video_size;
+            video_size = video_size.replace(",", ".");
+
+            const resultFromMedia = await this.createVideoInMedia({url, uuid, video_size});
+            const id = resultFromMedia.data.id;
+
+            await this.insertVideo(id, author_id, title, description, location, public_video);
+            if (res)
+                res.send({id, author_id, title, description, public_video, url, location, uuid});
+            return id;
+        } else {
+            if (res)
+                res.status(404).send("Author's id or name was not found");
+        }
     }
 }
 

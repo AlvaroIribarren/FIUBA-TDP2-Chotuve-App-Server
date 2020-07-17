@@ -26,6 +26,14 @@ class UsersManager {
         }
     }
 
+    async addNamesToElements(elements){
+        return await UsersRequestManager.addDisplayNameToElements(elements);
+    }
+
+    async addNameToElementById(id, element){
+        return await UsersRequestManager.addDisplayNameToElementById(id, element);
+    }
+
     async updateLastLogin(user_id){
         console.log("Updating last login");
         return await Manager.updateRowWithNewValue(user_id, users, ' last_login ', ' DEFAULT ');

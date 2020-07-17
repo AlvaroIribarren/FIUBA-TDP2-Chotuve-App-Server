@@ -50,7 +50,8 @@ class MediaRequestManager {
     }
 
     async getAllVideosWithAddedInfo(videos) {
-        return await this.addMediaInfoToVideos(videos);
+        videos = await this.addMediaInfoToVideos(videos);
+        return videos;
     }
 
     async postVideoToMedia(video) {

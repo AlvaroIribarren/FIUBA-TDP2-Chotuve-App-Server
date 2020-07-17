@@ -8,28 +8,31 @@ const reactions = 'reactions'
 class ReactionsManager {
     async getAllReactions() {
         try {
-            return Manager.getRows(reactions);
+            let allReactions = Manager.getRows(reactions);
+            allReactions = await UserManager.addNamesToElements(allReactions);
+            return allReactions;
         } catch (e) {
             console.log(e);
         }
     }
 
     async getReactionById(id) {
-        return await Manager.getIdFromTable(id, reactions);
+        let reaction = await Manager.getIdFromTable(id, reactions);
+        reaction = await UserManager.addNameToElementById(id, reaction);
+        return reaction;
     }
 
     async getAllReactionsFromVideo(video_id) {
-        const text = 'SELECT * FROM reactions WHERE video_id = ' + video_id;
-        const res = await Manager.executeQueryInTableWithoutValues(text);
-        console.log(res.rows);
-        return res.rows;
+        const condition = ' video_id = ' + video_id;
+        let allReactions = await Manager.getAllRowsWithCondition(reactions, condition);
+        allReactions = await UserManager.addNamesToElements(allReactions);
+        return allReactions;
     }
 
     async didUserReactToVideo(author_id, video_id, reaction_condition){
         const search = "author_id = " + author_id + " AND " + " video_id = " + video_id;
         const condition = search + " " + reaction_condition;
-        const result = await Manager.getAllRowsWithCondition(reactions, condition);
-        return result;
+        return await Manager.getAllRowsWithCondition(reactions, condition);
     }
 
     async didUserLikedTheVideo(author_id, video_id){
@@ -42,22 +45,22 @@ class ReactionsManager {
         return await this.didUserReactToVideo(author_id, video_id, reaction_condition);
     }
 
-    async insertReaction(author_id, author_name, video_id, positive_reaction) {
+    async insertReaction(author_id, video_id, positive_reaction) {
         const id = await Manager.generateNewIdInTable(reactions);
-        const text = 'INSERT INTO reactions(id, author_id, author_name, video_id, positive_reaction) ' +
-            'VALUES($1, $2, $3, $4, $5)';
-        const values = [id, author_id, author_name, video_id, positive_reaction];
+        const text = 'INSERT INTO reactions(id, author_id, video_id, positive_reaction) ' +
+            'VALUES($1, $2, $3, $4)';
+        const values = [id, author_id, video_id, positive_reaction];
         await Manager.executeQueryInTable(text, values);
         return id;
     }
 
     async deleteReactionById(id) {
-        console.log("Deleting video");
-        await Manager.deleteRowFromTableById(id, reactions);
+        console.log("Deleting reaction id:" + id);
+        return await Manager.deleteRowFromTableById(id, reactions);
     }
 
     async deleteAllReactionsFromVideo(video_id) {
-        console.log("Deleting all reactions");
+        console.log("Deleting all reactions from video: " + video_id);
         const condition = ' video_id = ' + video_id;
         return await Manager.deleteAllRowsWithCondition(reactions, condition);
     }
@@ -70,15 +73,12 @@ class ReactionsManager {
 
     async getReactionFromUserInVideo(author_id, video_id) {
         const condition = ' author_id =' + author_id + ' AND video_id =' + video_id;
-        const filteredReactions = await Manager.getAllRowsWithCondition(reactions, condition);
+        let filteredReactions = await Manager.getAllRowsWithCondition(reactions, condition);
+        filteredReactions = await UserManager.addNamesToElements(filteredReactions);
         if (filteredReactions.length > 0)
             return filteredReactions[0];
         else
             return null;
-    }
-
-    async validateUserInfo(author_id, author_name) {
-        return await UserManager.checkCorrectIdAndName(author_id, author_name);
     }
 
     async updateReaction(id, positive_reaction) {
@@ -88,7 +88,6 @@ class ReactionsManager {
     async validateInput(body) {
         const schema = {
             author_id: Joi.number().positive().required(),
-            author_name: Joi.string().required(),
             video_id: Joi.number().positive().required(),
             positive_reaction: Joi.boolean().required(),
         }
@@ -96,5 +95,4 @@ class ReactionsManager {
     }
 }
 
-const reactionsManager = new ReactionsManager();
-module.exports = reactionsManager;
+module.exports = new ReactionsManager();
