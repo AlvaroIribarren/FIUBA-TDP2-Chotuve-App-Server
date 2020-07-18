@@ -2,6 +2,7 @@ const {Pool} = require('pg');
 
 const SELECT_STRING = 'select *';
 
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }

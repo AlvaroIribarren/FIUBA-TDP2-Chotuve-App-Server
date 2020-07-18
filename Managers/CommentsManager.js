@@ -29,7 +29,9 @@ class CommentsManager {
 
     async getAllCommentsFromVideo(video_id) {
         const condition = ' video_id = ' + video_id;
-        return await Manager.getAllRowsWithCondition(comments, condition);
+        let allVideos = await Manager.getAllRowsWithCondition(comments, condition);
+        allVideos = await UserManager.addNamesToElements(allVideos);
+        return allVideos;
     }
 
     async getAllCommentsFromUser(user_id) {

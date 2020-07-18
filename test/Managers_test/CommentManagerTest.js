@@ -41,6 +41,10 @@ describe('Comments test', async function () {
         assert.property(comment, 'video_id');
     })
 
+    it('Check author_name existance', async () =>{
+        assert.property(comment, 'author_name');
+    })
+
     it('Check comment property existance', async () =>{
         assert.property(comment, 'comment');
     })

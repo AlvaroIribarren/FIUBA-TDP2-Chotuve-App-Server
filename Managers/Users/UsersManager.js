@@ -163,16 +163,6 @@ class UsersManager {
         return await MediaRequestManager.changeProfileImage(img_id, newImgUrl, newImgUuid);
     }
 
-    async checkCorrectIdAndName(author_id, author_name) {
-        const user = await this.getUserById(author_id);
-        if (user) {
-            const name = user.name;
-            return author_name === name;
-        } else {
-            return false;
-        }
-    }
-
     async validateUser(body) {
         const schema = {
             name: Joi.string().min(minNameLength).required(),
@@ -201,6 +191,14 @@ class UsersManager {
             phone: Joi.string().required()
         }
         return Joi.validate(body, schema);
+    }
+
+    async isUserEnabled(user_id){
+        const user = await Manager.getIdFromTable(user_id, users);
+        if (user)
+            return user.enabled;
+        else
+            return null;
     }
 
     async enableUser(user_id){
